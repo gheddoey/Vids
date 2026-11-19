@@ -57,6 +57,9 @@ export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm';
 
 const INK = '#1b1b1b';
 
+// Elongated head, taller than it is wide, like the reference characters.
+export const HEAD_H = 1.5;
+
 const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
 	const c = document.createElement('canvas');
 	c.width = c.height = 512;
@@ -86,7 +89,7 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
 
 	if (face === 'smile' || face === 'serious') {
 		// Small square-ish dots
-		for (const x of eyes) g.fillRect(x - 11, eyeY - 13, 22, 26);
+		for (const x of eyes) g.fillRect(x - 11, eyeY - 16, 22, 32);
 	}
 	if (face === 'serious') {
 		line(8, [[eyes[0] - 30, eyeY - 52], [eyes[0] + 22, eyeY - 38]]);
@@ -100,14 +103,14 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
 		for (const [i, x] of eyes.entries()) {
 			const inner = i === 0 ? 1 : -1; // iris sits toward the nose
 			g.fillStyle = '#f4f1ea';
-			g.fillRect(x - 44, eyeY - 24, 88, 52);
+			g.fillRect(x - 44, eyeY - 26, 88, 58);
 			g.fillStyle = eyeColor;
-			g.fillRect(x + inner * 14 - 15, eyeY - 18, 30, 40);
+			g.fillRect(x + inner * 14 - 15, eyeY - 20, 30, 46);
 			g.fillStyle = INK;
-			g.fillRect(x + inner * 14 - 6, eyeY - 8, 12, 18);
+			g.fillRect(x + inner * 14 - 6, eyeY - 10, 12, 22);
 			g.lineWidth = 5;
-			g.strokeRect(x - 44, eyeY - 24, 88, 52);
-			line(11, [[x - 46, eyeY - 24], [x + 46, eyeY - 24]]); // heavy upper lid
+			g.strokeRect(x - 44, eyeY - 26, 88, 58);
+			line(11, [[x - 46, eyeY - 26], [x + 46, eyeY - 26]]); // heavy upper lid
 		}
 		// Thick brows angled down toward the nose
 		g.strokeStyle = '#3a3a3a';
@@ -177,7 +180,7 @@ export const Character: React.FC<CharacterProps> = ({
 	const torso = useMemo(() => faceMaterials(img, TORSO, skin), [img, skin]);
 	const rArm = useMemo(() => faceMaterials(img, RIGHT_ARM, skin), [img, skin]);
 	const lArm = useMemo(() => faceMaterials(img, LEFT_ARM, skin), [img, skin]);
-	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, 1.2, 1.2, 1, 0.04), []);
+	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 1, 0.04), []);
 	const headMats = useMemo(() => {
 		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
 		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face, eyeColor), roughness: 0.7});
@@ -209,10 +212,13 @@ export const Character: React.FC<CharacterProps> = ({
 			</>
 			)}
 			{/* Head, hair and head object */}
-			<group position={[0, 4.62, 0]}>
+			<group position={[0, 4 + HEAD_H / 2 + 0.02, 0]}>
 				<mesh geometry={headGeo} material={headMats} castShadow receiveShadow />
-				{hair ? <Hair {...hair} /> : null}
-				{hat ? <Hat {...hat} /> : null}
+				{/* Hair and hats are modelled for a 1.2-tall head; lift them to the taller head's top */}
+				<group position={[0, HEAD_H / 2 - 0.6, 0]}>
+					{hair ? <Hair {...hair} /> : null}
+					{hat ? <Hat {...hat} /> : null}
+				</group>
 			</group>
 		</group>
 	);

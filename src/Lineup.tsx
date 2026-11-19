@@ -105,8 +105,8 @@ export const Lineup: React.FC<{view: View}> = ({view}) => {
 	let target: [number, number, number];
 	if (view === 'heads') {
 		// 2 rows of 4 heads, turned slightly so the sides of the hair show.
-		camera = {position: [0, 5.2, 11], fov: 32};
-		target = [0, 4.62, 0];
+		camera = {position: [0, 5.35, 11.6], fov: 32};
+		target = [0, 4.77, 0];
 		cast = CAST.map((c, i) => {
 			const row = Math.floor(i / 4);
 			const col = i % 4;
@@ -116,7 +116,7 @@ export const Lineup: React.FC<{view: View}> = ({view}) => {
 					{...c}
 					img={imgs[c.shirt]}
 					headOnly
-					position={[(col - 1.5) * 2.6, row === 0 ? 1.55 : -1.55, 0]}
+					position={[(col - 1.5) * 2.6, row === 0 ? 1.8 : -1.8, 0]}
 					rotY={0.45 - col * 0.3}
 				/>
 			);
