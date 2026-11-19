@@ -58,20 +58,25 @@ export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm';
 const INK = '#1b1b1b';
 
 // Elongated head, taller than it is wide, like the reference characters.
-export const HEAD_H = 1.5;
+export const HEAD_H = 1.4;
 
-const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
+// Optional per-character face mark.
+export type FaceMark = 'scar' | 'freckles' | 'blush' | 'drop' | 'mole';
+
+const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: FaceMark) => {
 	const c = document.createElement('canvas');
 	c.width = c.height = 512;
 	const g = c.getContext('2d')!;
 	g.fillStyle = skin;
 	g.fillRect(0, 0, 512, 512);
+	// Shift features down so hair fringes don't cover the brows.
+	g.translate(0, 34);
 	g.strokeStyle = INK;
 	g.fillStyle = INK;
 	g.lineCap = 'round';
 	g.lineJoin = 'round';
-	const eyeY = 232;
-	const eyes = [256 - 78, 256 + 78];
+	const eyeY = 226;
+	const eyes = [256 - 90, 256 + 90];
 	const line = (w: number, pts: number[][]) => {
 		g.lineWidth = w;
 		g.beginPath();
@@ -86,64 +91,144 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
 		g.quadraticCurveTo(cx, cy, x2, y2);
 		g.stroke();
 	};
+	const ellipse = (x: number, y: number, rx: number, ry: number, color: string) => {
+		g.fillStyle = color;
+		g.beginPath();
+		g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+		g.fill();
+	};
+	const shine = (x: number, y: number, s: number) => {
+		g.fillStyle = '#ffffff';
+		g.fillRect(x, y, s, s);
+	};
+
+	// Blush / freckles go under the line work.
+	if (mark === 'blush' || face === 'grin') {
+		ellipse(eyes[0] - 6, eyeY + 78, 40, 18, 'rgba(226, 110, 110, 0.32)');
+		ellipse(eyes[1] + 6, eyeY + 78, 40, 18, 'rgba(226, 110, 110, 0.32)');
+	}
+	if (mark === 'freckles') {
+		for (const side of [-1, 1]) {
+			for (const [dx, dy] of [[-22, 70], [0, 82], [22, 70], [-10, 94], [14, 98]]) {
+				ellipse(256 + side * 92 + dx, eyeY + dy, 4.5, 4.5, 'rgba(140, 80, 40, 0.55)');
+			}
+		}
+	}
+
+	// Hint of a nose: a soft hooked shadow line.
+	g.strokeStyle = 'rgba(80, 45, 20, 0.35)';
+	curve(6, 266, 262, 274, 296, 252, 300);
+	g.strokeStyle = INK;
 
 	if (face === 'smile' || face === 'serious') {
-		// Small square-ish dots
-		for (const x of eyes) g.fillRect(x - 11, eyeY - 16, 22, 32);
-	}
-	if (face === 'serious') {
-		line(8, [[eyes[0] - 30, eyeY - 52], [eyes[0] + 22, eyeY - 38]]);
-		line(8, [[eyes[1] + 30, eyeY - 52], [eyes[1] - 22, eyeY - 38]]);
-		line(7, [[228, 326], [284, 326]]);
+		// Big upright block eyes with a shine, like the reference dot eyes scaled up.
+		for (const x of eyes) {
+			g.fillStyle = INK;
+			g.fillRect(x - 24, eyeY - 34, 48, 70);
+			shine(x - 15, eyeY - 25, 14);
+		}
 	}
 	if (face === 'smile') {
-		curve(7, 220, 314, 256, 342, 292, 314);
+		// Soft arched brows and a small upturned smile with corner ticks.
+		curve(7, eyes[0] - 34, eyeY - 58, eyes[0], eyeY - 72, eyes[0] + 30, eyeY - 60);
+		curve(7, eyes[1] - 30, eyeY - 60, eyes[1], eyeY - 72, eyes[1] + 34, eyeY - 58);
+		curve(8, 214, 326, 256, 358, 298, 326);
+		line(5, [[210, 320], [216, 330]]);
+		line(5, [[302, 320], [296, 330]]);
+	}
+	if (face === 'serious') {
+		line(11, [[eyes[0] - 40, eyeY - 72], [eyes[0] + 30, eyeY - 48]]);
+		line(11, [[eyes[1] + 40, eyeY - 72], [eyes[1] - 30, eyeY - 48]]);
+		line(8, [[224, 338], [288, 338]]);
+		line(5, [[236, 356], [276, 356]]); // under-lip shadow
 	}
 	if (face === 'mustache') {
 		for (const [i, x] of eyes.entries()) {
 			const inner = i === 0 ? 1 : -1; // iris sits toward the nose
 			g.fillStyle = '#f4f1ea';
-			g.fillRect(x - 44, eyeY - 26, 88, 58);
+			g.fillRect(x - 54, eyeY - 34, 108, 74);
 			g.fillStyle = eyeColor;
-			g.fillRect(x + inner * 14 - 15, eyeY - 20, 30, 46);
+			g.fillRect(x + inner * 16 - 21, eyeY - 28, 42, 64);
 			g.fillStyle = INK;
-			g.fillRect(x + inner * 14 - 6, eyeY - 10, 12, 22);
-			g.lineWidth = 5;
-			g.strokeRect(x - 44, eyeY - 26, 88, 58);
-			line(11, [[x - 46, eyeY - 26], [x + 46, eyeY - 26]]); // heavy upper lid
+			g.fillRect(x + inner * 16 - 9, eyeY - 14, 18, 34);
+			shine(x + inner * 16 - 17, eyeY - 24, 10);
+			g.lineWidth = 6;
+			g.strokeRect(x - 54, eyeY - 34, 108, 74);
+			line(13, [[x - 57, eyeY - 34], [x + 57, eyeY - 34]]); // heavy upper lid
+			line(4, [[x - 40, eyeY + 50], [x + 30, eyeY + 50]]); // bag under the eye
 		}
 		// Thick brows angled down toward the nose
 		g.strokeStyle = '#3a3a3a';
-		line(15, [[eyes[0] - 48, eyeY - 70], [eyes[0] + 44, eyeY - 42]]);
-		line(15, [[eyes[1] + 48, eyeY - 70], [eyes[1] - 44, eyeY - 42]]);
+		line(17, [[eyes[0] - 58, eyeY - 82], [eyes[0] + 52, eyeY - 50]]);
+		line(17, [[eyes[1] + 58, eyeY - 82], [eyes[1] - 52, eyeY - 50]]);
 		g.strokeStyle = INK;
-		// Drooping grey mustache
+		// Drooping grey mustache with strand lines
 		g.fillStyle = '#8f8f8f';
 		g.beginPath();
-		g.moveTo(256, 292);
-		g.quadraticCurveTo(300, 280, 326, 318);
-		g.quadraticCurveTo(296, 306, 256, 312);
-		g.quadraticCurveTo(216, 306, 186, 318);
-		g.quadraticCurveTo(212, 280, 256, 292);
+		g.moveTo(256, 300);
+		g.quadraticCurveTo(306, 286, 336, 332);
+		g.quadraticCurveTo(300, 318, 256, 322);
+		g.quadraticCurveTo(212, 318, 176, 332);
+		g.quadraticCurveTo(206, 286, 256, 300);
 		g.fill();
-		curve(6, 236, 346, 256, 338, 276, 346);
+		g.strokeStyle = '#6c6c6c';
+		for (const dx of [-40, -20, 20, 40]) line(3, [[256 + dx, 304], [256 + dx * 1.15, 318]]);
+		g.strokeStyle = INK;
+		curve(7, 230, 362, 256, 350, 282, 362);
 	}
 	if (face === 'grin') {
 		for (const x of eyes) {
-			g.lineWidth = 8;
+			g.lineWidth = 11;
 			g.beginPath();
-			g.arc(x, eyeY + 8, 22, Math.PI * 1.1, Math.PI * 1.9);
+			g.arc(x, eyeY + 12, 34, Math.PI * 1.08, Math.PI * 1.92);
 			g.stroke();
 		}
-		curve(7, 206, 306, 256, 352, 306, 306);
+		curve(6, eyes[0] - 30, eyeY - 62, eyes[0], eyeY - 74, eyes[0] + 30, eyeY - 62);
+		curve(6, eyes[1] - 30, eyeY - 62, eyes[1], eyeY - 74, eyes[1] + 30, eyeY - 62);
+		// Open grin with teeth
+		g.fillStyle = INK;
+		g.beginPath();
+		g.moveTo(196, 316);
+		g.quadraticCurveTo(256, 392, 316, 316);
+		g.closePath();
+		g.fill();
+		g.fillStyle = '#ffffff';
+		g.fillRect(212, 318, 88, 14);
 	}
 	if (face === 'calm') {
 		for (const [i, x] of eyes.entries()) {
-			curve(7, x - 28, eyeY, x, eyeY + 6, x + 28, eyeY);
+			curve(10, x - 42, eyeY, x, eyeY + 10, x + 42, eyeY);
 			const out = i === 0 ? -1 : 1;
-			line(5, [[x + out * 28, eyeY], [x + out * 36, eyeY + 8]]); // lash tick
+			line(7, [[x + out * 42, eyeY], [x + out * 54, eyeY + 12]]); // lash tick
+			line(5, [[x + out * 20, eyeY + 6], [x + out * 26, eyeY + 18]]);
 		}
-		line(6, [[238, 326], [274, 326]]);
+		line(6, [[eyes[0] - 34, eyeY - 60], [eyes[0] + 30, eyeY - 56]]);
+		line(6, [[eyes[1] + 34, eyeY - 60], [eyes[1] - 30, eyeY - 56]]);
+		line(7, [[234, 336], [278, 336]]);
+	}
+
+	// Marks drawn over the top.
+	if (mark === 'scar') {
+		g.strokeStyle = '#9b5a4a';
+		line(6, [[eyes[1] + 10, eyeY + 50], [eyes[1] + 50, eyeY + 110]]);
+		for (const t of [0.3, 0.6]) {
+			const x = eyes[1] + 10 + 40 * t;
+			const y = eyeY + 50 + 60 * t;
+			line(4, [[x - 12, y + 6], [x + 12, y - 6]]);
+		}
+		g.strokeStyle = INK;
+	}
+	if (mark === 'drop') {
+		// Small teardrop mark under the left eye, like the reference.
+		g.fillStyle = '#3d8fd1';
+		g.beginPath();
+		g.moveTo(eyes[0] + 4, eyeY + 52);
+		g.quadraticCurveTo(eyes[0] + 20, eyeY + 82, eyes[0] + 4, eyeY + 90);
+		g.quadraticCurveTo(eyes[0] - 12, eyeY + 82, eyes[0] + 4, eyeY + 52);
+		g.fill();
+	}
+	if (mark === 'mole') {
+		ellipse(300, 360, 6, 6, '#3a2418');
 	}
 	const tex = new THREE.CanvasTexture(c);
 	tex.colorSpace = THREE.SRGBColorSpace;
@@ -158,6 +243,7 @@ export type CharacterProps = {
 	pants?: string;
 	face?: FaceType;
 	eyeColor?: string;
+	mark?: FaceMark;
 	hair?: {type: HairType; color: string; accent?: string};
 	hat?: {type: HatType; color: string; accent?: string};
 	position?: [number, number, number];
@@ -172,6 +258,7 @@ export const Character: React.FC<CharacterProps> = ({
 	pants = '#2a2c33',
 	face = 'smile',
 	eyeColor,
+	mark,
 	hair,
 	hat,
 	position = [0, 0, 0],
@@ -183,9 +270,9 @@ export const Character: React.FC<CharacterProps> = ({
 	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 1, 0.04), []);
 	const headMats = useMemo(() => {
 		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
-		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face, eyeColor), roughness: 0.7});
+		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face, eyeColor, mark), roughness: 0.7});
 		return [plain, plain, plain, plain, front, plain];
-	}, [skin, face, eyeColor]);
+	}, [skin, face, eyeColor, mark]);
 
 	return (
 		<group position={position} rotation={[0, rotY, 0]}>
