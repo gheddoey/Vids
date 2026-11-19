@@ -124,8 +124,8 @@ const tracks: Record<'A' | 'B' | 'C' | 'D' | 'E', Key[]> = {
 		...diveKeys(SPOT.D, {x: 1.0, z: -1.6}, {x: 4.0, z: -7.0}, -0.35),
 	],
 	E: [
-		{f: 0, x: 13, z: 3.0, rotY: -PI / 2, face: 'calm'},
-		...walk(258, 292, [13, 3.0], [0.5, 3.0], 8),
+		{f: 0, x: 45, z: 3.0, rotY: -PI / 2, face: 'calm'},
+		...walk(258, 292, [15, 3.0], [0.5, 3.0], 8),
 		// Turn to the table
 		{f: 292, rotY: -PI / 2},
 		{f: 300, rotY: -PI, headX: 0.35},
@@ -175,7 +175,7 @@ const SHOTS: Shot[] = [
 	// The dive, from above the front
 	{from: 204, to: 252, p0: [0, 10, 19], p1: [0, 8.5, 15], t0: [0, 2.6, -1.2], t1: [0, 2.8, -1.2], fov: 38},
 	// The thief walks in
-	{from: 252, to: 340, p0: [11, 5.2, 6.5], p1: [8.5, 5.0, 5.0], t0: [1.5, 3.0, 0.2], t1: [0.3, 3.3, 1.0], fov: 36},
+	{from: 252, to: 340, p0: [13, 6.2, 14], p1: [8.5, 5.4, 9.5], t0: [3, 3.0, 1.0], t1: [0.4, 3.3, 1.2], fov: 36},
 	// Close on the bite, the others glaring behind
 	{from: 340, to: 384, p0: faceCam(E_END, 6.0, -2.0, 4.8), p1: faceCam(E_END, 5.2, -1.7, 4.8), t0: [0.5, 4.4, 3.0], t1: [0.5, 4.5, 3.0], fov: 32},
 ];
