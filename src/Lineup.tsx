@@ -68,7 +68,7 @@ const CameraTarget: React.FC<{target: [number, number, number]}> = ({target}) =>
 	return null;
 };
 
-const useShirts = (names: string[]) => {
+export const useShirts = (names: string[]) => {
 	const [imgs, setImgs] = useState<Record<string, HTMLImageElement> | null>(null);
 	const [handle] = useState(() => delayRender('Loading shirts'));
 	useEffect(() => {

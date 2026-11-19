@@ -26,10 +26,10 @@ const Swept: React.FC<{color: string}> = ({color}) => {
 			<RBox size={[0.55, 0.2, 0.2]} pos={[0.05, 0.47, 0.62]} rot={[0, 0, 0.25]} color={dark} r={0.07} />
 			<RBox size={[0.45, 0.18, 0.2]} pos={[0.4, 0.42, 0.6]} rot={[0, 0, 0.15]} color={color} r={0.07} />
 			{/* Side locks framing the face */}
-			<RBox size={[0.2, 0.7, 0.3]} pos={[-0.66, 0.1, 0.38]} rot={[0.05, 0, 0.06]} color={color} r={0.07} />
-			<RBox size={[0.2, 0.6, 0.3]} pos={[0.66, 0.15, 0.38]} rot={[0.05, 0, -0.06]} color={dark} r={0.07} />
-			<RBox size={[0.2, 0.65, 0.5]} pos={[-0.66, 0.1, 0.0]} color={dark} r={0.07} />
-			<RBox size={[0.2, 0.65, 0.5]} pos={[0.66, 0.1, 0.0]} color={color} r={0.07} />
+			<RBox size={[0.2, 0.62, 0.26]} pos={[-0.66, 0.12, 0.18]} rot={[0.05, 0, 0.06]} color={color} r={0.07} />
+			<RBox size={[0.2, 0.55, 0.26]} pos={[0.66, 0.16, 0.18]} rot={[0.05, 0, -0.06]} color={dark} r={0.07} />
+			<RBox size={[0.2, 0.65, 0.5]} pos={[-0.66, 0.1, -0.2]} color={dark} r={0.07} />
+			<RBox size={[0.2, 0.65, 0.5]} pos={[0.66, 0.1, -0.2]} color={color} r={0.07} />
 			{/* Tips flicking out at the back */}
 			<RBox size={[0.4, 0.3, 0.2]} pos={[-0.4, -0.38, -0.6]} rot={[0.3, 0, 0.3]} color={dark} r={0.07} />
 			<RBox size={[0.4, 0.3, 0.2]} pos={[0.4, -0.38, -0.6]} rot={[0.3, 0, -0.3]} color={dark} r={0.07} />

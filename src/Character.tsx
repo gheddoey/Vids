@@ -235,6 +235,50 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 	return tex;
 };
 
+// Joint angles (radians) and root placement. Positive lean tips the upper body forward;
+// negative armX / legX swings a limb forward; armZ swings it out to the side
+// (right arm outward is negative, left arm outward is positive); positive headX looks down.
+export type Pose = {
+	x: number;
+	y: number;
+	z: number;
+	rotY: number;
+	lean: number;
+	twist: number;
+	side: number;
+	headX: number;
+	headY: number;
+	headZ: number;
+	armLX: number;
+	armLZ: number;
+	armRX: number;
+	armRZ: number;
+	legLX: number;
+	legRX: number;
+	face?: FaceType;
+};
+
+export const REST: Pose = {
+	x: 0,
+	y: 0,
+	z: 0,
+	rotY: 0,
+	lean: 0,
+	twist: 0,
+	side: 0,
+	headX: 0,
+	headY: 0,
+	headZ: 0,
+	armLX: 0,
+	armLZ: 0,
+	armRX: 0,
+	armRZ: 0,
+	legLX: 0,
+	legRX: 0,
+};
+
+const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm'];
+
 export type CharacterProps = {
 	shirt: string;
 	img?: HTMLImageElement | null;
@@ -248,9 +292,20 @@ export type CharacterProps = {
 	hat?: {type: HatType; color: string; accent?: string};
 	position?: [number, number, number];
 	rotY?: number;
+	pose?: Partial<Pose>;
+	// Something held in a hand (rendered at the hand, pointing forward).
+	holdL?: React.ReactNode;
+	holdR?: React.ReactNode;
 };
 
-// R6-style blocky body, in studs: legs 1x2x1, torso 2x2x1, arms 1x2x1, head ~1.2 cube.
+const Limb: React.FC<{material: THREE.Material | THREE.Material[]}> = ({material}) => (
+	<mesh position={[0, -1, 0]} material={material} castShadow receiveShadow>
+		<boxGeometry args={[0.99, 2, 1]} />
+	</mesh>
+);
+
+// R6-style blocky body, in studs: legs 1x2x1, torso 2x2x1, arms 1x2x1, elongated head.
+// Limbs pivot at the shoulders/hips, the upper body pivots at the waist, the head at the neck.
 export const Character: React.FC<CharacterProps> = ({
 	img = null,
 	headOnly = false,
@@ -263,48 +318,76 @@ export const Character: React.FC<CharacterProps> = ({
 	hat,
 	position = [0, 0, 0],
 	rotY = 0,
+	pose = {},
+	holdL,
+	holdR,
 }) => {
+	const p: Pose = {...REST, x: position[0], y: position[1], z: position[2], rotY, ...pose};
 	const torso = useMemo(() => faceMaterials(img, TORSO, skin), [img, skin]);
 	const rArm = useMemo(() => faceMaterials(img, RIGHT_ARM, skin), [img, skin]);
 	const lArm = useMemo(() => faceMaterials(img, LEFT_ARM, skin), [img, skin]);
+	const legMat = useMemo(() => new THREE.MeshStandardMaterial({color: pants, roughness: 0.85}), [pants]);
 	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 1, 0.04), []);
+	// Every expression is drawn once up front so faces can swap instantly mid-animation.
 	const headMats = useMemo(() => {
 		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
-		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face, eyeColor, mark), roughness: 0.7});
-		return [plain, plain, plain, plain, front, plain];
-	}, [skin, face, eyeColor, mark]);
+		return Object.fromEntries(
+			FACES.map((f) => {
+				const front = new THREE.MeshStandardMaterial({map: drawFace(skin, f, eyeColor, mark), roughness: 0.7});
+				return [f, [plain, plain, plain, plain, front, plain]];
+			}),
+		) as Record<FaceType, THREE.Material[]>;
+	}, [skin, eyeColor, mark]);
+
+	const head = (
+		<group position={[0, HEAD_H / 2 + 0.02, 0]}>
+			<mesh geometry={headGeo} material={headMats[p.face ?? face]} castShadow receiveShadow />
+			{/* Hair and hats are modelled for a 1.2-tall head; lift them to the taller head's top */}
+			<group position={[0, HEAD_H / 2 - 0.6, 0]}>
+				{hair ? <Hair {...hair} /> : null}
+				{hat ? <Hat {...hat} /> : null}
+			</group>
+		</group>
+	);
+
+	if (headOnly) {
+		return (
+			<group position={[p.x, p.y + 4, p.z]} rotation={[0, p.rotY, 0]}>
+				{head}
+			</group>
+		);
+	}
 
 	return (
-		<group position={position} rotation={[0, rotY, 0]}>
-			{headOnly ? null : (
-			<>
-			{/* Legs */}
-			{[-0.5, 0.5].map((x) => (
-				<mesh key={x} position={[x, 1, 0]} castShadow receiveShadow>
-					<boxGeometry args={[0.99, 2, 1]} />
-					<meshStandardMaterial color={pants} roughness={0.85} />
+		<group position={[p.x, p.y, p.z]} rotation={[0, p.rotY, 0]}>
+			{/* Legs, pivoting at the hips */}
+			<group position={[-0.5, 2, 0]} rotation={[p.legRX, 0, 0]}>
+				<Limb material={legMat} />
+			</group>
+			<group position={[0.5, 2, 0]} rotation={[p.legLX, 0, 0]}>
+				<Limb material={legMat} />
+			</group>
+			{/* Upper body, pivoting at the waist */}
+			<group position={[0, 2, 0]} rotation={[p.lean, p.twist, p.side]}>
+				<mesh position={[0, 1, 0]} material={torso} castShadow receiveShadow>
+					<boxGeometry args={[2, 2, 1]} />
 				</mesh>
-			))}
-			{/* Torso */}
-			<mesh position={[0, 3, 0]} material={torso} castShadow receiveShadow>
-				<boxGeometry args={[2, 2, 1]} />
-			</mesh>
-			{/* Arms (character's right arm is on -x) */}
-			<mesh position={[-1.5, 3, 0]} material={rArm} castShadow receiveShadow>
-				<boxGeometry args={[0.99, 2, 1]} />
-			</mesh>
-			<mesh position={[1.5, 3, 0]} material={lArm} castShadow receiveShadow>
-				<boxGeometry args={[0.99, 2, 1]} />
-			</mesh>
-			</>
-			)}
-			{/* Head, hair and head object */}
-			<group position={[0, 4 + HEAD_H / 2 + 0.02, 0]}>
-				<mesh geometry={headGeo} material={headMats} castShadow receiveShadow />
-				{/* Hair and hats are modelled for a 1.2-tall head; lift them to the taller head's top */}
-				<group position={[0, HEAD_H / 2 - 0.6, 0]}>
-					{hair ? <Hair {...hair} /> : null}
-					{hat ? <Hat {...hat} /> : null}
+				{/* Arms, pivoting at the shoulders (character's right arm is on -x) */}
+				<group position={[-1.5, 1.75, 0]} rotation={[p.armRX, 0, p.armRZ]}>
+					<group position={[0, 0.25, 0]}>
+						<Limb material={rArm} />
+						{holdR ? <group position={[0, -2.05, 0.1]}>{holdR}</group> : null}
+					</group>
+				</group>
+				<group position={[1.5, 1.75, 0]} rotation={[p.armLX, 0, p.armLZ]}>
+					<group position={[0, 0.25, 0]}>
+						<Limb material={lArm} />
+						{holdL ? <group position={[0, -2.05, 0.1]}>{holdL}</group> : null}
+					</group>
+				</group>
+				{/* Head, pivoting at the neck */}
+				<group position={[0, 2, 0]} rotation={[p.headX, p.headY, p.headZ]}>
+					{head}
 				</group>
 			</group>
 		</group>
