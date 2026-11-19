@@ -218,6 +218,51 @@ def sadtrombone():
     return np.concatenate(out)
 
 
+# --- Bar: low room tone, a fan hum, and desert wind leaking through the door ---
+def bar_ambience():
+    dur = 22.5
+    t = t_axis(dur)
+    room = band(noise(dur), 40, 300) * 0.5
+    hum = 0.08 * np.sin(2 * np.pi * 60 * t) * (1 + 0.3 * np.sin(2 * np.pi * 0.5 * t))
+    wind = band(noise(dur), 300, 1500) * (0.4 + 0.3 * np.sin(2 * np.pi * t / 6.1))
+    return norm(room, 0.3) + hum + norm(wind, 0.12)
+
+
+def coins():
+    """Three coins dropped and slid on stone."""
+    d = 0.7
+    out = np.zeros(int(SR * d))
+    for i, at in enumerate([0.0, 0.07, 0.13]):
+        x = sum(a * np.sin(2 * np.pi * f * t_axis(0.35)) for f, a in [(2900 + i * 230, 1), (4700 + i * 310, 0.6), (6900, 0.3)])
+        place(out, x * env(0.35, 0.001, 0.08), at)
+    slide = band(noise(0.3), 1500, 6000) * np.linspace(1, 0, int(SR * 0.3)) * 0.25
+    place(out, slide, 0.2)
+    return out
+
+
+def pour():
+    d = 0.45
+    t = t_axis(d)
+    x = band(noise(d), 300, 2500) * (0.6 + 0.4 * np.sin(2 * np.pi * 23 * t))
+    rising = sweep(500, 900, d) * 0.15
+    return (x + rising) * np.clip(t / 0.03, 0, 1) * np.clip((d - t) / 0.08, 0, 1)
+
+
+def ice():
+    d = 0.4
+    out = np.zeros(int(SR * d))
+    for at in [0.0, 0.06, 0.15]:
+        f = rng.uniform(3000, 4500)
+        place(out, (np.sin(2 * np.pi * f * t_axis(0.12)) + 0.5 * np.sin(2 * np.pi * f * 1.7 * t_axis(0.12))) * env(0.12, 0.0005, 0.025), at)
+    return out
+
+
+def glass():
+    d = 0.3
+    x = sum(a * np.sin(2 * np.pi * f * t_axis(d)) for f, a in [(1900, 1), (3300, 0.5), (5200, 0.25)])
+    return x * env(d, 0.0005, 0.06)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     save('ambience', ambience(), 0.5)
@@ -236,4 +281,9 @@ if __name__ == '__main__':
     save('munch', munch(), 0.6)
     save('gulp', gulp(), 0.7)
     save('sadtrombone', sadtrombone(), 0.8)
+    save('bar_ambience', bar_ambience(), 0.5)
+    save('coins', coins(), 0.7)
+    save('pour', pour(), 0.7)
+    save('ice', ice(), 0.6)
+    save('glass', glass(), 0.6)
     print('wrote', sorted(os.listdir(OUT)))

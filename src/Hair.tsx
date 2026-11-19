@@ -4,7 +4,7 @@ import {RBox, seeded, shade} from './parts';
 // All hair is built in head-local space. The head is a 1.2 cube centred on 0,
 // so the top of the scalp is y = 0.6 and the face points toward +z.
 
-export type HairType = 'swept' | 'spiky' | 'bob' | 'pompadour' | 'bun' | 'mop';
+export type HairType = 'swept' | 'spiky' | 'bob' | 'pompadour' | 'bun' | 'mop' | 'flattop' | 'braids' | 'short';
 
 const Shell: React.FC<{color: string; height?: number}> = ({color, height = 0.6}) => (
 	<>
@@ -145,6 +145,52 @@ const Mop: React.FC<{color: string}> = ({color}) => {
 	);
 };
 
+// Tall, flat-topped slab of hair standing straight up, with comb lines.
+const Flattop: React.FC<{color: string}> = ({color}) => {
+	const light = shade(color, 0.08);
+	const dark = shade(color, -0.1);
+	return (
+		<group>
+			<Shell color={color} height={0.45} />
+			<RBox size={[0.9, 1.7, 1.15]} pos={[0, 1.45, 0.02]} color={color} />
+			<RBox size={[0.96, 0.12, 1.2]} pos={[0, 2.3, 0.02]} color={light} />
+			{[-0.3, -0.1, 0.1, 0.3].map((x) => (
+				<RBox key={x} size={[0.03, 1.5, 0.03]} pos={[x, 1.45, 0.6]} color={dark} />
+			))}
+			{[-0.3, 0, 0.3].map((z) => (
+				<RBox key={z} size={[0.03, 1.5, 0.03]} pos={[0.46, 1.45, z]} color={dark} />
+			))}
+			{/* Short sides */}
+			<RBox size={[0.12, 0.4, 0.5]} pos={[-0.64, 0.25, 0.15]} color={color} />
+			<RBox size={[0.12, 0.4, 0.5]} pos={[0.64, 0.25, 0.15]} color={color} />
+		</group>
+	);
+};
+
+// Black hair gathered into thick hanging braids at the back.
+const Braids: React.FC<{color: string}> = ({color}) => {
+	const dark = shade(color, -0.06);
+	return (
+		<group>
+			<Shell color={color} height={0.5} />
+			{[-0.5, -0.17, 0.17, 0.5].map((x, i) =>
+				[0, 1, 2].map((j) => (
+					<RBox key={`${x}${j}`} size={[0.24, 0.3, 0.24]} pos={[x, -0.3 - j * 0.28, -0.62 - j * 0.02]} rot={[0, 0, (j % 2 ? 0.2 : -0.2)]} color={(i + j) % 2 ? dark : color} />
+				)),
+			)}
+		</group>
+	);
+};
+
+// Short neat hair (mostly hidden under a hat).
+const Short: React.FC<{color: string}> = ({color}) => (
+	<group>
+		<Shell color={color} height={0.45} />
+		<RBox size={[0.14, 0.45, 0.5]} pos={[-0.64, 0.12, 0.12]} color={color} />
+		<RBox size={[0.14, 0.45, 0.5]} pos={[0.64, 0.12, 0.12]} color={color} />
+	</group>
+);
+
 export const Hair: React.FC<{type: HairType; color: string; accent?: string}> = ({type, color, accent = '#e04a7a'}) => {
 	switch (type) {
 		case 'swept':
@@ -159,5 +205,11 @@ export const Hair: React.FC<{type: HairType; color: string; accent?: string}> = 
 			return <Bun color={color} accent={accent} />;
 		case 'mop':
 			return <Mop color={color} />;
+		case 'flattop':
+			return <Flattop color={color} />;
+		case 'braids':
+			return <Braids color={color} />;
+		case 'short':
+			return <Short color={color} />;
 	}
 };

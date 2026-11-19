@@ -4,7 +4,7 @@ import {RBox, shade} from './parts';
 // Head objects, in head-local space (head is a 1.2 cube centred on 0, face toward +z).
 // Built from hard-edged blocks so they read like the blocky reference style.
 
-export type HatType = 'cap' | 'fedora' | 'beanie' | 'goggles' | 'headphones' | 'badgecap';
+export type HatType = 'cap' | 'fedora' | 'beanie' | 'goggles' | 'headphones' | 'badgecap' | 'safari' | 'schoolcap' | 'headband';
 
 type P = {color: string; accent: string};
 
@@ -117,6 +117,51 @@ const BadgeCap: React.FC<P> = ({color, accent}) => (
 	</group>
 );
 
+// Wide-brimmed safari hat with a dented crown and a dark band.
+const Safari: React.FC<P> = ({color, accent}) => (
+	<group>
+		<Facet r={1.2} h={0.06} sides={14} pos={[0, 0.44, 0.04]} rot={[0.1, 0, 0]} color={shade(color, -0.05)} />
+		{/* Brim edge turned down slightly */}
+		<Facet r={1.22} r2={1.26} h={0.08} sides={14} pos={[0, 0.39, 0.06]} rot={[0.1, 0, 0]} color={shade(color, -0.12)} />
+		<RBox size={[1.3, 0.48, 1.26]} pos={[0, 0.7, 0]} color={color} />
+		<RBox size={[1.1, 0.12, 1.06]} pos={[0, 0.98, 0]} color={color} />
+		<RBox size={[0.26, 0.05, 0.86]} pos={[0, 1.05, 0]} color={shade(color, -0.12)} />
+		<RBox size={[1.34, 0.13, 1.3]} pos={[0, 0.53, 0]} color={accent} rough={0.6} />
+	</group>
+);
+
+// Black school cap: flat top, short stiff brim, gold badge and chain, back fading into the hair.
+const SchoolCap: React.FC<P> = ({color, accent}) => (
+	<group>
+		<RBox size={[1.46, 0.46, 1.46]} pos={[0, 0.66, 0]} color={color} />
+		<RBox size={[1.52, 0.1, 1.52]} pos={[0, 0.9, -0.02]} color={shade(color, 0.04)} />
+		<RBox size={[1.48, 0.12, 1.48]} pos={[0, 0.44, 0]} color={shade(color, -0.04)} />
+		{/* Brim */}
+		<RBox size={[1.3, 0.06, 0.45]} pos={[0, 0.4, 0.9]} rot={[0.18, 0, 0]} color={shade(color, -0.02)} />
+		{/* Gold badge and a chain across the band */}
+		<RBox size={[0.3, 0.26, 0.05]} pos={[0.05, 0.66, 0.74]} color={accent} rough={0.35} />
+		<RBox size={[0.14, 0.12, 0.06]} pos={[0.05, 0.66, 0.765]} color={shade(accent, -0.15)} rough={0.35} />
+		<RBox size={[0.9, 0.04, 0.04]} pos={[-0.25, 0.48, 0.75]} rot={[0, 0, -0.08]} color={accent} rough={0.35} />
+		{/* Ragged back blending into the hair */}
+		{[-0.5, -0.17, 0.17, 0.5].map((x, i) => (
+			<RBox key={x} size={[0.34, 0.5 + (i % 2) * 0.15, 0.2]} pos={[x, 0.3 - (i % 2) * 0.07, -0.72]} rot={[-0.2, 0, 0]} color={color} />
+		))}
+	</group>
+);
+
+// Cloth headband wrapped around the forehead, knot and tails at the back.
+const Headband: React.FC<P> = ({color, accent}) => (
+	<group position={[0, 0.42, 0]}>
+		<RBox size={[1.4, 0.3, 1.4]} color={color} />
+		{[-0.4, -0.1, 0.2, 0.48].map((x) => (
+			<RBox key={x} size={[0.04, 0.3, 0.02]} pos={[x, 0, 0.71]} rot={[0, 0, 0.3]} color={shade(color, -0.1)} />
+		))}
+		<RBox size={[0.3, 0.26, 0.2]} pos={[0.25, 0.02, -0.75]} color={shade(color, -0.06)} />
+		<RBox size={[0.18, 0.6, 0.06]} pos={[0.12, -0.32, -0.82]} rot={[0.25, 0, 0.12]} color={color} />
+		<RBox size={[0.18, 0.5, 0.06]} pos={[0.4, -0.28, -0.8]} rot={[0.3, 0, -0.18]} color={accent} />
+	</group>
+);
+
 export const Hat: React.FC<{type: HatType; color: string; accent?: string}> = ({type, color, accent = '#ffffff'}) => {
 	const p = {color, accent};
 	switch (type) {
@@ -132,5 +177,11 @@ export const Hat: React.FC<{type: HatType; color: string; accent?: string}> = ({
 			return <Headphones {...p} />;
 		case 'badgecap':
 			return <BadgeCap {...p} />;
+		case 'safari':
+			return <Safari {...p} />;
+		case 'schoolcap':
+			return <SchoolCap {...p} />;
+		case 'headband':
+			return <Headband {...p} />;
 	}
 };

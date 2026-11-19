@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import {Hair, HairType} from './Hair';
 import {Hat, HatType} from './Hats';
+import {RBox} from './parts';
 
 // Roblox classic shirt template (585x559) regions: [x, y, w, h].
 // Box face order in three.js: +x, -x, +y, -y, +z (front), -z (back).
@@ -57,7 +58,9 @@ const faceMaterials = (img: HTMLImageElement | null, rects: Rect[], skin: string
 // dizzy    - spiral eyes, wobbly mouth (after the bonk)
 // chewA/B  - happy closed eyes, mouth puffed / open (eating)
 // smug     - half-lidded eyes, one raised brow, side smirk
-export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouch' | 'dizzy' | 'chewA' | 'chewB' | 'smug';
+// talkA/B  - neutral eyes, mouth open / closed (speaking)
+// squint   - suspicious narrowed eyes, flat brows, tight mouth
+export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouch' | 'dizzy' | 'chewA' | 'chewB' | 'smug' | 'talkA' | 'talkB' | 'squint';
 
 const INK = '#1b1b1b';
 
@@ -294,6 +297,34 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		curve(8, 226, 336, 270, 344, 300, 316);
 	}
 
+	if (face === 'talkA' || face === 'talkB') {
+		for (const x of eyes) {
+			g.fillStyle = INK;
+			g.fillRect(x - 24, eyeY - 34, 48, 70);
+			shine(x - 15, eyeY - 25, 14);
+		}
+		line(9, [[eyes[0] - 36, eyeY - 62], [eyes[0] + 30, eyeY - 58]]);
+		line(9, [[eyes[1] + 36, eyeY - 62], [eyes[1] - 30, eyeY - 58]]);
+		if (face === 'talkA') {
+			ellipse(256, 338, 34, 22, INK);
+			ellipse(256, 348, 18, 9, '#c4545a');
+		} else {
+			line(8, [[226, 336], [286, 336]]);
+		}
+	}
+	if (face === 'squint') {
+		// Narrowed eyes: blocks with heavy flat lids, angled brows
+		for (const [i, x] of eyes.entries()) {
+			g.fillStyle = INK;
+			g.fillRect(x - 24, eyeY - 2, 48, 26);
+			shine(x - 14, eyeY + 3, 9);
+			line(11, [[x - 32, eyeY - 4], [x + 32, eyeY - 4]]);
+			const inner = i === 0 ? 1 : -1;
+			line(11, [[x - inner * 40, eyeY - 52], [x + inner * 32, eyeY - 30]]);
+		}
+		line(8, [[232, 340], [282, 336]]);
+	}
+
 	// Marks drawn over the top.
 	if (mark === 'scar') {
 		g.strokeStyle = '#9b5a4a';
@@ -364,7 +395,7 @@ export const REST: Pose = {
 	legRX: 0,
 };
 
-const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm', 'ouch', 'dizzy', 'chewA', 'chewB', 'smug'];
+const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm', 'ouch', 'dizzy', 'chewA', 'chewB', 'smug', 'talkA', 'talkB', 'squint'];
 
 export type CharacterProps = {
 	shirt: string;
@@ -377,6 +408,9 @@ export type CharacterProps = {
 	mark?: FaceMark;
 	hair?: {type: HairType; color: string; accent?: string};
 	hat?: {type: HatType; color: string; accent?: string};
+	// Facial hair block and sunglasses, worn on the head.
+	beard?: string;
+	shades?: boolean;
 	position?: [number, number, number];
 	rotY?: number;
 	pose?: Partial<Pose>;
@@ -403,6 +437,8 @@ export const Character: React.FC<CharacterProps> = ({
 	mark,
 	hair,
 	hat,
+	beard,
+	shades,
 	position = [0, 0, 0],
 	rotY = 0,
 	pose = {},
@@ -429,6 +465,24 @@ export const Character: React.FC<CharacterProps> = ({
 	const head = (
 		<group position={[0, HEAD_H / 2 + 0.02, 0]}>
 			<mesh geometry={headGeo} material={headMats[p.face ?? face]} castShadow receiveShadow />
+			{beard ? (
+				<group>
+					<RBox size={[1.26, 0.42, 0.34]} pos={[0, -0.52, 0.48]} color={beard} />
+					<RBox size={[0.16, 0.8, 0.9]} pos={[-0.62, -0.3, 0.1]} color={beard} />
+					<RBox size={[0.16, 0.8, 0.9]} pos={[0.62, -0.3, 0.1]} color={beard} />
+					<RBox size={[0.7, 0.12, 0.08]} pos={[0, -0.2, 0.63]} color={beard} />
+				</group>
+			) : null}
+			{shades ? (
+				<group position={[0, 0.0, 0]}>
+					{[-0.27, 0.27].map((x) => (
+						<RBox key={x} size={[0.46, 0.24, 0.05]} pos={[x, 0, 0.625]} color="#141418" rough={0.15} />
+					))}
+					<RBox size={[0.14, 0.05, 0.04]} pos={[0, 0.06, 0.625]} color="#141418" rough={0.15} />
+					<RBox size={[0.04, 0.06, 0.8]} pos={[-0.62, 0.05, 0.22]} color="#141418" rough={0.15} />
+					<RBox size={[0.04, 0.06, 0.8]} pos={[0.62, 0.05, 0.22]} color="#141418" rough={0.15} />
+				</group>
+			) : null}
 			{/* Hair and hats are modelled for a 1.2-tall head; lift them to the taller head's top */}
 			<group position={[0, HEAD_H / 2 - 0.6, 0]}>
 				{hair ? <Hair {...hair} /> : null}
