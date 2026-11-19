@@ -18,9 +18,9 @@ const TOP = 2.45; // counter top
 type Who = 'BK' | 'JT' | 'AV' | 'JS' | 'PN';
 
 const CAST: Record<Who, CharacterProps> = {
-	BK: {shirt: 'ts_barkeep', skin: '#6e4a33', pants: '#3b302a', face: 'talkB'},
+	BK: {shirt: 'ts_barkeep', eyeColor: '#5a3a24', skin: '#6e4a33', pants: '#3b302a', face: 'talkB'},
 	JT: {
-		shirt: 'ts_jotaro',
+		shirt: 'ts_jotaro', eyeColor: '#2f7a74',
 		skin: '#e8bf93',
 		pants: '#1b1c22',
 		face: 'squint',
@@ -28,7 +28,7 @@ const CAST: Record<Who, CharacterProps> = {
 		hat: {type: 'schoolcap', color: '#1d1f26', accent: '#d8b24a'},
 	},
 	AV: {
-		shirt: 'ts_avdol',
+		shirt: 'ts_avdol', eyeColor: '#9a6a1a',
 		skin: '#7a4e33',
 		pants: '#d9c9a6',
 		face: 'squint',
@@ -37,7 +37,7 @@ const CAST: Record<Who, CharacterProps> = {
 		shades: true,
 	},
 	JS: {
-		shirt: 'ts_joseph',
+		shirt: 'ts_joseph', eyeColor: '#3f8a5a',
 		skin: '#e9c39a',
 		pants: '#4a4438',
 		face: 'serious',
@@ -45,7 +45,7 @@ const CAST: Record<Who, CharacterProps> = {
 		hat: {type: 'safari', color: '#a89668', accent: '#5a4a30'},
 		beard: '#c9c9c9',
 	},
-	PN: {shirt: 'ts_polnareff', skin: '#f0d0b0', pants: '#c3c6cc', face: 'squint', hair: {type: 'flattop', color: '#d7dbe2'}},
+	PN: {shirt: 'ts_polnareff', eyeColor: '#3a6fb0', skin: '#f0d0b0', pants: '#c3c6cc', face: 'squint', hair: {type: 'flattop', color: '#d7dbe2'}},
 };
 
 // Customers stand in a row facing the counter (-z). Seen from behind the bar,

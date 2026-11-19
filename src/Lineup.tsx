@@ -5,14 +5,14 @@ import {ThreeCanvas} from '@remotion/three';
 import {Character, CharacterProps} from './Character';
 
 export const CAST: CharacterProps[] = [
-	{shirt: 'pilot', pants: '#1f2b47', face: 'serious', mark: 'scar', hair: {type: 'pompadour', color: '#2b1d14'}},
-	{shirt: 'plaid', pants: '#3d5675', face: 'grin', mark: 'freckles', hair: {type: 'mop', color: '#9a2a22'}, hat: {type: 'goggles', color: '#5a3b22', accent: '#ffb347'}},
-	{shirt: 'varsity', pants: '#d9cfb8', face: 'smile', mark: 'blush', hair: {type: 'swept', color: '#3fa34d'}, hat: {type: 'cap', color: '#6b3a24', accent: '#f2f2f2'}},
+	{shirt: 'pilot', eyeColor: '#2f5d8a', pants: '#1f2b47', face: 'serious', mark: 'scar', hair: {type: 'pompadour', color: '#2b1d14'}},
+	{shirt: 'plaid', eyeColor: '#3f7a3a', pants: '#3d5675', face: 'grin', mark: 'freckles', hair: {type: 'mop', color: '#9a2a22'}, hat: {type: 'goggles', color: '#5a3b22', accent: '#ffb347'}},
+	{shirt: 'varsity', eyeColor: '#7a4a2a', pants: '#d9cfb8', face: 'smile', mark: 'blush', hair: {type: 'swept', color: '#3fa34d'}, hat: {type: 'cap', color: '#6b3a24', accent: '#f2f2f2'}},
 	{shirt: 'wings', pants: '#3a3a40', face: 'mustache', eyeColor: '#c0392b', skin: '#e9b98a', hair: {type: 'spiky', color: '#d9dde3'}, hat: {type: 'headphones', color: '#26282e', accent: '#e23b3b'}},
-	{shirt: 'suit', pants: '#24325a', face: 'mustache', skin: '#f0c595', hair: {type: 'bob', color: '#16161a'}, hat: {type: 'fedora', color: '#6e4a2c', accent: '#2a2a2a'}},
-	{shirt: 'jersey05', pants: '#d8d8d8', face: 'grin', skin: '#a8714a', hat: {type: 'beanie', color: '#e2742b', accent: '#fff3d6'}},
-	{shirt: 'bluejacket', pants: '#2b2d33', face: 'calm', mark: 'drop', hair: {type: 'swept', color: '#5b3a1e'}, hat: {type: 'badgecap', color: '#f2b230', accent: '#d8382b'}},
-	{shirt: 'tiedye', pants: '#5a3a8a', face: 'smile', mark: 'mole', hair: {type: 'bun', color: '#3a2318', accent: '#e04a7a'}},
+	{shirt: 'suit', eyeColor: '#8e2f8a', pants: '#24325a', face: 'mustache', skin: '#f0c595', hair: {type: 'bob', color: '#16161a'}, hat: {type: 'fedora', color: '#6e4a2c', accent: '#2a2a2a'}},
+	{shirt: 'jersey05', eyeColor: '#b07a1a', pants: '#d8d8d8', face: 'grin', skin: '#a8714a', hat: {type: 'beanie', color: '#e2742b', accent: '#fff3d6'}},
+	{shirt: 'bluejacket', eyeColor: '#2a8a8a', pants: '#2b2d33', face: 'calm', mark: 'drop', hair: {type: 'swept', color: '#5b3a1e'}, hat: {type: 'badgecap', color: '#f2b230', accent: '#d8382b'}},
+	{shirt: 'tiedye', eyeColor: '#c2477a', pants: '#5a3a8a', face: 'smile', mark: 'mole', hair: {type: 'bun', color: '#3a2318', accent: '#e04a7a'}},
 ];
 
 const Backdrop: React.FC = () => (

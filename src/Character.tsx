@@ -83,7 +83,7 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 	g.lineCap = 'round';
 	g.lineJoin = 'round';
 	const eyeY = 226;
-	const eyes = [256 - 90, 256 + 90];
+	const eyes = [256 - 100, 256 + 100];
 	const line = (w: number, pts: number[][]) => {
 		g.lineWidth = w;
 		g.beginPath();
@@ -127,49 +127,142 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 	curve(6, 266, 262, 274, 296, 252, 300);
 	g.strokeStyle = INK;
 
-	if (face === 'smile' || face === 'serious') {
-		// Big upright block eyes with a shine, like the reference dot eyes scaled up.
-		for (const x of eyes) {
-			g.fillStyle = INK;
-			g.fillRect(x - 24, eyeY - 34, 48, 70);
-			shine(x - 15, eyeY - 25, 14);
+	// ---- Eyes in the reference style: a cream block with a thin border and soft shadow,
+	// a small square pupil, and a thick slab brow resting on top. ----
+	type EyeOpts = {
+		look?: [number, number]; // pupil offset, -1..1
+		lid?: number; // 0..1 of the eye covered from the top
+		closed?: boolean;
+		chevron?: boolean;
+		spiral?: boolean;
+		brow?: number; // + angry (inner ends down), - worried (inner ends up)
+		raise?: [number, number]; // brow lift in px, per eye
+		pupil?: number; // pupil size in px
+	};
+	const EW = 122;
+	const EH = 82;
+	const drawEyes = (o: EyeOpts = {}) => {
+		for (const [i, x] of eyes.entries()) {
+			const inner = i === 0 ? 1 : -1; // direction toward the nose
+			const left = x - EW / 2;
+			const top = eyeY - EH / 2;
+			// Soft shadow and outer rim
+			g.save();
+			g.shadowColor = 'rgba(40, 25, 10, 0.35)';
+			g.shadowBlur = 14;
+			g.shadowOffsetY = 4;
+			g.fillStyle = '#d6ccb7';
+			g.fillRect(left - 4, top - 4, EW + 8, EH + 8);
+			g.restore();
+			// Whites with a lighter inner panel
+			g.fillStyle = '#ece5d6';
+			g.fillRect(left, top, EW, EH);
+			g.fillStyle = '#f7f3ec';
+			g.fillRect(left + 9, top + 9, EW - 18, EH - 22);
+			if (o.closed) {
+				g.fillStyle = '#3d3833';
+				g.fillRect(left + 12, eyeY - 2, EW - 24, 10);
+			} else if (o.chevron) {
+				g.strokeStyle = '#4a453e';
+				line(10, [
+					[x - inner * 20, eyeY - 22],
+					[x + inner * 18, eyeY],
+					[x - inner * 20, eyeY + 22],
+				]);
+				g.strokeStyle = INK;
+			} else if (o.spiral) {
+				g.strokeStyle = eyeColor;
+				g.lineWidth = 5;
+				g.beginPath();
+				for (let t = 0; t <= Math.PI * 4.5; t += 0.15) {
+					const r = 3 + t * 2.1;
+					const a2 = inner * t;
+					const px = x + Math.cos(a2) * r;
+					const py = eyeY + Math.sin(a2) * r * 0.8;
+					if (t === 0) g.moveTo(px, py);
+					else g.lineTo(px, py);
+				}
+				g.stroke();
+				g.strokeStyle = INK;
+			} else {
+				const ps = o.pupil ?? 27;
+				const px = x + (o.look?.[0] ?? 0) * 30;
+				const py = eyeY + (o.look?.[1] ?? 0) * 14;
+				g.fillStyle = eyeColor;
+				g.fillRect(px - ps / 2, py - ps / 2, ps, ps);
+				g.fillStyle = 'rgba(255, 255, 255, 0.35)';
+				g.fillRect(px - ps / 2 + 3, py - ps / 2 + 3, ps / 3, ps / 3);
+			}
+			// Upper lid sliding down
+			if (o.lid) {
+				const lh = EH * o.lid;
+				g.fillStyle = '#e0d6c2';
+				g.fillRect(left, top, EW, lh);
+				g.fillStyle = '#b5aa93';
+				g.fillRect(left, top + lh - 3, EW, 4);
+			}
+			g.strokeStyle = '#c8bca3';
+			g.lineWidth = 3;
+			g.strokeRect(left, top, EW, EH);
+			g.strokeStyle = INK;
+			// Slab brow, tilted around its centre
+			const lift = o.raise?.[i] ?? 0;
+			const bw = EW + 22;
+			const bt = 28;
+			const tilt = (o.brow ?? 0) * inner * 0.22;
+			g.save();
+			g.translate(x, top - 6 - lift - (o.lid ? -EH * o.lid * 0.35 : 0));
+			g.rotate(tilt);
+			g.shadowColor = 'rgba(30, 20, 10, 0.35)';
+			g.shadowBlur = 10;
+			g.shadowOffsetY = 5;
+			g.fillStyle = '#6c665b';
+			g.beginPath();
+			g.moveTo(-bw / 2, -bt / 2 + 3);
+			g.lineTo(-bw / 2 + 8, -bt / 2);
+			g.lineTo(bw / 2 - 8, -bt / 2);
+			g.lineTo(bw / 2, -bt / 2 + 3);
+			g.lineTo(bw / 2 - 4, bt / 2);
+			g.lineTo(-bw / 2 + 4, bt / 2);
+			g.closePath();
+			g.fill();
+			g.shadowColor = 'transparent';
+			g.fillStyle = '#7f786b';
+			g.fillRect(-bw / 2 + 8, -bt / 2, bw - 16, 7);
+			g.fillStyle = '#58524a';
+			g.fillRect(-bw / 2 + 4, bt / 2 - 5, bw - 8, 5);
+			g.restore();
 		}
-	}
+	};
+
+	const EYES: Record<FaceType, EyeOpts> = {
+		smile: {},
+		serious: {brow: 0.6, lid: 0.12},
+		mustache: {brow: 1.0, lid: 0.2},
+		grin: {closed: true, raise: [8, 8], brow: -0.3},
+		calm: {closed: true, brow: -0.2},
+		ouch: {chevron: true, brow: 0.8},
+		dizzy: {spiral: true, brow: -0.7, raise: [6, 6]},
+		chewA: {closed: true, raise: [6, 6], brow: -0.2},
+		chewB: {closed: true, raise: [6, 6], brow: -0.2},
+		smug: {lid: 0.45, look: [0.5, 0.2], raise: [0, 16], brow: 0.15},
+		talkA: {brow: 0.2},
+		talkB: {brow: 0.2},
+		squint: {lid: 0.5, brow: 0.7},
+	};
+	drawEyes(EYES[face]);
+
+	// ---- Mouths ----
 	if (face === 'smile') {
-		// Soft arched brows and a small upturned smile with corner ticks.
-		curve(7, eyes[0] - 34, eyeY - 58, eyes[0], eyeY - 72, eyes[0] + 30, eyeY - 60);
-		curve(7, eyes[1] - 30, eyeY - 60, eyes[1], eyeY - 72, eyes[1] + 34, eyeY - 58);
 		curve(8, 214, 326, 256, 358, 298, 326);
 		line(5, [[210, 320], [216, 330]]);
 		line(5, [[302, 320], [296, 330]]);
 	}
 	if (face === 'serious') {
-		line(11, [[eyes[0] - 40, eyeY - 72], [eyes[0] + 30, eyeY - 48]]);
-		line(11, [[eyes[1] + 40, eyeY - 72], [eyes[1] - 30, eyeY - 48]]);
 		line(8, [[224, 338], [288, 338]]);
-		line(5, [[236, 356], [276, 356]]); // under-lip shadow
+		line(5, [[236, 356], [276, 356]]);
 	}
 	if (face === 'mustache') {
-		for (const [i, x] of eyes.entries()) {
-			const inner = i === 0 ? 1 : -1; // iris sits toward the nose
-			g.fillStyle = '#f4f1ea';
-			g.fillRect(x - 54, eyeY - 34, 108, 74);
-			g.fillStyle = eyeColor;
-			g.fillRect(x + inner * 16 - 21, eyeY - 28, 42, 64);
-			g.fillStyle = INK;
-			g.fillRect(x + inner * 16 - 9, eyeY - 14, 18, 34);
-			shine(x + inner * 16 - 17, eyeY - 24, 10);
-			g.lineWidth = 6;
-			g.strokeRect(x - 54, eyeY - 34, 108, 74);
-			line(13, [[x - 57, eyeY - 34], [x + 57, eyeY - 34]]); // heavy upper lid
-			line(4, [[x - 40, eyeY + 50], [x + 30, eyeY + 50]]); // bag under the eye
-		}
-		// Thick brows angled down toward the nose
-		g.strokeStyle = '#3a3a3a';
-		line(17, [[eyes[0] - 58, eyeY - 82], [eyes[0] + 52, eyeY - 50]]);
-		line(17, [[eyes[1] + 58, eyeY - 82], [eyes[1] - 52, eyeY - 50]]);
-		g.strokeStyle = INK;
-		// Drooping grey mustache with strand lines
 		g.fillStyle = '#8f8f8f';
 		g.beginPath();
 		g.moveTo(256, 300);
@@ -184,15 +277,6 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		curve(7, 230, 362, 256, 350, 282, 362);
 	}
 	if (face === 'grin') {
-		for (const x of eyes) {
-			g.lineWidth = 11;
-			g.beginPath();
-			g.arc(x, eyeY + 12, 34, Math.PI * 1.08, Math.PI * 1.92);
-			g.stroke();
-		}
-		curve(6, eyes[0] - 30, eyeY - 62, eyes[0], eyeY - 74, eyes[0] + 30, eyeY - 62);
-		curve(6, eyes[1] - 30, eyeY - 62, eyes[1], eyeY - 74, eyes[1] + 30, eyeY - 62);
-		// Open grin with teeth
 		g.fillStyle = INK;
 		g.beginPath();
 		g.moveTo(196, 316);
@@ -202,25 +286,8 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		g.fillStyle = '#ffffff';
 		g.fillRect(212, 318, 88, 14);
 	}
-	if (face === 'calm') {
-		for (const [i, x] of eyes.entries()) {
-			curve(10, x - 42, eyeY, x, eyeY + 10, x + 42, eyeY);
-			const out = i === 0 ? -1 : 1;
-			line(7, [[x + out * 42, eyeY], [x + out * 54, eyeY + 12]]); // lash tick
-			line(5, [[x + out * 20, eyeY + 6], [x + out * 26, eyeY + 18]]);
-		}
-		line(6, [[eyes[0] - 34, eyeY - 60], [eyes[0] + 30, eyeY - 56]]);
-		line(6, [[eyes[1] + 34, eyeY - 60], [eyes[1] - 30, eyeY - 56]]);
-		line(7, [[234, 336], [278, 336]]);
-	}
-
+	if (face === 'calm') line(7, [[234, 336], [278, 336]]);
 	if (face === 'ouch') {
-		// Squeezed > < eyes
-		line(10, [[eyes[0] - 30, eyeY - 26], [eyes[0] + 24, eyeY], [eyes[0] - 30, eyeY + 26]]);
-		line(10, [[eyes[1] + 30, eyeY - 26], [eyes[1] - 24, eyeY], [eyes[1] + 30, eyeY + 26]]);
-		line(7, [[eyes[0] - 40, eyeY - 60], [eyes[0] + 26, eyeY - 44]]);
-		line(7, [[eyes[1] + 40, eyeY - 60], [eyes[1] - 26, eyeY - 44]]);
-		// Open, wavy yelling mouth
 		g.fillStyle = INK;
 		g.beginPath();
 		g.moveTo(206, 318);
@@ -233,21 +300,6 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		g.fillRect(236, 352, 40, 14);
 	}
 	if (face === 'dizzy') {
-		// Spiral eyes
-		for (const [i, x] of eyes.entries()) {
-			g.lineWidth = 7;
-			g.beginPath();
-			for (let t = 0; t <= Math.PI * 5; t += 0.15) {
-				const r = 4 + t * 2.4;
-				const a2 = (i === 0 ? 1 : -1) * t;
-				const px = x + Math.cos(a2) * r;
-				const py = eyeY + Math.sin(a2) * r;
-				if (t === 0) g.moveTo(px, py);
-				else g.lineTo(px, py);
-			}
-			g.stroke();
-		}
-		// Wobbly mouth
 		g.lineWidth = 7;
 		g.beginPath();
 		g.moveTo(214, 330);
@@ -255,22 +307,11 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		g.stroke();
 	}
 	if (face === 'chewA' || face === 'chewB') {
-		// Happy closed eyes
-		for (const x of eyes) {
-			g.lineWidth = 10;
-			g.beginPath();
-			g.arc(x, eyeY + 12, 30, Math.PI * 1.1, Math.PI * 1.9);
-			g.stroke();
-		}
-		curve(6, eyes[0] - 30, eyeY - 62, eyes[0], eyeY - 74, eyes[0] + 30, eyeY - 62);
-		curve(6, eyes[1] - 30, eyeY - 62, eyes[1], eyeY - 74, eyes[1] + 30, eyeY - 62);
-		// Puffed cheeks
 		g.strokeStyle = 'rgba(80, 45, 20, 0.45)';
 		curve(6, 150, 300, 136, 330, 156, 356);
 		curve(6, 362, 300, 376, 330, 356, 356);
 		g.strokeStyle = INK;
 		if (face === 'chewA') {
-			// Closed, munching mouth
 			g.lineWidth = 7;
 			g.beginPath();
 			g.moveTo(222, 334);
@@ -282,48 +323,13 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 			ellipse(256, 346, 12, 7, '#c4545a');
 		}
 	}
-	if (face === 'smug') {
-		// Half-lidded eyes: block eyes with the top covered by a flat lid
-		for (const x of eyes) {
-			g.fillStyle = INK;
-			g.fillRect(x - 24, eyeY - 4, 48, 36);
-			shine(x - 15, eyeY + 2, 12);
-			line(9, [[x - 32, eyeY - 6], [x + 32, eyeY - 6]]);
-		}
-		// One raised brow, one flat
-		curve(7, eyes[0] - 34, eyeY - 52, eyes[0], eyeY - 58, eyes[0] + 30, eyeY - 50);
-		curve(7, eyes[1] - 30, eyeY - 74, eyes[1], eyeY - 96, eyes[1] + 34, eyeY - 80);
-		// Side smirk
-		curve(8, 226, 336, 270, 344, 300, 316);
+	if (face === 'smug') curve(8, 226, 336, 270, 344, 300, 316);
+	if (face === 'talkA') {
+		ellipse(256, 338, 34, 22, INK);
+		ellipse(256, 348, 18, 9, '#c4545a');
 	}
-
-	if (face === 'talkA' || face === 'talkB') {
-		for (const x of eyes) {
-			g.fillStyle = INK;
-			g.fillRect(x - 24, eyeY - 34, 48, 70);
-			shine(x - 15, eyeY - 25, 14);
-		}
-		line(9, [[eyes[0] - 36, eyeY - 62], [eyes[0] + 30, eyeY - 58]]);
-		line(9, [[eyes[1] + 36, eyeY - 62], [eyes[1] - 30, eyeY - 58]]);
-		if (face === 'talkA') {
-			ellipse(256, 338, 34, 22, INK);
-			ellipse(256, 348, 18, 9, '#c4545a');
-		} else {
-			line(8, [[226, 336], [286, 336]]);
-		}
-	}
-	if (face === 'squint') {
-		// Narrowed eyes: blocks with heavy flat lids, angled brows
-		for (const [i, x] of eyes.entries()) {
-			g.fillStyle = INK;
-			g.fillRect(x - 24, eyeY - 2, 48, 26);
-			shine(x - 14, eyeY + 3, 9);
-			line(11, [[x - 32, eyeY - 4], [x + 32, eyeY - 4]]);
-			const inner = i === 0 ? 1 : -1;
-			line(11, [[x - inner * 40, eyeY - 52], [x + inner * 32, eyeY - 30]]);
-		}
-		line(8, [[232, 340], [282, 336]]);
-	}
+	if (face === 'talkB') line(8, [[226, 336], [286, 336]]);
+	if (face === 'squint') line(8, [[232, 340], [282, 336]]);
 
 	// Marks drawn over the top.
 	if (mark === 'scar') {
