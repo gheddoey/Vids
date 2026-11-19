@@ -198,77 +198,43 @@ export const Confetti: React.FC<{frame: number; n?: number; area?: [number, numb
 
 // ---------- Captions ----------
 
-type Chunk = {words: {w: string; s: number; e: number}[]; s: number; e: number; line: number};
-
-const chunks: Chunk[] = (() => {
-	const out: Chunk[] = [];
-	T.lines.forEach((l, li) => {
-		let cur: Chunk | null = null;
-		l.words.forEach((w, i) => {
-			if (!cur) cur = {words: [], s: w.s, e: w.e, line: li};
-			cur.words.push(w);
-			cur.e = w.e;
-			const last = i === l.words.length - 1;
-			const brk = /[.,?!]$/.test(w.w) || cur.words.length >= 3;
-			if (last || brk) {
-				out.push(cur);
-				cur = null;
-			}
-		});
-	});
-	// Each chunk stays up until the next one starts (no flicker in short pauses).
-	out.forEach((c, i) => (c.e = Math.max(c.e, (out[i + 1]?.s ?? c.e + 0.6) - 0.01)));
-	return out;
+// One word on screen at a time, held until the next word starts (no flicker in pauses).
+const WORDS = (() => {
+	const all = T.lines.flatMap((l) => l.words.map((w) => ({...w})));
+	all.forEach((w, i) => (w.e = Math.max(w.e, (all[i + 1]?.s ?? w.e + 0.6) - 0.01)));
+	return all;
 })();
 
-const SPECIAL: Record<string, string> = {LEBRON: '#ffc72c', JAMES: '#ffc72c', CHOSEN: '#ffc72c'};
+const GOLD = new Set(['lebron', 'james', 'chosen']);
 
 export const Captions: React.FC = () => {
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const c = chunks.find((k) => t >= k.s && t < k.e);
-	if (!c) return null;
-	const pop = spring({frame: frame - Math.round(c.s * fps), fps, config: {damping: 12, stiffness: 220, mass: 0.6}});
-	const reveal = c.words.some((w) => /LeBron/i.test(w.w));
+	const w = WORDS.find((k) => t >= k.s && t < k.e);
+	if (!w) return null;
+	const pop = spring({frame: frame - Math.round(w.s * fps), fps, config: {damping: 14, stiffness: 260, mass: 0.5}});
+	const word = w.w.replace(/["]/g, '');
+	const key = word.replace(/[.,?!]/g, '').toLowerCase();
+	const gold = GOLD.has(key);
 	return (
-		<AbsoluteFill style={{alignItems: 'center', top: reveal ? 1080 : 1150, height: 400, justifyContent: 'flex-start'}}>
+		<AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-start', top: 1180}}>
 			<div
 				style={{
-					display: 'flex',
-					flexWrap: 'wrap',
-					justifyContent: 'center',
-					gap: '0 26px',
-					width: 960,
-					transform: `scale(${0.82 + 0.18 * pop})`,
-					fontFamily: '"Inter Display", "Inter", sans-serif',
-					fontWeight: 900,
-					fontSize: reveal ? 132 : 104,
-					lineHeight: 1.05,
-					letterSpacing: -1,
-					textTransform: 'uppercase',
-					textAlign: 'center',
+					transform: `scale(${0.86 + 0.14 * pop})`,
+					fontFamily: '"Inter", sans-serif',
+					fontWeight: 700,
+					fontSize: gold ? 134 : 118,
+					letterSpacing: -1.5,
+					lineHeight: 1,
+					color: gold ? '#ffc72c' : '#ffffff',
+					WebkitTextStroke: '10px #000',
+					paintOrder: 'stroke fill',
+					textShadow: '0 6px 18px rgba(0,0,0,0.55)',
+					whiteSpace: 'nowrap',
 				}}
 			>
-				{c.words.map((w, i) => {
-					const active = t >= w.s - 0.04;
-					const word = w.w.replace(/[.,?!]/g, '').toUpperCase();
-					const col = SPECIAL[word] ?? (t >= w.s && t < w.e + 0.05 ? '#ffe14d' : '#ffffff');
-					return (
-						<span
-							key={i}
-							style={{
-								color: col,
-								opacity: active ? 1 : 0.0,
-								WebkitTextStroke: '14px #000',
-								paintOrder: 'stroke fill',
-								textShadow: '0 8px 0 rgba(0,0,0,0.55)',
-							}}
-						>
-							{word}
-						</span>
-					);
-				})}
+				{word}
 			</div>
 		</AbsoluteFill>
 	);
