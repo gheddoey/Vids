@@ -47,52 +47,100 @@ const faceMaterials = (img: HTMLImageElement | null, rects: Rect[], skin: string
 		return new THREE.MeshStandardMaterial({map: tex, roughness: 0.85});
 	});
 
-export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin';
+// Face styles taken from the reference screenshots:
+// smile    - tiny square dot eyes, small thin smile (green-hair character)
+// serious  - dot eyes with slanted brows, flat mouth
+// mustache - white eyes with coloured iris, heavy angled brows, grey mustache
+// grin     - closed happy arches, wide smile (card character)
+// calm     - closed eyes as thin lines with lash ticks, small flat mouth
+export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm';
 
-const drawFace = (skin: string, face: FaceType) => {
+const INK = '#1b1b1b';
+
+const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a') => {
 	const c = document.createElement('canvas');
-	c.width = c.height = 256;
+	c.width = c.height = 512;
 	const g = c.getContext('2d')!;
 	g.fillStyle = skin;
-	g.fillRect(0, 0, 256, 256);
-	g.fillStyle = '#1c1c1c';
-	// Eyes: simple dark blocks, like the classic faces
-	g.fillRect(78, 96, 16, 26);
-	g.fillRect(162, 96, 16, 26);
-	g.strokeStyle = '#1c1c1c';
-	g.lineWidth = 7;
+	g.fillRect(0, 0, 512, 512);
+	g.strokeStyle = INK;
+	g.fillStyle = INK;
 	g.lineCap = 'round';
-	g.beginPath();
-	if (face === 'smile') {
-		g.moveTo(96, 160);
-		g.quadraticCurveTo(128, 182, 160, 160);
-	} else if (face === 'grin') {
-		g.moveTo(88, 154);
-		g.quadraticCurveTo(128, 196, 168, 154);
-		g.closePath();
-		g.fillStyle = '#ffffff';
-		g.fill();
-	} else {
-		g.moveTo(102, 170);
-		g.lineTo(154, 170);
-	}
-	g.stroke();
-	if (face === 'serious' || face === 'mustache') {
-		g.lineWidth = 6;
+	g.lineJoin = 'round';
+	const eyeY = 232;
+	const eyes = [256 - 78, 256 + 78];
+	const line = (w: number, pts: number[][]) => {
+		g.lineWidth = w;
 		g.beginPath();
-		g.moveTo(70, 82);
-		g.lineTo(100, 90);
-		g.moveTo(186, 82);
-		g.lineTo(156, 90);
+		g.moveTo(pts[0][0], pts[0][1]);
+		for (const [x, y] of pts.slice(1)) g.lineTo(x, y);
 		g.stroke();
+	};
+	const curve = (w: number, x1: number, y1: number, cx: number, cy: number, x2: number, y2: number) => {
+		g.lineWidth = w;
+		g.beginPath();
+		g.moveTo(x1, y1);
+		g.quadraticCurveTo(cx, cy, x2, y2);
+		g.stroke();
+	};
+
+	if (face === 'smile' || face === 'serious') {
+		// Small square-ish dots
+		for (const x of eyes) g.fillRect(x - 11, eyeY - 13, 22, 26);
+	}
+	if (face === 'serious') {
+		line(8, [[eyes[0] - 30, eyeY - 52], [eyes[0] + 22, eyeY - 38]]);
+		line(8, [[eyes[1] + 30, eyeY - 52], [eyes[1] - 22, eyeY - 38]]);
+		line(7, [[228, 326], [284, 326]]);
+	}
+	if (face === 'smile') {
+		curve(7, 220, 314, 256, 342, 292, 314);
 	}
 	if (face === 'mustache') {
-		g.fillStyle = '#8b8b8b';
+		for (const [i, x] of eyes.entries()) {
+			const inner = i === 0 ? 1 : -1; // iris sits toward the nose
+			g.fillStyle = '#f4f1ea';
+			g.fillRect(x - 44, eyeY - 24, 88, 52);
+			g.fillStyle = eyeColor;
+			g.fillRect(x + inner * 14 - 15, eyeY - 18, 30, 40);
+			g.fillStyle = INK;
+			g.fillRect(x + inner * 14 - 6, eyeY - 8, 12, 18);
+			g.lineWidth = 5;
+			g.strokeRect(x - 44, eyeY - 24, 88, 52);
+			line(11, [[x - 46, eyeY - 24], [x + 46, eyeY - 24]]); // heavy upper lid
+		}
+		// Thick brows angled down toward the nose
+		g.strokeStyle = '#3a3a3a';
+		line(15, [[eyes[0] - 48, eyeY - 70], [eyes[0] + 44, eyeY - 42]]);
+		line(15, [[eyes[1] + 48, eyeY - 70], [eyes[1] - 44, eyeY - 42]]);
+		g.strokeStyle = INK;
+		// Drooping grey mustache
+		g.fillStyle = '#8f8f8f';
 		g.beginPath();
-		g.moveTo(90, 160);
-		g.quadraticCurveTo(128, 138, 166, 160);
-		g.quadraticCurveTo(128, 152, 90, 160);
+		g.moveTo(256, 292);
+		g.quadraticCurveTo(300, 280, 326, 318);
+		g.quadraticCurveTo(296, 306, 256, 312);
+		g.quadraticCurveTo(216, 306, 186, 318);
+		g.quadraticCurveTo(212, 280, 256, 292);
 		g.fill();
+		curve(6, 236, 346, 256, 338, 276, 346);
+	}
+	if (face === 'grin') {
+		for (const x of eyes) {
+			g.lineWidth = 8;
+			g.beginPath();
+			g.arc(x, eyeY + 8, 22, Math.PI * 1.1, Math.PI * 1.9);
+			g.stroke();
+		}
+		curve(7, 206, 306, 256, 352, 306, 306);
+	}
+	if (face === 'calm') {
+		for (const [i, x] of eyes.entries()) {
+			curve(7, x - 28, eyeY, x, eyeY + 6, x + 28, eyeY);
+			const out = i === 0 ? -1 : 1;
+			line(5, [[x + out * 28, eyeY], [x + out * 36, eyeY + 8]]); // lash tick
+		}
+		line(6, [[238, 326], [274, 326]]);
 	}
 	const tex = new THREE.CanvasTexture(c);
 	tex.colorSpace = THREE.SRGBColorSpace;
@@ -106,6 +154,7 @@ export type CharacterProps = {
 	skin?: string;
 	pants?: string;
 	face?: FaceType;
+	eyeColor?: string;
 	hair?: {type: HairType; color: string; accent?: string};
 	hat?: {type: HatType; color: string; accent?: string};
 	position?: [number, number, number];
@@ -119,6 +168,7 @@ export const Character: React.FC<CharacterProps> = ({
 	skin = '#f3c98f',
 	pants = '#2a2c33',
 	face = 'smile',
+	eyeColor,
 	hair,
 	hat,
 	position = [0, 0, 0],
@@ -130,9 +180,9 @@ export const Character: React.FC<CharacterProps> = ({
 	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, 1.2, 1.2, 1, 0.04), []);
 	const headMats = useMemo(() => {
 		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
-		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face), roughness: 0.7});
+		const front = new THREE.MeshStandardMaterial({map: drawFace(skin, face, eyeColor), roughness: 0.7});
 		return [plain, plain, plain, plain, front, plain];
-	}, [skin, face]);
+	}, [skin, face, eyeColor]);
 
 	return (
 		<group position={position} rotation={[0, rotY, 0]}>

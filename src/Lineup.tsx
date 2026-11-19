@@ -8,10 +8,10 @@ export const CAST: CharacterProps[] = [
 	{shirt: 'pilot', pants: '#1f2b47', face: 'serious', hair: {type: 'pompadour', color: '#2b1d14'}},
 	{shirt: 'plaid', pants: '#3d5675', face: 'grin', hair: {type: 'mop', color: '#9a2a22'}, hat: {type: 'goggles', color: '#5a3b22', accent: '#ffb347'}},
 	{shirt: 'varsity', pants: '#d9cfb8', face: 'smile', hair: {type: 'swept', color: '#3fa34d'}, hat: {type: 'cap', color: '#6b3a24', accent: '#f2f2f2'}},
-	{shirt: 'wings', pants: '#3a3a40', face: 'serious', skin: '#e9b98a', hair: {type: 'spiky', color: '#d9dde3'}, hat: {type: 'headphones', color: '#26282e', accent: '#e23b3b'}},
+	{shirt: 'wings', pants: '#3a3a40', face: 'mustache', eyeColor: '#c0392b', skin: '#e9b98a', hair: {type: 'spiky', color: '#d9dde3'}, hat: {type: 'headphones', color: '#26282e', accent: '#e23b3b'}},
 	{shirt: 'suit', pants: '#24325a', face: 'mustache', skin: '#f0c595', hair: {type: 'bob', color: '#16161a'}, hat: {type: 'fedora', color: '#6e4a2c', accent: '#2a2a2a'}},
 	{shirt: 'jersey05', pants: '#d8d8d8', face: 'grin', skin: '#a8714a', hat: {type: 'beanie', color: '#e2742b', accent: '#fff3d6'}},
-	{shirt: 'bluejacket', pants: '#2b2d33', face: 'serious', hair: {type: 'swept', color: '#5b3a1e'}, hat: {type: 'badgecap', color: '#f2b230', accent: '#d8382b'}},
+	{shirt: 'bluejacket', pants: '#2b2d33', face: 'calm', hair: {type: 'swept', color: '#5b3a1e'}, hat: {type: 'badgecap', color: '#f2b230', accent: '#d8382b'}},
 	{shirt: 'tiedye', pants: '#5a3a8a', face: 'smile', hair: {type: 'bun', color: '#3a2318', accent: '#e04a7a'}},
 ];
 
