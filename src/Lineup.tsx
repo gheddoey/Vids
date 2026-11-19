@@ -111,7 +111,7 @@ export const Lineup: React.FC<{view: View}> = ({view}) => {
 	} else if (view === 'heads') {
 		// 2 rows of 4 heads, turned slightly so the sides of the hair show.
 		camera = {position: [0, 5.35, 11.6], fov: 32};
-		target = [0, 4.62, 0];
+		target = [0, 4.72, 0];
 		cast = CAST.map((c, i) => {
 			const row = Math.floor(i / 4);
 			const col = i % 4;

@@ -44,7 +44,7 @@ const faceMaterials = (img: HTMLImageElement | null, rects: Rect[], skin: string
 		const tex = new THREE.CanvasTexture(c);
 		tex.colorSpace = THREE.SRGBColorSpace;
 		tex.anisotropy = 4;
-		return new THREE.MeshStandardMaterial({map: tex, roughness: 0.65});
+		return new THREE.MeshStandardMaterial({map: tex, roughness: 0.85});
 	});
 
 // Face styles taken from the reference screenshots:
@@ -61,8 +61,8 @@ export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouc
 
 const INK = '#1b1b1b';
 
-// Classic blocky head: a near-cube with heavily rounded edges, sitting right on the torso.
-export const HEAD_H = 1.2;
+// Elongated head, taller than it is wide, like the reference characters.
+export const HEAD_H = 1.4;
 
 // Optional per-character face mark.
 export type FaceMark = 'scar' | 'freckles' | 'blush' | 'drop' | 'mole';
@@ -73,13 +73,14 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 	const g = c.getContext('2d')!;
 	g.fillStyle = skin;
 	g.fillRect(0, 0, 512, 512);
+	// Shift features down so hair fringes don't cover the brows.
+	g.translate(0, 34);
 	g.strokeStyle = INK;
 	g.fillStyle = INK;
 	g.lineCap = 'round';
 	g.lineJoin = 'round';
-	// Classic face layout: eyes set wide in the upper middle, mouth in the lower middle.
-	const eyeY = 212;
-	const eyes = [256 - 100, 256 + 100];
+	const eyeY = 226;
+	const eyes = [256 - 90, 256 + 90];
 	const line = (w: number, pts: number[][]) => {
 		g.lineWidth = w;
 		g.beginPath();
@@ -118,21 +119,32 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		}
 	}
 
+	// Hint of a nose: a soft hooked shadow line.
+	g.strokeStyle = 'rgba(80, 45, 20, 0.35)';
+	curve(6, 266, 262, 274, 296, 252, 300);
+	g.strokeStyle = INK;
+
 	if (face === 'smile' || face === 'serious') {
-		// Classic upright oval eyes
+		// Big upright block eyes with a shine, like the reference dot eyes scaled up.
 		for (const x of eyes) {
-			ellipse(x, eyeY, 19, 38, INK);
-			ellipse(x - 6, eyeY - 18, 5, 7, 'rgba(255, 255, 255, 0.85)');
+			g.fillStyle = INK;
+			g.fillRect(x - 24, eyeY - 34, 48, 70);
+			shine(x - 15, eyeY - 25, 14);
 		}
 	}
 	if (face === 'smile') {
-		// The classic wide, thin smile
-		curve(12, 160, 312, 256, 420, 352, 312);
+		// Soft arched brows and a small upturned smile with corner ticks.
+		curve(7, eyes[0] - 34, eyeY - 58, eyes[0], eyeY - 72, eyes[0] + 30, eyeY - 60);
+		curve(7, eyes[1] - 30, eyeY - 60, eyes[1], eyeY - 72, eyes[1] + 34, eyeY - 58);
+		curve(8, 214, 326, 256, 358, 298, 326);
+		line(5, [[210, 320], [216, 330]]);
+		line(5, [[302, 320], [296, 330]]);
 	}
 	if (face === 'serious') {
 		line(11, [[eyes[0] - 40, eyeY - 72], [eyes[0] + 30, eyeY - 48]]);
 		line(11, [[eyes[1] + 40, eyeY - 72], [eyes[1] - 30, eyeY - 48]]);
-		line(11, [[206, 344], [306, 344]]);
+		line(8, [[224, 338], [288, 338]]);
+		line(5, [[236, 356], [276, 356]]); // under-lip shadow
 	}
 	if (face === 'mustache') {
 		for (const [i, x] of eyes.entries()) {
@@ -373,8 +385,10 @@ export type CharacterProps = {
 	holdR?: React.ReactNode;
 };
 
-const Limb: React.FC<{material: THREE.Material | THREE.Material[]; geometry: THREE.BufferGeometry}> = ({material, geometry}) => (
-	<mesh position={[0, -1, 0]} geometry={geometry} material={material} castShadow receiveShadow />
+const Limb: React.FC<{material: THREE.Material | THREE.Material[]}> = ({material}) => (
+	<mesh position={[0, -1, 0]} material={material} castShadow receiveShadow>
+		<boxGeometry args={[0.99, 2, 1]} />
+	</mesh>
 );
 
 // R6-style blocky body, in studs: legs 1x2x1, torso 2x2x1, arms 1x2x1, elongated head.
@@ -399,17 +413,14 @@ export const Character: React.FC<CharacterProps> = ({
 	const torso = useMemo(() => faceMaterials(img, TORSO, skin), [img, skin]);
 	const rArm = useMemo(() => faceMaterials(img, RIGHT_ARM, skin), [img, skin]);
 	const lArm = useMemo(() => faceMaterials(img, LEFT_ARM, skin), [img, skin]);
-	const legMat = useMemo(() => new THREE.MeshStandardMaterial({color: pants, roughness: 0.6}), [pants]);
-	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 6, 0.3), []);
-	// Body parts are blocks with a slight bevel, like the classic avatar.
-	const torsoGeo = useMemo(() => new RoundedBoxGeometry(2, 2, 1, 2, 0.06), []);
-	const limbGeo = useMemo(() => new RoundedBoxGeometry(0.98, 2, 1, 2, 0.06), []);
+	const legMat = useMemo(() => new THREE.MeshStandardMaterial({color: pants, roughness: 0.85}), [pants]);
+	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 1, 0.04), []);
 	// Every expression is drawn once up front so faces can swap instantly mid-animation.
 	const headMats = useMemo(() => {
-		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.55});
+		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
 		return Object.fromEntries(
 			FACES.map((f) => {
-				const front = new THREE.MeshStandardMaterial({map: drawFace(skin, f, eyeColor, mark), roughness: 0.55});
+				const front = new THREE.MeshStandardMaterial({map: drawFace(skin, f, eyeColor, mark), roughness: 0.7});
 				return [f, [plain, plain, plain, plain, front, plain]];
 			}),
 		) as Record<FaceType, THREE.Material[]>;
@@ -438,24 +449,26 @@ export const Character: React.FC<CharacterProps> = ({
 		<group position={[p.x, p.y, p.z]} rotation={[0, p.rotY, 0]}>
 			{/* Legs, pivoting at the hips */}
 			<group position={[-0.5, 2, 0]} rotation={[p.legRX, 0, 0]}>
-				<Limb material={legMat} geometry={limbGeo} />
+				<Limb material={legMat} />
 			</group>
 			<group position={[0.5, 2, 0]} rotation={[p.legLX, 0, 0]}>
-				<Limb material={legMat} geometry={limbGeo} />
+				<Limb material={legMat} />
 			</group>
 			{/* Upper body, pivoting at the waist */}
 			<group position={[0, 2, 0]} rotation={[p.lean, p.twist, p.side]}>
-				<mesh position={[0, 1, 0]} geometry={torsoGeo} material={torso} castShadow receiveShadow />
+				<mesh position={[0, 1, 0]} material={torso} castShadow receiveShadow>
+					<boxGeometry args={[2, 2, 1]} />
+				</mesh>
 				{/* Arms, pivoting at the shoulders (character's right arm is on -x) */}
 				<group position={[-1.5, 1.75, 0]} rotation={[p.armRX, 0, p.armRZ]}>
 					<group position={[0, 0.25, 0]}>
-						<Limb material={rArm} geometry={limbGeo} />
+						<Limb material={rArm} />
 						{holdR ? <group position={[0, -2.05, 0.1]}>{holdR}</group> : null}
 					</group>
 				</group>
 				<group position={[1.5, 1.75, 0]} rotation={[p.armLX, 0, p.armLZ]}>
 					<group position={[0, 0.25, 0]}>
-						<Limb material={lArm} geometry={limbGeo} />
+						<Limb material={lArm} />
 						{holdL ? <group position={[0, -2.05, 0.1]}>{holdL}</group> : null}
 					</group>
 				</group>
