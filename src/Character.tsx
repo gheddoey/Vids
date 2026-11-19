@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import {Hair, HairType} from './Hair';
 import {Hat, HatType} from './Hats';
-import {RBox} from './parts';
+import {RBox, shade} from './parts';
 
 // Roblox classic shirt template (585x559) regions: [x, y, w, h].
 // Box face order in three.js: +x, -x, +y, -y, +z (front), -z (back).
@@ -70,7 +70,7 @@ export const HEAD_H = 1.4;
 // Optional per-character face mark.
 export type FaceMark = 'scar' | 'freckles' | 'blush' | 'drop' | 'mole';
 
-const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: FaceMark) => {
+const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: FaceMark, browColor = '#6c665b') => {
 	const c = document.createElement('canvas');
 	c.width = c.height = 512;
 	const g = c.getContext('2d')!;
@@ -216,7 +216,7 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 			g.shadowColor = 'rgba(30, 20, 10, 0.35)';
 			g.shadowBlur = 10;
 			g.shadowOffsetY = 5;
-			g.fillStyle = '#6c665b';
+			g.fillStyle = browColor;
 			g.beginPath();
 			g.moveTo(-bw / 2, -bt / 2 + 3);
 			g.lineTo(-bw / 2 + 8, -bt / 2);
@@ -227,9 +227,9 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 			g.closePath();
 			g.fill();
 			g.shadowColor = 'transparent';
-			g.fillStyle = '#7f786b';
+			g.fillStyle = shade(browColor, 0.08);
 			g.fillRect(-bw / 2 + 8, -bt / 2, bw - 16, 7);
-			g.fillStyle = '#58524a';
+			g.fillStyle = shade(browColor, -0.08);
 			g.fillRect(-bw / 2 + 4, bt / 2 - 5, bw - 8, 5);
 			g.restore();
 		}
@@ -411,6 +411,8 @@ export type CharacterProps = {
 	pants?: string;
 	face?: FaceType;
 	eyeColor?: string;
+	// Brow colour; defaults to the hair colour, then the beard, then a dark brown.
+	browColor?: string;
 	mark?: FaceMark;
 	hair?: {type: HairType; color: string; accent?: string};
 	hat?: {type: HatType; color: string; accent?: string};
@@ -440,6 +442,7 @@ export const Character: React.FC<CharacterProps> = ({
 	pants = '#2a2c33',
 	face = 'smile',
 	eyeColor,
+	browColor,
 	mark,
 	hair,
 	hat,
@@ -458,15 +461,16 @@ export const Character: React.FC<CharacterProps> = ({
 	const legMat = useMemo(() => new THREE.MeshStandardMaterial({color: pants, roughness: 0.85}), [pants]);
 	const headGeo = useMemo(() => new RoundedBoxGeometry(1.2, HEAD_H, 1.2, 1, 0.04), []);
 	// Every expression is drawn once up front so faces can swap instantly mid-animation.
+	const brow = browColor ?? hair?.color ?? beard ?? '#3a2a20';
 	const headMats = useMemo(() => {
 		const plain = new THREE.MeshStandardMaterial({color: skin, roughness: 0.7});
 		return Object.fromEntries(
 			FACES.map((f) => {
-				const front = new THREE.MeshStandardMaterial({map: drawFace(skin, f, eyeColor, mark), roughness: 0.7});
+				const front = new THREE.MeshStandardMaterial({map: drawFace(skin, f, eyeColor, mark, brow), roughness: 0.7});
 				return [f, [plain, plain, plain, plain, front, plain]];
 			}),
 		) as Record<FaceType, THREE.Material[]>;
-	}, [skin, eyeColor, mark]);
+	}, [skin, eyeColor, mark, brow]);
 
 	const head = (
 		<group position={[0, HEAD_H / 2 + 0.02, 0]}>
