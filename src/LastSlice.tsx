@@ -167,7 +167,8 @@ const tracks: Record<'A' | 'B' | 'C' | 'D' | 'E', Key[]> = {
 		// Narrows in, head tilt
 		{f: 176, headZ: 0},
 		{f: 182, headZ: 0.12, ease: 'snap'},
-		...dB.keys,
+		// Skips the shared slump: he flops onto his back instead
+		...dB.keys.filter((k) => k.f < 498),
 		// Shakes a fist at the first bite
 		{f: 356, armRX: -0.3, armRZ: -0.15},
 		{f: 360, armRX: -1.7, armRZ: -0.25, ease: 'back'},
@@ -320,7 +321,7 @@ const SHOTS: Shot[] = [
 	// Walking off, waving
 	{from: 450, to: 498, p0: [0, 7, 24], p1: [-4, 6.8, 22], t0: [0, 3, 0], t1: [-6, 3, 0], fov: 34},
 	// Defeat
-	{from: 498, to: 528, p0: [5, 8.5, 16], p1: [4, 7.6, 13.5], t0: [0, 1.8, -3.5], t1: [0, 1.8, -3.5], fov: 40},
+	{from: 498, to: 528, p0: [6, 8.8, 18], p1: [5, 8.0, 15.5], t0: [1.5, 1.6, -3.0], t1: [1.5, 1.6, -3.0], fov: 42},
 ];
 
 const CameraRig: React.FC<{frame: number}> = ({frame}) => {
