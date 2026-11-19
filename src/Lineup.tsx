@@ -93,7 +93,7 @@ export const useShirts = (names: string[]) => {
 	return imgs;
 };
 
-type View = 'groupA' | 'groupB' | 'heads';
+type View = 'groupA' | 'groupB' | 'heads' | 'base';
 
 export const Lineup: React.FC<{view: View}> = ({view}) => {
 	const {width, height} = useVideoConfig();
@@ -103,10 +103,15 @@ export const Lineup: React.FC<{view: View}> = ({view}) => {
 	let cast: React.ReactNode;
 	let camera: {position: [number, number, number]; fov: number};
 	let target: [number, number, number];
-	if (view === 'heads') {
+	if (view === 'base') {
+		// Plain grey avatar, 3/4 view like the reference base model.
+		camera = {position: [5.5, 6.2, 12], fov: 30};
+		target = [0, 2.9, 0];
+		cast = <Character shirt="none" skin="#c9cbcf" pants="#c9cbcf" face="smile" rotY={0.25} />;
+	} else if (view === 'heads') {
 		// 2 rows of 4 heads, turned slightly so the sides of the hair show.
 		camera = {position: [0, 5.35, 11.6], fov: 32};
-		target = [0, 4.72, 0];
+		target = [0, 4.62, 0];
 		cast = CAST.map((c, i) => {
 			const row = Math.floor(i / 4);
 			const col = i % 4;
