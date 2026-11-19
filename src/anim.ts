@@ -52,7 +52,7 @@ export const sample = (keys: Key[], f: number): Partial<Pose> => {
 };
 
 // Walk cycle keys: root slides linearly while legs and arms swing in opposition.
-export const walk = (f0: number, f1: number, from: [number, number], to: [number, number], stride = 8): Key[] => {
+export const walk = (f0: number, f1: number, from: [number, number], to: [number, number], stride = 8, arms = true): Key[] => {
 	const keys: Key[] = [
 		{f: f0, x: from[0], z: from[1]},
 		{f: f1, x: to[0], z: to[1], ease: 'linear'},
@@ -61,14 +61,7 @@ export const walk = (f0: number, f1: number, from: [number, number], to: [number
 	for (let f = f0; f <= f1; f += stride) {
 		const end = f + stride > f1;
 		const swing = end ? 0 : 0.6 * side;
-		keys.push({
-			f,
-			legLX: -swing,
-			legRX: swing,
-			armLX: swing * 0.75,
-			armRX: -swing * 0.75,
-			y: end ? 0 : 0,
-		});
+		keys.push({f, legLX: -swing, legRX: swing, y: 0, ...(arms ? {armLX: swing * 0.75, armRX: -swing * 0.75} : {})});
 		keys.push({f: Math.min(f + stride / 2, f1), y: end ? 0 : 0.18});
 		side *= -1;
 	}
@@ -87,4 +80,11 @@ export const add = (a: Partial<Pose>, b: Partial<Pose>): Partial<Pose> => {
 		if (typeof v === 'number') out[k] = ((out[k] as number | undefined) ?? 0) + v;
 	}
 	return out as Partial<Pose>;
+};
+
+// Footstep frames of a walk (contact poses), for syncing sounds.
+export const stepFrames = (f0: number, f1: number, stride = 8) => {
+	const out: number[] = [];
+	for (let f = f0; f + stride <= f1; f += stride) out.push(f);
+	return out;
 };

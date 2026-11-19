@@ -53,7 +53,11 @@ const faceMaterials = (img: HTMLImageElement | null, rects: Rect[], skin: string
 // mustache - white eyes with coloured iris, heavy angled brows, grey mustache
 // grin     - closed happy arches, wide smile (card character)
 // calm     - closed eyes as thin lines with lash ticks, small flat mouth
-export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm';
+// ouch     - squeezed > < eyes, open wavy mouth (impact)
+// dizzy    - spiral eyes, wobbly mouth (after the bonk)
+// chewA/B  - happy closed eyes, mouth puffed / open (eating)
+// smug     - half-lidded eyes, one raised brow, side smirk
+export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouch' | 'dizzy' | 'chewA' | 'chewB' | 'smug';
 
 const INK = '#1b1b1b';
 
@@ -207,6 +211,89 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		line(7, [[234, 336], [278, 336]]);
 	}
 
+	if (face === 'ouch') {
+		// Squeezed > < eyes
+		line(10, [[eyes[0] - 30, eyeY - 26], [eyes[0] + 24, eyeY], [eyes[0] - 30, eyeY + 26]]);
+		line(10, [[eyes[1] + 30, eyeY - 26], [eyes[1] - 24, eyeY], [eyes[1] + 30, eyeY + 26]]);
+		line(7, [[eyes[0] - 40, eyeY - 60], [eyes[0] + 26, eyeY - 44]]);
+		line(7, [[eyes[1] + 40, eyeY - 60], [eyes[1] - 26, eyeY - 44]]);
+		// Open, wavy yelling mouth
+		g.fillStyle = INK;
+		g.beginPath();
+		g.moveTo(206, 318);
+		g.quadraticCurveTo(232, 300, 256, 318);
+		g.quadraticCurveTo(280, 300, 306, 318);
+		g.quadraticCurveTo(300, 372, 256, 374);
+		g.quadraticCurveTo(212, 372, 206, 318);
+		g.fill();
+		g.fillStyle = '#c4545a';
+		g.fillRect(236, 352, 40, 14);
+	}
+	if (face === 'dizzy') {
+		// Spiral eyes
+		for (const [i, x] of eyes.entries()) {
+			g.lineWidth = 7;
+			g.beginPath();
+			for (let t = 0; t <= Math.PI * 5; t += 0.15) {
+				const r = 4 + t * 2.4;
+				const a2 = (i === 0 ? 1 : -1) * t;
+				const px = x + Math.cos(a2) * r;
+				const py = eyeY + Math.sin(a2) * r;
+				if (t === 0) g.moveTo(px, py);
+				else g.lineTo(px, py);
+			}
+			g.stroke();
+		}
+		// Wobbly mouth
+		g.lineWidth = 7;
+		g.beginPath();
+		g.moveTo(214, 330);
+		for (let x = 214; x <= 298; x += 6) g.lineTo(x, 330 + Math.sin((x - 214) / 7) * 7);
+		g.stroke();
+	}
+	if (face === 'chewA' || face === 'chewB') {
+		// Happy closed eyes
+		for (const x of eyes) {
+			g.lineWidth = 10;
+			g.beginPath();
+			g.arc(x, eyeY + 12, 30, Math.PI * 1.1, Math.PI * 1.9);
+			g.stroke();
+		}
+		curve(6, eyes[0] - 30, eyeY - 62, eyes[0], eyeY - 74, eyes[0] + 30, eyeY - 62);
+		curve(6, eyes[1] - 30, eyeY - 62, eyes[1], eyeY - 74, eyes[1] + 30, eyeY - 62);
+		// Puffed cheeks
+		g.strokeStyle = 'rgba(80, 45, 20, 0.45)';
+		curve(6, 150, 300, 136, 330, 156, 356);
+		curve(6, 362, 300, 376, 330, 356, 356);
+		g.strokeStyle = INK;
+		if (face === 'chewA') {
+			// Closed, munching mouth
+			g.lineWidth = 7;
+			g.beginPath();
+			g.moveTo(222, 334);
+			g.quadraticCurveTo(239, 346, 256, 334);
+			g.quadraticCurveTo(273, 346, 290, 334);
+			g.stroke();
+		} else {
+			ellipse(256, 340, 22, 16, INK);
+			ellipse(256, 346, 12, 7, '#c4545a');
+		}
+	}
+	if (face === 'smug') {
+		// Half-lidded eyes: block eyes with the top covered by a flat lid
+		for (const x of eyes) {
+			g.fillStyle = INK;
+			g.fillRect(x - 24, eyeY - 4, 48, 36);
+			shine(x - 15, eyeY + 2, 12);
+			line(9, [[x - 32, eyeY - 6], [x + 32, eyeY - 6]]);
+		}
+		// One raised brow, one flat
+		curve(7, eyes[0] - 34, eyeY - 52, eyes[0], eyeY - 58, eyes[0] + 30, eyeY - 50);
+		curve(7, eyes[1] - 30, eyeY - 74, eyes[1], eyeY - 96, eyes[1] + 34, eyeY - 80);
+		// Side smirk
+		curve(8, 226, 336, 270, 344, 300, 316);
+	}
+
 	// Marks drawn over the top.
 	if (mark === 'scar') {
 		g.strokeStyle = '#9b5a4a';
@@ -277,7 +364,7 @@ export const REST: Pose = {
 	legRX: 0,
 };
 
-const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm'];
+const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm', 'ouch', 'dizzy', 'chewA', 'chewB', 'smug'];
 
 export type CharacterProps = {
 	shirt: string;

@@ -1,0 +1,239 @@
+"""Synthesize the sound effects for "The Last Slice" into public/sfx/*.wav.
+
+Everything is generated from sine waves and filtered noise, so there are no
+third-party samples or licences to worry about. Run: python3 tools/make_sfx.py
+"""
+
+import os
+import wave
+
+import numpy as np
+
+SR = 44100
+OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'sfx')
+rng = np.random.default_rng(7)
+
+
+def t_axis(dur):
+    return np.arange(int(SR * dur)) / SR
+
+
+def env(dur, attack=0.005, decay=None, release=None):
+    """Attack then exponential decay (decay = time constant in seconds)."""
+    t = t_axis(dur)
+    a = np.clip(t / max(attack, 1e-4), 0, 1)
+    d = np.exp(-t / decay) if decay else np.ones_like(t)
+    e = a * d
+    if release:
+        r = np.clip((dur - t) / release, 0, 1)
+        e *= r
+    return e
+
+
+def band(x, lo, hi):
+    """FFT band-pass filter (lo/hi in Hz, soft edges)."""
+    n = len(x)
+    f = np.fft.rfftfreq(n, 1 / SR)
+    X = np.fft.rfft(x)
+    g = 1 / (1 + (lo / np.maximum(f, 1)) ** 4) if lo else 1
+    g = g * (1 / (1 + (f / hi) ** 4) if hi else 1)
+    return np.fft.irfft(X * g, n)
+
+
+def noise(dur):
+    return rng.standard_normal(int(SR * dur))
+
+
+def sweep(f0, f1, dur, curve=1.0):
+    t = t_axis(dur)
+    f = f0 + (f1 - f0) * (t / dur) ** curve
+    return np.sin(2 * np.pi * np.cumsum(f) / SR)
+
+
+def norm(x, peak=0.9):
+    m = np.max(np.abs(x)) or 1
+    return x / m * peak
+
+
+def save(name, x, peak=0.9):
+    x = norm(x, peak)
+    data = (x * 32767).astype(np.int16)
+    with wave.open(os.path.join(OUT, name + '.wav'), 'wb') as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(SR)
+        w.writeframes(data.tobytes())
+
+
+def pad(x, dur):
+    out = np.zeros(int(SR * dur))
+    out[: len(x)] = x[: len(out)]
+    return out
+
+
+def place(buf, x, at):
+    i = int(SR * at)
+    j = min(len(buf), i + len(x))
+    buf[i:j] += x[: j - i]
+
+
+# --- Park ambience: soft wind plus occasional birds (22 s) ---
+def ambience():
+    dur = 22.5
+    wind = band(noise(dur), 80, 700)
+    t = t_axis(dur)
+    wind *= 0.6 + 0.4 * np.sin(2 * np.pi * t / 7.3) * np.sin(2 * np.pi * t / 3.1 + 1)
+    out = norm(wind, 0.25)
+    for at in [0.8, 1.05, 4.2, 6.9, 7.1, 11.5, 14.8, 15.0, 18.6, 20.9]:
+        d = 0.09
+        f0 = rng.uniform(2800, 3600)
+        chirp = sweep(f0, f0 * rng.uniform(1.3, 1.6), d, 0.6) * env(d, 0.004, 0.04)
+        place(out, chirp * 0.16, at)
+    return out
+
+
+# --- Short percussive hit for each close-up ---
+def hit():
+    d = 0.4
+    body = sweep(140, 60, d, 0.4) * env(d, 0.002, 0.11)
+    click = band(noise(0.02), 1500, 8000) * env(0.02, 0.0005, 0.004)
+    return body + pad(click, d) * 0.6
+
+
+# --- Everyone notices the slice: low "dun" with a rising swish ---
+def notice():
+    d = 1.2
+    dun = (sweep(75, 52, d, 0.5) + 0.5 * sweep(150, 104, d, 0.5)) * env(d, 0.01, 0.35)
+    sw = band(noise(0.35), 600, 4000) * np.linspace(0, 1, int(SR * 0.35)) ** 2
+    out = np.zeros(int(SR * d))
+    place(out, sw * 0.5, 0)
+    place(out, dun, 0.08)
+    return out
+
+
+# --- Standoff tension: wavering high whistle over wind (3 s) ---
+def tension():
+    d = 3.2
+    t = t_axis(d)
+    vib = 1 + 0.006 * np.sin(2 * np.pi * 5.5 * t)
+    f = 880 + 60 * (t / d)
+    tone = np.sin(2 * np.pi * np.cumsum(f * vib) / SR) + 0.3 * np.sin(2 * np.pi * np.cumsum(1.5 * f * vib) / SR)
+    tone *= np.clip(t / 1.2, 0, 1) * np.clip((d - t) / 0.4, 0, 1) * 0.35
+    wind = band(noise(d), 200, 1200) * (0.5 + 0.5 * np.sin(2 * np.pi * t / 1.6)) * 0.4
+    return tone + norm(wind, 0.3)
+
+
+def click():
+    d = 0.03
+    return band(noise(d), 2500, 9000) * env(d, 0.0005, 0.005)
+
+
+def swish():
+    d = 0.3
+    t = t_axis(d)
+    x = band(noise(d), 900, 5000)
+    return x * np.sin(np.pi * t / d) ** 2
+
+
+def whoosh():
+    d = 0.7
+    t = t_axis(d)
+    parts = [band(noise(d), lo, lo * 2.2) * np.exp(-((t - c) ** 2) / 0.012) for lo, c in [(250, 0.15), (500, 0.28), (1000, 0.4), (2000, 0.5)]]
+    return sum(parts)
+
+
+# --- The bonk: hollow wood knock + low thump ---
+def bonk():
+    d = 0.9
+    knock = sum(a * np.sin(2 * np.pi * f * t_axis(d)) for f, a in [(520, 1), (1040, 0.55), (1630, 0.35), (2400, 0.2)])
+    knock *= env(d, 0.001, 0.07)
+    thump = sweep(160, 55, d, 0.3) * env(d, 0.001, 0.18)
+    crack = band(noise(0.03), 1500, 7000) * env(0.03, 0.0003, 0.006)
+    return knock * 0.9 + thump * 1.2 + pad(crack, d) * 0.7
+
+
+# --- Dizzy cartoon ring after the bonk ---
+def ring():
+    d = 1.4
+    t = t_axis(d)
+    f = 1500 * (1 + 0.05 * np.sin(2 * np.pi * 9 * t))
+    tone = np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.4 * np.sin(2 * np.pi * np.cumsum(f * 2.01) / SR)
+    return tone * env(d, 0.01, 0.45)
+
+
+def thud():
+    d = 0.35
+    body = sweep(110, 45, d, 0.4) * env(d, 0.002, 0.08)
+    dirt = band(noise(d), 60, 500) * env(d, 0.002, 0.05)
+    return body + dirt * 0.8
+
+
+def step():
+    d = 0.12
+    f = rng.uniform(0.9, 1.1)
+    return band(noise(d), 80 * f, 900 * f) * env(d, 0.002, 0.025) + sweep(120, 70, d) * env(d, 0.001, 0.02) * 0.4
+
+
+def rustle():
+    d = 0.45
+    t = t_axis(d)
+    jitter = np.abs(band(noise(d), 0, 40))
+    jitter /= jitter.max()
+    return band(noise(d), 1200, 6000) * jitter * np.sin(np.pi * t / d)
+
+
+# --- Bite crunch: crackle bursts with a little body ---
+def crunch():
+    d = 0.32
+    out = np.zeros(int(SR * d))
+    for at in np.sort(rng.uniform(0, 0.22, 26)):
+        dd = 0.012
+        place(out, band(noise(dd), 1800, 9000) * env(dd, 0.0003, 0.003) * rng.uniform(0.4, 1), at)
+    body = band(noise(d), 150, 900) * env(d, 0.002, 0.06)
+    return out + body * 0.5
+
+
+def munch():
+    d = 0.16
+    return band(noise(d), 120, 900) * np.sin(np.pi * t_axis(d) / d) ** 2
+
+
+def gulp():
+    d = 0.22
+    return sweep(320, 110, d, 0.6) * np.sin(np.pi * t_axis(d) / d) ** 1.5
+
+
+# --- Sad trombone: four falling notes, the last one wobbling ---
+def sadtrombone():
+    notes = [(233.1, 0.42), (220.0, 0.42), (207.7, 0.42), (196.0, 1.3)]
+    out = []
+    for i, (f, d) in enumerate(notes):
+        t = t_axis(d)
+        vib = 1 + (0.025 * np.sin(2 * np.pi * 5 * t) if i == 3 else 0)
+        bright = np.clip(t / 0.12, 0, 1)  # "wah": brighter after the attack
+        phase = 2 * np.pi * np.cumsum(f * vib) / SR
+        tone = sum((1 / n) * (bright if n > 2 else 1) * np.sin(n * phase) for n in range(1, 9))
+        tone *= np.clip(t / 0.03, 0, 1) * np.clip((d - t) / 0.08, 0, 1)
+        out.append(tone)
+    return np.concatenate(out)
+
+
+if __name__ == '__main__':
+    os.makedirs(OUT, exist_ok=True)
+    save('ambience', ambience(), 0.5)
+    save('hit', hit())
+    save('notice', notice())
+    save('tension', tension(), 0.6)
+    save('click', click(), 0.5)
+    save('swish', swish(), 0.6)
+    save('whoosh', whoosh(), 0.8)
+    save('bonk', bonk(), 0.95)
+    save('ring', ring(), 0.5)
+    save('thud', thud())
+    save('step', step(), 0.6)
+    save('rustle', rustle(), 0.5)
+    save('crunch', crunch(), 0.9)
+    save('munch', munch(), 0.6)
+    save('gulp', gulp(), 0.7)
+    save('sadtrombone', sadtrombone(), 0.8)
+    print('wrote', sorted(os.listdir(OUT)))

@@ -3,12 +3,17 @@ import * as THREE from 'three';
 import {RBox, shade} from './parts';
 
 // A single pizza slice lying flat, tip pointing toward +z, crust along x at z = 0.
-export const Slice: React.FC<{bitten?: boolean}> = ({bitten}) => {
+// stage 0 = whole, 1 = one bite, 2 = just the crust end left.
+export const Slice: React.FC<{bitten?: boolean; stage?: 0 | 1 | 2}> = ({bitten, stage = bitten ? 1 : 0}) => {
 	const geo = useMemo(() => {
 		const s = new THREE.Shape();
 		s.moveTo(-0.45, 0);
 		s.lineTo(0.45, 0);
-		if (bitten) {
+		if (stage === 2) {
+			s.lineTo(0.34, 0.22);
+			s.quadraticCurveTo(0.18, 0.12, 0.06, 0.26);
+			s.quadraticCurveTo(-0.08, 0.14, -0.34, 0.22);
+		} else if (stage === 1) {
 			s.lineTo(0.2, 0.55);
 			s.quadraticCurveTo(0.08, 0.42, 0, 0.52);
 			s.quadraticCurveTo(-0.08, 0.42, -0.2, 0.55);
@@ -20,8 +25,10 @@ export const Slice: React.FC<{bitten?: boolean}> = ({bitten}) => {
 		g.rotateX(Math.PI / 2);
 		g.translate(0, 0.06, 0);
 		return g;
-	}, [bitten]);
-	const pepperoni: [number, number][] = bitten
+	}, [stage]);
+	const pepperoni: [number, number][] = stage === 2
+		? [[-0.18, 0.1]]
+		: stage === 1
 		? [
 				[-0.18, 0.18],
 				[0.16, 0.26],
