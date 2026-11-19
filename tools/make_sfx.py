@@ -263,6 +263,106 @@ def glass():
     return x * env(d, 0.0005, 0.06)
 
 
+# ======================= LeBron short =======================
+def crowd():
+    """Arena crowd swelling into a roar, with scattered claps."""
+    d = 4.0
+    t = t_axis(d)
+    roar = band(noise(d), 250, 2500) * (0.25 + 0.75 * np.clip(t / 0.6, 0, 1)) * np.clip((d - t) / 1.5, 0, 1)
+    out = norm(roar, 0.6)
+    for at in rng.uniform(0.2, 3.2, 70):
+        place(out, band(noise(0.03), 900, 5000) * env(0.03, 0.001, 0.008) * rng.uniform(0.1, 0.35), at)
+    return out
+
+
+def buzzer():
+    d = 0.9
+    t = t_axis(d)
+    sq = np.sign(np.sin(2 * np.pi * 196 * t)) * 0.5 + np.sign(np.sin(2 * np.pi * 247 * t)) * 0.3
+    return band(sq, 100, 3000) * np.clip(t / 0.01, 0, 1) * np.clip((d - t) / 0.05, 0, 1)
+
+
+def netswish():
+    d = 0.35
+    return band(noise(d), 2500, 9000) * env(d, 0.01, 0.09) + band(noise(d), 600, 2000) * env(d, 0.005, 0.05) * 0.4
+
+
+def bounce():
+    d = 0.18
+    return sweep(150, 80, d, 0.4) * env(d, 0.001, 0.035) + band(noise(d), 800, 3000) * env(d, 0.0005, 0.006) * 0.5
+
+
+def shutter():
+    d = 0.25
+    out = np.zeros(int(SR * d))
+    for at in (0.0, 0.05):
+        place(out, band(noise(0.02), 1500, 8000) * env(0.02, 0.0005, 0.005), at)
+    place(out, sweep(3000, 2200, 0.15) * env(0.15, 0.002, 0.03) * 0.2, 0.02)
+    return out
+
+
+def riser():
+    d = 2.0
+    t = t_axis(d)
+    tone = sweep(120, 900, d, 2.0) * 0.4
+    hiss = band(noise(d), 1500, 8000) * (t / d) ** 2
+    return (tone + hiss) * np.clip((t / d) ** 1.5, 0, 1)
+
+
+def boom():
+    d = 2.2
+    sub = sweep(70, 32, d, 0.3) * env(d, 0.002, 0.6)
+    hit = band(noise(0.15), 60, 600) * env(0.15, 0.001, 0.05)
+    tail = band(noise(d), 100, 900) * env(d, 0.01, 0.5) * 0.25
+    return sub * 1.3 + pad(hit, d) + tail
+
+
+def alarm():
+    d = 0.9
+    out = np.zeros(int(SR * d))
+    for at in (0.0, 0.2, 0.45, 0.65):
+        place(out, np.sign(np.sin(2 * np.pi * 2100 * t_axis(0.12))) * env(0.12, 0.001, 0.08) * 0.4, at)
+    return out
+
+
+def bed():
+    """Quiet, steady beat that builds: kick, off-beat hat, soft minor pad. 41 s at 92 bpm."""
+    dur, bpm = 42.0, 92
+    beat = 60 / bpm
+    out = np.zeros(int(SR * dur))
+    t = t_axis(dur)
+    # Pad: Am - F - C - G, one chord per 2 bars
+    chords = [(220.0, 261.6, 329.6), (174.6, 220.0, 261.6), (196.0, 261.6, 329.6), (196.0, 246.9, 293.7)]
+    bar = beat * 4
+    for i in range(int(dur / (bar * 2)) + 1):
+        c = chords[i % 4]
+        s0 = i * bar * 2
+        n = int(SR * bar * 2)
+        tt = t_axis(bar * 2)
+        tone = sum(np.sin(2 * np.pi * f * tt) + 0.3 * np.sin(2 * np.pi * f * 2 * tt) for f in c)
+        tone *= np.clip(tt / 0.4, 0, 1) * np.clip((bar * 2 - tt) / 0.4, 0, 1) * 0.08
+        place(out, tone, s0)
+    # Drums come in after the hook and get busier toward the reveal
+    k = 0
+    while k * beat < dur:
+        at = k * beat
+        if at > 3.6:
+            place(out, (sweep(110, 45, 0.3, 0.3) * env(0.3, 0.001, 0.07)) * 0.55, at)
+            if at > 10.8:
+                place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.0005, 0.012) * 0.25, at + beat / 2)
+            if at > 23.5 and k % 2 == 1:
+                place(out, band(noise(0.12), 900, 5000) * env(0.12, 0.001, 0.04) * 0.35, at)
+        k += 1
+    # Duck everything right before the name drop, then let it land
+    fade = np.ones_like(out)
+    a, b = int(SR * 37.0), int(SR * 37.4)
+    fade[a:b] = np.linspace(1, 0.1, b - a)
+    fade[b:] = 0.1
+    c = int(SR * 38.25)
+    fade[c:] = 1.0
+    return out * fade
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     save('ambience', ambience(), 0.5)
@@ -286,4 +386,6 @@ if __name__ == '__main__':
     save('pour', pour(), 0.7)
     save('ice', ice(), 0.6)
     save('glass', glass(), 0.6)
+    for n in ('crowd', 'buzzer', 'netswish', 'bounce', 'shutter', 'riser', 'boom', 'alarm', 'bed'):
+        save(n, globals()[n](), 0.8)
     print('wrote', sorted(os.listdir(OUT)))

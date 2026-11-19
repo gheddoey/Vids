@@ -404,7 +404,223 @@ def polnareff():
     t.save('ts_polnareff')
 
 
+# ======================= LeBron short =======================
+from PIL import ImageFont
+
+FONT = '/usr/share/fonts/opentype/inter/InterDisplay-Black.otf'
+
+
+def text(t, region, msg, cx, cy, size, color, stroke=None, sw=0):
+    x, y, w, h = region
+    f = ImageFont.truetype(FONT, int(size * S))
+    X, Y = (x + cx * w) * S, (y + cy * h) * S
+    t.d.text((X, Y), msg, font=f, fill=rgb(color), anchor='mm', stroke_width=int(sw * S), stroke_fill=rgb(stroke) if stroke else None)
+
+
+def jersey(name, base, trim, num, numc, numo, word=None):
+    """Basketball tank top: bare arms, trim at neck/arms, big number front and back."""
+    t = T()
+
+    def torso(k, r):
+        t.vgrad(r, base, shade(base, -0.08)[:3] and '#%02x%02x%02x' % shade(base, -0.08)[:3])
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, '#000000', 2, 0.3, 0.9, seed=len(k) * 23)
+        if k == 'front':
+            # V-neck with trim, cut-in arm holes
+            t.poly(r, [(0.34, 0), (0.66, 0), (0.5, 0.2)], (0, 0, 0, 0))
+            t.line(r, [(0.33, 0), (0.5, 0.21), (0.67, 0)], trim, 2.2)
+            t.poly(r, [(0, 0), (0.12, 0), (0.06, 0.3), (0, 0.32)], (0, 0, 0, 0))
+            t.poly(r, [(1, 0), (0.88, 0), (0.94, 0.3), (1, 0.32)], (0, 0, 0, 0))
+            t.line(r, [(0.12, 0), (0.06, 0.3), (0, 0.32)], trim, 1.6)
+            t.line(r, [(0.88, 0), (0.94, 0.3), (1, 0.32)], trim, 1.6)
+            if word:
+                text(t, r, word, 0.5, 0.33, 13, numc, numo, 1.2)
+            text(t, r, num, 0.5, 0.64 if word else 0.55, 52, numc, numo, 3)
+            # Waistband
+            t.fill(r, trim, y0=0.93, y1=1)
+        if k == 'back':
+            t.line(r, [(0.3, 0), (0.5, 0.08), (0.7, 0)], trim, 2.2)
+            text(t, r, num, 0.5, 0.55, 56, numc, numo, 3)
+            t.fill(r, trim, y0=0.93, y1=1)
+        if k in ('left', 'right'):
+            t.d.rectangle(t.box(r, 0, 0, 1, 0.3), fill=(0, 0, 0, 0))
+            t.line(r, [(0, 0.3), (1, 0.3)], trim, 1.6)
+            t.line(r, [(0.5, 0.3), (0.5, 1)], trim, 1.6)
+            t.fill(r, trim, y0=0.93, y1=1)
+        if k == 'top':
+            t.d.rectangle(t.box(r, 0, 0, 1, 1), fill=(0, 0, 0, 0))
+            t.fill(r, base, x0=0.1, x1=0.3)
+            t.fill(r, base, x0=0.7, x1=0.9)
+
+    all_torso(t, torso)
+    t.save(name)
+
+
+def kid():
+    t = T()
+    tee, dark = '#3c4a66', '#2e3a52'
+
+    def torso(k, r):
+        t.vgrad(r, '#43527a', '#34405c')
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, dark, 4, seed=len(k) * 29)
+        if k == 'front':
+            t.d.chord(t.box(r, 0.33, -0.16, 0.67, 0.16), 0, 180, fill=(0, 0, 0, 0))
+            t.line(r, [(0.33, 0.0), (0.38, 0.1), (0.5, 0.15), (0.62, 0.1), (0.67, 0.0)], '#56658c', 1.4)
+            # Faded basketball print
+            t.dot(r, 0.5, 0.5, 15, '#c9763a')
+            t.line(r, [(0.5, 0.38), (0.5, 0.62)], '#7a3f1a', 0.9)
+            t.line(r, [(0.38, 0.5), (0.62, 0.5)], '#7a3f1a', 0.9)
+            t.dot(r, 0.5, 0.5, 15, '#c9763a')
+            t.line(r, [(0.5, 0.385), (0.5, 0.615)], '#7a3f1a', 0.9)
+            t.line(r, [(0.385, 0.5), (0.615, 0.5)], '#7a3f1a', 0.9)
+            # Small stain and a frayed hem
+            t.dot(r, 0.7, 0.75, 3, '#3a465f')
+            for xx in [i / 10 for i in range(11)]:
+                t.line(r, [(xx, 0.95), (xx + 0.03, 1.0)], dark, 0.6)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        if k == 'bottom':
+            return
+        if k == 'top':
+            t.vgrad(r, '#43527a', '#3c4a66')
+            return
+        t.vgrad(r, '#43527a', '#38456a', 0, 0.5)
+        t.line(r, [(0, 0.5), (1, 0.5)], dark, 0.8)
+
+    arms(t, arm)
+    t.save('ts_kid')
+
+
+def mom():
+    t = T()
+    denim, dd = '#5c7fae', '#46668f'
+
+    def torso(k, r):
+        t.vgrad(r, '#6286b5', '#4f72a0')
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, dd, 3, seed=len(k) * 31)
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.6, 1), (0.4, 1)], '#f2ece0')
+            t.line(r, [(0.36, 0), (0.4, 1)], '#e2a64a', 0.8)
+            t.line(r, [(0.64, 0), (0.6, 1)], '#e2a64a', 0.8)
+            for x in (0.12, 0.66):
+                t.line(r, [(x, 0.3), (x + 0.22, 0.3), (x + 0.22, 0.48), (x, 0.48), (x, 0.3)], '#e2a64a', 0.7)
+            t.fill(r, dd, y0=0.86, y1=0.94, x1=0.38)
+            t.fill(r, dd, y0=0.86, y1=0.94, x0=0.62)
+        if k == 'back':
+            t.line(r, [(0.1, 0.3), (0.9, 0.3)], '#e2a64a', 0.7)
+            t.fill(r, dd, y0=0.86, y1=0.94)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        t.vgrad(r, '#6286b5', '#4f72a0')
+        if k in ('front', 'out', 'back', 'in'):
+            t.fill(r, dd, y0=0.84, y1=0.94)
+            t.line(r, [(0, 0.5), (1, 0.52)], dd, 0.8)
+
+    arms(t, arm)
+    t.save('ts_mom')
+
+
+def coach():
+    t = T()
+    navy, stripe = '#1f2c4a', '#f0f0f0'
+
+    def torso(k, r):
+        t.vgrad(r, '#24345a', '#1a2540')
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, '#121a2e', 3, seed=len(k) * 37)
+        if k == 'front':
+            t.fill(r, '#cfd6e2', x0=0.49, x1=0.51)
+            t.fill(r, '#24345a', y0=0, y1=0.12, x0=0.3, x1=0.7)
+            t.line(r, [(0.3, 0.12), (0.7, 0.12)], stripe, 1)
+            # Whistle on a red lanyard
+            t.line(r, [(0.36, 0.05), (0.5, 0.42), (0.64, 0.05)], '#c0392b', 1.2)
+            t.fill(r, '#c9ccd2', x0=0.46, x1=0.56, y0=0.42, y1=0.5)
+            t.dot(r, 0.5, 0.46, 1.6, '#8a8f96')
+            text(t, r, 'COACH', 0.74, 0.3, 9, '#ffffff')
+        if k == 'back':
+            text(t, r, 'COACH', 0.5, 0.35, 18, '#ffffff')
+        if k in ('left', 'right'):
+            t.fill(r, stripe, x0=0.42, x1=0.5)
+            t.fill(r, stripe, x0=0.54, x1=0.62)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        t.vgrad(r, '#24345a', '#1a2540')
+        if k == 'out':
+            t.fill(r, stripe, x0=0.36, x1=0.46)
+            t.fill(r, stripe, x0=0.54, x1=0.64)
+        if k in ('front', 'out', 'back', 'in'):
+            t.fill(r, '#121a2e', y0=0.88, y1=1)
+
+    arms(t, arm)
+    t.save('ts_coach')
+
+
+def suit_white():
+    t = T()
+    white, ws, line = '#f3f1ec', '#d9d6cd', '#b5b1a6'
+
+    def torso(k, r):
+        t.vgrad(r, white, '#e4e1d8')
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, ws, 3, seed=len(k) * 41)
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.56, 0.5), (0.44, 0.5)], '#efe6cf')
+            t.poly(r, [(0.47, 0.06), (0.53, 0.06), (0.55, 0.48), (0.5, 0.54), (0.45, 0.48)], '#f8f6f0')
+            t.line(r, [(0.45, 0.06), (0.47, 0.5), (0.5, 0.54), (0.53, 0.5), (0.55, 0.06)], line, 0.6)
+            t.poly(r, [(0.36, 0), (0.24, 0), (0.3, 0.32), (0.44, 0.5)], '#ffffff')
+            t.poly(r, [(0.64, 0), (0.76, 0), (0.7, 0.32), (0.56, 0.5)], '#ffffff')
+            t.line(r, [(0.24, 0), (0.3, 0.32), (0.44, 0.5)], line, 0.8)
+            t.line(r, [(0.76, 0), (0.7, 0.32), (0.56, 0.5)], line, 0.8)
+            for yy in (0.6, 0.76):
+                t.dot(r, 0.5, yy, 1.8, '#ffffff', outline=line)
+            t.line(r, [(0.5, 0.5), (0.5, 1)], line, 0.7)
+            t.line(r, [(0.14, 0.7), (0.32, 0.7)], line, 0.8)
+            t.line(r, [(0.68, 0.7), (0.86, 0.7)], line, 0.8)
+            t.line(r, [(0.7, 0.3), (0.84, 0.3)], line, 0.8)
+            t.fill(r, '#e9c46a', x0=0.72, x1=0.8, y0=0.26, y1=0.3)
+        if k == 'back':
+            t.line(r, [(0.5, 0.1), (0.5, 1)], ws, 0.8)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        t.vgrad(r, white, '#e2dfd6')
+        if k in ('front', 'out', 'back', 'in'):
+            t.folds(r, ws, 2, 0.1, 0.7, seed=len(k) + (side == 'L'))
+            t.fill(r, '#fbfaf6', y0=0.9, y1=1)
+            t.line(r, [(0, 0.9), (1, 0.9)], line, 0.6)
+
+    arms(t, arm)
+    t.save('ts_suitwhite')
+
+
+def lebron_set():
+    kid()
+    mom()
+    coach()
+    suit_white()
+    jersey('ts_hs23', '#1f6a3a', '#e8c547', '23', '#ffffff', '#e8c547', 'IRISH')
+    jersey('ts_wine23', '#6f263d', '#ffb81c', '23', '#ffffff', '#ffb81c')
+    jersey('ts_purple6', '#552583', '#fdb927', '6', '#fdb927', '#ffffff')
+    jersey('ts_purple23', '#552583', '#fdb927', '23', '#fdb927', '#ffffff')
+    jersey('ts_purple9', '#552583', '#fdb927', '9', '#fdb927', '#ffffff')
+    jersey('ts_blue4', '#1d428a', '#ffc72c', '4', '#ffc72c', '#ffffff')
+    jersey('ts_blue8', '#1d428a', '#ffc72c', '8', '#ffc72c', '#ffffff')
+
+
 if __name__ == '__main__':
-    for fn in (barkeep, joseph, jotaro, avdol, polnareff):
-        fn()
+    import sys as _s
+    if 'lebron' in _s.argv:
+        lebron_set()
+    else:
+        for fn in (barkeep, joseph, jotaro, avdol, polnareff):
+            fn()
     print('wrote', sorted(f for f in os.listdir(OUT) if f.startswith('ts_')))
