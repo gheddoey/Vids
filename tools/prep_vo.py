@@ -109,6 +109,11 @@ def main(src, script_path, name):
             d = (ne - ns) * k / tot
             ws.append({'w': w, 's': round(t, 3), 'e': round(t + d, 3)})
             t += d
+        # Measured per-word start times (from ASR alignment), if the script provides them.
+        if 'wt' in l and len(l['wt']) == len(ws):
+            for k, wd in enumerate(ws):
+                wd['s'] = round(remap(l['wt'][k]), 3)
+                wd['e'] = round(remap(l['wt'][k + 1]), 3) if k + 1 < len(ws) else round(ne, 3)
         # Snap words that have measured times.
         for wd in ws:
             if wd['w'] in anchors and l['s'] - 0.05 <= anchors[wd['w']] <= l['e'] + 0.05:

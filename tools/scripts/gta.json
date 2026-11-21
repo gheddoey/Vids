@@ -1,0 +1,415 @@
+{
+ "lines": [
+  {
+   "text": "The biggest game series on Earth only exists because of a bug.",
+   "s": 0.08,
+   "e": 4.08,
+   "wt": [
+    0.08,
+    0.18,
+    0.72,
+    0.99,
+    1.4,
+    1.65,
+    2.08,
+    2.42,
+    3.07,
+    3.36,
+    3.45,
+    3.5
+   ]
+  },
+  {
+   "text": "Dundee, Scotland. 1988.",
+   "s": 4.69,
+   "e": 6.99,
+   "wt": [
+    4.69,
+    5.1,
+    5.94
+   ]
+  },
+  {
+   "text": "A young programmer named David Jones starts a tiny studio called DMA Design.",
+   "s": 7.36,
+   "e": 12.17,
+   "wt": [
+    7.36,
+    7.43,
+    7.7,
+    8.24,
+    8.53,
+    8.84,
+    9.29,
+    9.62,
+    9.68,
+    10.17,
+    10.68,
+    11.02,
+    11.58
+   ]
+  },
+  {
+   "text": "Their first big hit? Lemmings.",
+   "s": 12.47,
+   "e": 14.29,
+   "wt": [
+    12.47,
+    12.61,
+    12.91,
+    13.11,
+    13.69
+   ]
+  },
+  {
+   "text": "Millions of tiny walkers, marching off cliffs.",
+   "s": 14.51,
+   "e": 17.9,
+   "wt": [
+    14.51,
+    15.71,
+    15.82,
+    16.2,
+    16.77,
+    17.27,
+    17.44
+   ]
+  },
+  {
+   "text": "Then they try something new.",
+   "s": 18.28,
+   "e": 19.72,
+   "wt": [
+    18.28,
+    18.66,
+    18.77,
+    19.01,
+    19.34
+   ]
+  },
+  {
+   "text": "A top-down cops and robbers game called Race'n'Chase.",
+   "s": 19.89,
+   "e": 22.96,
+   "wt": [
+    19.89,
+    20.09,
+    20.66,
+    21.04,
+    21.13,
+    21.52,
+    21.82,
+    22.08
+   ]
+  },
+  {
+   "text": "One problem.",
+   "s": 23.28,
+   "e": 24.0,
+   "wt": [
+    23.28,
+    23.52
+   ]
+  },
+  {
+   "text": "It's boring.",
+   "s": 24.29,
+   "e": 25.12,
+   "wt": [
+    24.29,
+    24.48
+   ]
+  },
+  {
+   "text": "Until a bug changes everything.",
+   "s": 25.42,
+   "e": 27.65,
+   "wt": [
+    25.42,
+    25.88,
+    26.35,
+    26.42,
+    27.0
+   ]
+  },
+  {
+   "text": "The police cars go crazy, ramming the player off the road.",
+   "s": 27.98,
+   "e": 31.14,
+   "wt": [
+    27.98,
+    28.08,
+    28.46,
+    28.73,
+    28.91,
+    29.59,
+    30.07,
+    30.15,
+    30.54,
+    30.67,
+    30.75
+   ]
+  },
+  {
+   "text": "The team should fix it.",
+   "s": 31.51,
+   "e": 32.49,
+   "wt": [
+    31.51,
+    31.58,
+    31.83,
+    31.99,
+    32.35
+   ]
+  },
+  {
+   "text": "Instead, they laugh, and keep it.",
+   "s": 32.74,
+   "e": 34.95,
+   "wt": [
+    32.74,
+    33.24,
+    33.77,
+    34.31,
+    34.48,
+    34.48
+   ]
+  },
+  {
+   "text": "Chaos becomes the game.",
+   "s": 35.22,
+   "e": 36.96,
+   "wt": [
+    35.22,
+    35.77,
+    36.44,
+    36.54
+   ]
+  },
+  {
+   "text": "But the project drags on, and the publisher almost pulls the plug.",
+   "s": 37.22,
+   "e": 40.68,
+   "wt": [
+    37.22,
+    37.35,
+    37.43,
+    37.89,
+    38.37,
+    38.72,
+    38.8,
+    38.88,
+    39.46,
+    39.89,
+    40.15,
+    40.21
+   ]
+  },
+  {
+   "text": "So they lean into it.",
+   "s": 40.93,
+   "e": 42.4,
+   "wt": [
+    40.93,
+    41.34,
+    41.55,
+    41.93,
+    42.28
+   ]
+  },
+  {
+   "text": "A publicist stirs up outrage on purpose.",
+   "s": 42.65,
+   "e": 45.17,
+   "wt": [
+    42.65,
+    42.8,
+    43.56,
+    43.7,
+    44.1,
+    44.44,
+    44.56
+   ]
+  },
+  {
+   "text": "Newspapers rage.",
+   "s": 45.34,
+   "e": 46.65,
+   "wt": [
+    45.34,
+    46.04
+   ]
+  },
+  {
+   "text": "Politicians complain.",
+   "s": 46.72,
+   "e": 48.04,
+   "wt": [
+    46.72,
+    47.42
+   ]
+  },
+  {
+   "text": "And the game flies off the shelves.",
+   "s": 48.22,
+   "e": 50.26,
+   "wt": [
+    48.22,
+    48.39,
+    48.39,
+    48.86,
+    49.46,
+    49.62,
+    49.71
+   ]
+  },
+  {
+   "text": "In New York, the Houser brothers start Rockstar Games.",
+   "s": 50.6,
+   "e": 53.6,
+   "wt": [
+    50.6,
+    50.71,
+    50.86,
+    51.34,
+    51.43,
+    51.86,
+    52.18,
+    52.56,
+    53.07
+   ]
+  },
+  {
+   "text": "In 2001, the series goes 3D, and suddenly the whole city is yours.",
+   "s": 53.76,
+   "e": 58.59,
+   "wt": [
+    53.76,
+    53.9,
+    54.79,
+    54.87,
+    55.28,
+    55.55,
+    56.21,
+    56.37,
+    56.97,
+    57.07,
+    57.49,
+    57.98,
+    58.15
+   ]
+  },
+  {
+   "text": "Vice City.",
+   "s": 58.82,
+   "e": 59.56,
+   "wt": [
+    58.82,
+    59.15
+   ]
+  },
+  {
+   "text": "San Andreas.",
+   "s": 59.62,
+   "e": 60.6,
+   "wt": [
+    59.62,
+    59.94
+   ]
+  },
+  {
+   "text": "Then, in 2013, part five makes one billion dollars in three days,",
+   "s": 60.86,
+   "e": 65.76,
+   "wt": [
+    60.86,
+    61.26,
+    61.43,
+    62.35,
+    62.62,
+    63.06,
+    63.29,
+    63.72,
+    64.23,
+    64.67,
+    64.85,
+    65.28
+   ]
+  },
+  {
+   "text": "the fastest entertainment launch in history.",
+   "s": 65.91,
+   "e": 68.27,
+   "wt": [
+    65.91,
+    66.0,
+    66.63,
+    67.14,
+    67.49,
+    67.62
+   ]
+  },
+  {
+   "text": "The series is called...",
+   "s": 68.51,
+   "e": 69.53,
+   "wt": [
+    68.51,
+    68.58,
+    68.98,
+    69.11
+   ]
+  },
+  {
+   "text": "Grand Theft Auto.",
+   "s": 69.76,
+   "e": 70.89,
+   "wt": [
+    69.76,
+    70.14,
+    70.46
+   ]
+  },
+  {
+   "text": "And after thirteen years of waiting, the sixth one has finally arrived.",
+   "s": 71.21,
+   "e": 75.24,
+   "wt": [
+    71.21,
+    71.33,
+    71.59,
+    72.22,
+    72.51,
+    72.59,
+    73.18,
+    73.26,
+    73.7,
+    73.94,
+    74.14,
+    74.69
+   ]
+  },
+  {
+   "text": "And it all started with a cop car that wouldn't stop.",
+   "s": 75.49,
+   "e": 78.23,
+   "wt": [
+    75.49,
+    75.63,
+    75.72,
+    75.91,
+    76.38,
+    76.54,
+    76.59,
+    76.96,
+    77.24,
+    77.41,
+    77.81
+   ]
+  }
+ ],
+ "gap": 0.2,
+ "keepGapBefore": {
+  "27": 0.45
+ }
+}
