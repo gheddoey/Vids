@@ -35,7 +35,7 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
   Animation Explainers, Gaming") → I build the video from the mp3.
 - Scripts: give them **without `<break>` tags** (they asked to remove them). Paragraph breaks only.
   Aim length by the voice speed: this voice speaks ~2.9 words/s, so ~170–210 words ≈ 60–70 s raw.
-- Commit and push after each meaningful step (branch `claude/install-tools-qtsrqr`).
+- Commit and push after each meaningful step (on the session's assigned branch).
 
 ## Art style (locked in — the user approved these)
 
@@ -185,8 +185,10 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 
 ## Environment notes
 
-- Cloud container, no GPU. Chromium + Playwright preinstalled. Python 3.13 with numpy, PIL,
-  pocketsphinx, fonttools. ffmpeg 6.1. Fonts: Inter / Inter Display (all weights), DejaVu.
+- Cloud container, no GPU. Chromium + Playwright preinstalled. Python 3.13: `pip install -r requirements.txt`
+  (numpy, PIL, pocketsphinx, fonttools, scipy, soundfile, pyloudnorm, librosa, opencv, noisereduce,
+  pedalboard). ffmpeg 6.1, sox (`apt-get install sox`). Remotion extras: transitions, media-utils, noise,
+  motion-blur, layout-utils, paths, shapes; `@react-three/drei` for 3D helpers. Fonts: Inter / Inter Display (all weights), DejaVu.
 - Network is restricted: roblox.com, pollinations, ambientcg, polyhaven are blocked; pypi works.
   Make assets procedurally instead of downloading.
 - GitHub pushes work now (Claude GitHub App connected for `gheddoey/Vids`).

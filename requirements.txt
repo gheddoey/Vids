@@ -1,0 +1,11 @@
+pocketsphinx==5.1.1
+fonttools
+numpy
+pillow
+scipy
+soundfile
+pyloudnorm
+librosa
+opencv-python-headless
+noisereduce
+pedalboard
