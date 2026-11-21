@@ -8,7 +8,7 @@ const LEO_EYES = '#6a4a2a';
 
 export const P: Record<string, Person> = {
 	leo11: {h: 0.62, shirt: 'ts_leo11', skin: LEO_SKIN, pants: '#161616', hair: {type: 'wavy', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'smile'},
-	leoPj: {h: 0.62, shirt: 'ts_kid', skin: LEO_SKIN, pants: '#3c4a66', hair: {type: 'wavy', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'serious'},
+	leoPj: {h: 0.62, shirt: 'ts_leo_pj', skin: LEO_SKIN, pants: '#8ec5ea', hair: {type: 'wavy', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'serious'},
 	leo13: {h: 0.7, shirt: 'ts_leo13', skin: LEO_SKIN, pants: '#3a3f48', hair: {type: 'wavy', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'smile'},
 	leoBib: {h: 0.7, shirt: 'ts_bib_o', skin: LEO_SKIN, pants: '#22262e', hair: {type: 'wavy', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'serious'},
 	leo17: {h: 0.9, shirt: 'ts_barca30', skin: LEO_SKIN, pants: '#1a3a8a', hair: {type: 'swept', color: '#5a3a22'}, eyeColor: LEO_EYES, face: 'smile'},

@@ -848,6 +848,29 @@ def messi_set():
                 t.line(r, [(xx, 0.9), (xx, 1)], '#5a5e66', 0.5)
     plain('ts_sweater', '#7a7e88', '#5a5e66', sweater)
 
+    # Leo's pyjamas: sky blue with navy piping, buttons, collar, a little football on the pocket
+    def pyjama(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            for yy in [0.2, 0.45, 0.7, 0.95]:
+                for xx in [0.15, 0.4, 0.65, 0.9]:
+                    t.dot(r, xx, yy, 1.1, '#f2f6fb')
+        if k == 'front':
+            t.poly(r, [(0.3, 0), (0.5, 0.16), (0.7, 0), (0.62, 0.2), (0.5, 0.24), (0.38, 0.2)], '#1f3a6a')
+            t.line(r, [(0.5, 0.2), (0.5, 1)], '#1f3a6a', 1.2)
+            for yy in (0.36, 0.56, 0.76):
+                t.dot(r, 0.56, yy, 1.8, '#f6f2ea', outline='#1f3a6a')
+            t.line(r, [(0.14, 0.34), (0.38, 0.34), (0.38, 0.58), (0.14, 0.58), (0.14, 0.34)], '#1f3a6a', 0.9)
+            t.dot(r, 0.26, 0.47, 5, '#ffffff', outline='#161616')
+            for ang in range(5):
+                import math
+                t.dot(r, 0.26 + 0.035 * math.cos(ang * 1.2566), 0.47 + 0.03 * math.sin(ang * 1.2566), 1.0, '#161616')
+            t.dot(r, 0.26, 0.47, 1.4, '#161616')
+            t.fill(r, '#1f3a6a', y0=0.94, y1=1)
+        if k == 'back':
+            t.fill(r, '#1f3a6a', y0=0, y1=0.08, x0=0.3, x1=0.7)
+            t.fill(r, '#1f3a6a', y0=0.94, y1=1)
+    plain('ts_leo_pj', '#8ec5ea', '#6aa6d0', pyjama, lambda t, s_, k, r: t.fill(r, '#1f3a6a', y0=0.9, y1=0.96) if k in ('front', 'out', 'back', 'in') else None)
+
 
 if __name__ == '__main__' and 'messi' in __import__('sys').argv:
     messi_set()

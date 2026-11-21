@@ -449,25 +449,25 @@ def bed_messi():
     k = 0
     while k * beat < dur:
         at = k * beat
-        in_drums = (23.4 <= at < 37.8) or (47.6 <= at < 54.0)
+        in_drums = (22.55 <= at < 36.54) or (45.74 <= at < 51.90)
         if in_drums:
             place(out, (sweep(110, 45, 0.3, 0.3) * env(0.3, 0.001, 0.07)) * 0.55, at)
             place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.0005, 0.012) * 0.22, at + beat / 2)
             if k % 2 == 1:
                 place(out, band(noise(0.12), 900, 5000) * env(0.12, 0.001, 0.04) * 0.3, at)
-            if at >= 47.6:
+            if at >= 45.74:
                 place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.0005, 0.01) * 0.15, at + beat / 4)
         k += 1
     g = np.ones_like(out)
     seg = lambda a, b, v0, v1: g.__setitem__(slice(int(SR * a), int(SR * b)), np.linspace(v0, v1, int(SR * b) - int(SR * a)))
-    seg(37.6, 38.4, 1.0, 0.55)  # heartbreak: thinner
-    g[int(SR * 38.4) : int(SR * 47.4)] = 0.55
-    seg(47.4, 47.8, 0.55, 1.25)  # the lift
-    g[int(SR * 47.8) : int(SR * 53.9)] = 1.25
-    seg(53.9, 54.3, 1.25, 0.0)  # silence before the name
-    g[int(SR * 54.3) : int(SR * 56.55)] = 0.0
-    g[int(SR * 56.55) :] = 0.9
-    tail = int(SR * 59.6)
+    seg(36.34, 37.14, 1.0, 0.55)  # heartbreak: thinner
+    g[int(SR * 37.14) : int(SR * 45.54)] = 0.55
+    seg(45.54, 45.94, 0.55, 1.25)  # the lift
+    g[int(SR * 45.94) : int(SR * 51.80)] = 1.25
+    seg(51.80, 52.15, 1.25, 0.0)  # silence before the name
+    g[int(SR * 52.15) : int(SR * 54.40)] = 0.0
+    g[int(SR * 54.40) :] = 0.9
+    tail = int(SR * 57.39)
     g[tail:] *= np.linspace(1, 0, len(g) - tail)
     return out * g
 

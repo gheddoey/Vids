@@ -7,7 +7,7 @@ import {Pose} from '../Character';
 import {RBox} from '../parts';
 import {useBlockFont} from '../BlockText';
 import {Key, onTwos, walk} from '../anim';
-import {Actor, Ball, Cam, CaptionsFor, Confetti, PI, handOf, poseAt} from '../lebron/common';
+import {Actor, Cam, CaptionsFor, Confetti, PI, handOf, poseAt} from '../lebron/common';
 import {P, Person, SHIRTS} from './cast';
 import {
 	Bedroom,
@@ -24,6 +24,7 @@ import {
 	Office,
 	Pen,
 	Plane,
+	SoccerBall,
 	Stadium,
 	SteelMill,
 	TrainingGround,
@@ -36,7 +37,7 @@ const W = 1080;
 const H = 1920;
 const T = timing as {duration: number; lines: {text: string; s: number; e: number; words: {w: string; s: number; e: number}[]}[]};
 const sec = (s: number) => Math.round(s * FPS);
-export const MESSI_FRAMES = sec(T.duration + 0.4);
+export const MESSI_FRAMES = sec(T.duration + 0.25);
 
 type Imgs = Record<string, HTMLImageElement>;
 type ShotProps = {f: number; d: number; imgs: Imgs};
@@ -93,7 +94,7 @@ const LineUp: React.FC<ShotProps> = ({f, d, imgs}) => {
 			))}
 			<Who p={P.leo11} imgs={imgs} pose={leo} at={[6.5, 0, 0.2]} />
 			<group position={[7.6, 0.3, 1.2]}>
-				<Ball r={0.3} />
+				<SoccerBall r={0.3} spin={f * 0.25} />
 			</group>
 		</>
 	);
@@ -310,7 +311,7 @@ const Dribble: React.FC<ShotProps> = ({f, d, imgs}) => {
 			{teen(P.teenC, 3.8, 1.0, 3)}
 			<Who p={p} imgs={imgs} pose={leo} at={[0, 0, 0.3]} />
 			<group position={ball}>
-				<Ball r={0.3} />
+				<SoccerBall r={0.3} spin={f * 0.25} />
 			</group>
 		</>
 	);
@@ -382,7 +383,7 @@ const BigClub: React.FC<ShotProps> = ({f, d, imgs}) => {
 			<Stadium mode="club" frame={f} />
 			<Who p={p} imgs={imgs} pose={leo} at={[0, 0, 0]} />
 			<group position={ball}>
-				<Ball r={0.32} />
+				<SoccerBall r={0.32} spin={f * 0.3} />
 			</group>
 		</>
 	);
@@ -582,7 +583,7 @@ const FiveSeven: React.FC<ShotProps> = ({f, d, imgs}) => {
 			<Who p={P.dad} imgs={imgs} pose={poseAt([{f: 0, rotY: 0.6, face: 'smile', ...ARMS_CROSSED}], f, 2)} at={[-2.6, 0, -0.8]} />
 			{juggle ? (
 				<group position={[-0.5, 0.9 + kickPhase * 1.6, -1.2]}>
-					<Ball r={0.3} />
+					<SoccerBall r={0.3} spin={f * 0.25} />
 				</group>
 			) : null}
 		</>

@@ -188,35 +188,29 @@ export const DoctorDesk: React.FC<{pulse?: number}> = ({pulse = 0}) => (
 		{[0.5, 1.2, 1.9].map((y) => (
 			<RBox key={y} size={[1.1, 0.04, 0.02]} pos={[1.35, y, 1.11]} color="#5a3a20" />
 		))}
-		{/* Lightbox with a hand X-ray */}
+		{/* Lightbox with a hand X-ray, the bones built as raised blocks */}
 		<group position={[-0.9, 3.55, -0.9]}>
 			<RBox size={[1.9, 1.9, 0.2]} color="#dcdcdc" />
-			<group position={[0, 0, 0.11]}>
-				<Canvas2D
-					w={1.7}
-					h={1.7}
-					px={180}
-					k="xray"
-					emissive={1.3}
-					draw={(g, w, h) => {
-						g.fillStyle = '#16222e';
-						g.fillRect(0, 0, w, h);
-						g.fillStyle = '#d8eef8';
-						const bone = (x: number, y: number, bw: number, bh: number) => {
-							g.beginPath();
-							g.roundRect(x * w, y * h, bw * w, bh * h, bw * w * 0.4);
-							g.fill();
-						};
-						bone(0.33, 0.62, 0.36, 0.32);
-						[0.32, 0.42, 0.52, 0.62].forEach((x, i) => {
-							bone(x, 0.36 - (i === 1 || i === 2 ? 0.08 : 0), 0.07, 0.22);
-							bone(x, 0.12 - (i === 1 || i === 2 ? 0.08 : 0), 0.06, 0.2);
-						});
-						bone(0.72, 0.5, 0.08, 0.18);
-						bone(0.8, 0.36, 0.06, 0.14);
-					}}
-				/>
-			</group>
+			<RBox size={[1.7, 1.7, 0.06]} pos={[0, 0, 0.1]} color="#1a2a3a" emissive="#0a1a2a" />
+			<pointLight position={[0, 0, 0.6]} intensity={4} color="#bfe6ff" distance={3} decay={2} />
+			{(() => {
+				const bone = '#dff2ff';
+				const glow = '#5a8aa8';
+				const parts: [number, number, number, number, number][] = [
+					[0, -0.42, 0.62, 0.5, 0],
+					[-0.27, 0.0, 0.13, 0.38, 0.05],
+					[-0.09, 0.08, 0.13, 0.42, 0],
+					[0.09, 0.06, 0.13, 0.42, 0],
+					[0.27, 0.0, 0.13, 0.36, -0.05],
+					[-0.3, 0.45, 0.11, 0.3, 0.06],
+					[-0.1, 0.52, 0.11, 0.32, 0],
+					[0.1, 0.5, 0.11, 0.32, 0],
+					[0.29, 0.43, 0.11, 0.28, -0.06],
+					[0.47, -0.18, 0.14, 0.34, -0.6],
+					[0.62, 0.05, 0.11, 0.26, -0.5],
+				];
+				return parts.map(([x, y, w, h, r], k) => <RBox key={k} size={[w, h, 0.06]} pos={[x, y, 0.15]} rot={[0, 0, r]} color={bone} emissive={glow} />);
+			})()}
 		</group>
 		{/* Bar chart of heights: four tall bars and Leo's short red one */}
 		<group position={[0.4, 2.5, 0.3]}>
@@ -316,24 +310,24 @@ export const NeighbourhoodPitch: React.FC = () => {
 
 // ---------- 4/6. Kitchen at night ----------
 
-const ClothCheck: React.FC<{w: number; d: number; c?: string}> = ({w, d, c = '#c83a3a'}) => (
-	<group rotation={[-PI / 2, 0, 0]}>
-		<Canvas2D
-			w={w}
-			h={d}
-			px={60}
-			k={`check${c}`}
-			draw={(g, W, H) => {
-				g.fillStyle = '#f6f2ea';
-				g.fillRect(0, 0, W, H);
-				g.fillStyle = c + 'aa';
-				const s = W / 12;
-				for (let i = 0; i < 12; i += 2) g.fillRect(i * s, 0, s, H);
-				for (let j = 0; j < H / s; j += 2) g.fillRect(0, j * s, W, s);
-			}}
-		/>
-	</group>
-);
+// Checked tablecloth made of thin tiles (not a printed texture).
+const ClothCheck: React.FC<{w: number; d: number; c?: string}> = ({w, d, c = '#d84a3a'}) => {
+	const n = 10;
+	const m = Math.round((d / w) * n);
+	const sw = w / n;
+	const sd = d / m;
+	return (
+		<group>
+			<RBox size={[w, 0.03, d]} color="#f6f2ea" />
+			{Array.from({length: n * m}, (_, k) => {
+				const i = k % n;
+				const j = Math.floor(k / n);
+				if ((i + j) % 2) return null;
+				return <RBox key={k} size={[sw, 0.035, sd]} pos={[-w / 2 + sw * (i + 0.5), 0.003, -d / 2 + sd * (j + 0.5)]} color={c} />;
+			})}
+		</group>
+	);
+};
 
 export const Kitchen: React.FC<{lamp?: number; tag?: boolean; coins?: number}> = ({lamp = 1, tag, coins = 0}) => (
 	<group>
@@ -576,10 +570,9 @@ export const Bedroom: React.FC<{moon: 'full' | 'half' | 'crescent'; clock: strin
 		</group>
 		{/* Framed posters, built in 3D: a ball and a boot */}
 		<Frame pos={[-2.2, 6.2, -2.76]} w={2.2} h={2.8} inner="#c8102e">
-			<mesh position={[0, 0.2, 0.08]}>
-				<sphereGeometry args={[0.55, 14, 10]} />
-				<meshStandardMaterial color="#f6f6f2" />
-			</mesh>
+			<group position={[0, 0.2, 0.2]}>
+				<SoccerBall r={0.55} spin={0.4} />
+			</group>
 			<RBox size={[1.5, 0.3, 0.05]} pos={[0, -0.85, 0.05]} color="#161616" />
 		</Frame>
 		<Frame pos={[1.2, 6.4, -2.76]} w={2.2} h={1.8} inner="#7cc3ee">
@@ -624,16 +617,9 @@ export const Bedroom: React.FC<{moon: 'full' | 'half' | 'crescent'; clock: strin
 			</group>
 		</group>
 		{/* Football on the floor */}
-		<mesh position={[1.4, 0.35, 1.6]} castShadow>
-			<sphereGeometry args={[0.35, 14, 10]} />
-			<meshStandardMaterial color="#f6f6f2" />
-		</mesh>
-		{[[0.12, 0.15, 0.3], [-0.2, 0.1, 0.24], [0.05, -0.22, 0.28]].map(([x, y, z], i) => (
-			<mesh key={i} position={[1.4 + x, 0.35 + y, 1.6 + z]}>
-				<boxGeometry args={[0.12, 0.12, 0.04]} />
-				<meshStandardMaterial color="#161616" />
-			</mesh>
-		))}
+		<group position={[1.4, 0.35, 1.6]}>
+			<SoccerBall r={0.35} spin={0.8} />
+		</group>
 	</group>
 );
 
@@ -854,11 +840,10 @@ export const TrainingGround: React.FC<{gate?: boolean}> = ({gate}) => (
 			))}
 		</group>
 		<group position={[7.5, 0, 4]}>
-			{[[0, 0.4, 0], [0.5, 0.4, 0.2], [-0.4, 0.4, 0.3], [0.1, 1.0, 0.1], [0.3, 0.4, -0.4]].map(([x, y, z], i) => (
-				<mesh key={i} position={[x, y, z]} castShadow>
-					<sphereGeometry args={[0.35, 12, 8]} />
-					<meshStandardMaterial color={i % 2 ? '#f6f6f2' : '#f2d04a'} />
-				</mesh>
+			{[[0, 0.4, 0], [0.7, 0.4, 0.2], [-0.6, 0.4, 0.3], [0.1, 1.05, 0.1], [0.3, 0.4, -0.6]].map(([x, y, z], i) => (
+				<group key={i} position={[x, y, z]}>
+					<SoccerBall r={0.35} spin={i * 1.3} />
+				</group>
 			))}
 		</group>
 		<Fence z={-14} from={-40} to={40} />
@@ -890,6 +875,28 @@ export const TrainingGround: React.FC<{gate?: boolean}> = ({gate}) => (
 );
 
 // ---------- 12. Café terrace ----------
+
+// Ink signature as a thin 3D stroke.
+const Signature: React.FC = () => {
+	const geo = useMemo(() => {
+		const pts = [
+			[-0.55, -0.35],
+			[-0.4, -0.15],
+			[-0.3, -0.42],
+			[-0.15, -0.18],
+			[0.0, -0.4],
+			[0.15, -0.2],
+			[0.3, -0.38],
+			[0.5, -0.22],
+		].map(([x, z]) => new THREE.Vector3(x, 0.03, -z));
+		return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.018, 5, false);
+	}, []);
+	return (
+		<mesh geometry={geo}>
+			<meshStandardMaterial color="#1e3a8a" roughness={0.4} />
+		</mesh>
+	);
+};
 
 export const Cafe: React.FC<{signed: boolean}> = ({signed}) => (
 	<group>
@@ -962,37 +969,17 @@ export const Cafe: React.FC<{signed: boolean}> = ({signed}) => (
 				<RBox size={[0.5, 0.06, 0.3]} color="#c8ccd2" />
 				<RBox size={[0.42, 0.4, 0.04]} pos={[0, 0.2, 0]} color="#fbfbf6" />
 			</group>
-			{/* The napkin contract */}
-			<group position={[0, 2.395, 0.55]} rotation={[-PI / 2, 0, signed ? -0.15 : 0.1]}>
-				<Canvas2D
-					w={1.4}
-					h={1.4}
-					px={260}
-					k={signed ? 'napkin2' : 'napkin1'}
-					draw={(g, w, h) => {
-						g.fillStyle = '#fbfaf4';
-						g.fillRect(0, 0, w, h);
-						g.strokeStyle = '#e8e2d0';
-						g.lineWidth = 6;
-						g.strokeRect(w * 0.06, h * 0.06, w * 0.88, h * 0.88);
-						g.fillStyle = '#1e3a8a';
-						g.font = `italic 600 ${h * 0.1}px "DejaVu Serif", serif`;
-						g.textAlign = 'left';
-						g.fillText('Leo will sign', w * 0.12, h * 0.26);
-						g.fillText('for the club.', w * 0.12, h * 0.4);
-						g.font = `italic 500 ${h * 0.075}px "DejaVu Serif", serif`;
-						g.fillText('Dec 2000', w * 0.12, h * 0.56);
-						if (signed) {
-							g.strokeStyle = '#1e3a8a';
-							g.lineWidth = 7;
-							g.beginPath();
-							g.moveTo(w * 0.14, h * 0.8);
-							g.bezierCurveTo(w * 0.3, h * 0.62, w * 0.36, h * 0.9, w * 0.5, h * 0.74);
-							g.bezierCurveTo(w * 0.6, h * 0.64, w * 0.66, h * 0.86, w * 0.84, h * 0.72);
-							g.stroke();
-						}
-					}}
-				/>
+			{/* The napkin contract: a folded napkin with raised ink and a 3D signature */}
+			<group position={[0, 2.39, 0.55]} rotation={[0, signed ? -0.15 : 0.1, 0]}>
+				<RBox size={[1.5, 0.03, 1.5]} color="#fbfaf4" />
+				<RBox size={[1.5, 0.006, 0.02]} pos={[0, 0.018, 0]} color="#e2ddcc" />
+				<RBox size={[0.02, 0.006, 1.5]} pos={[0, 0.018, 0]} color="#e2ddcc" />
+				<group rotation={[-PI / 2, 0, 0]} position={[0, 0.03, 0]}>
+					<BlockText text="LEO WILL SIGN" size={0.11} depth={0.01} color="#1e3a8a" position={[-0.02, 0.48, 0]} />
+					<BlockText text="FOR THE CLUB" size={0.11} depth={0.01} color="#1e3a8a" position={[-0.02, 0.3, 0]} />
+					<BlockText text="DEC 2000" size={0.08} depth={0.01} color="#1e3a8a" position={[-0.28, 0.12, 0]} />
+				</group>
+				{signed ? <Signature /> : null}
 			</group>
 		</group>
 		{[-2.6, 2.6].map((x) => (
@@ -1004,11 +991,105 @@ export const Cafe: React.FC<{signed: boolean}> = ({signed}) => (
 	</group>
 );
 
+// ---------- Soccer pieces ----------
+
+const LINE = '#f4f4f0';
+const Line: React.FC<{x: number; z: number; w: number; d: number}> = ({x, z, w, d}) => (
+	<mesh rotation={[-PI / 2, 0, 0]} position={[x, 0.012, z]}>
+		<planeGeometry args={[w, d]} />
+		<meshStandardMaterial color={LINE} roughness={0.9} />
+	</mesh>
+);
+
+// Halfway line, centre circle and spot, penalty and six-yard boxes, penalty arc.
+export const PitchMarkings: React.FC = () => (
+	<group>
+		<Line x={0} z={-2} w={64} d={0.25} />
+		<mesh rotation={[-PI / 2, 0, 0]} position={[0, 0.012, -2]}>
+			<ringGeometry args={[7.0, 7.25, 64]} />
+			<meshStandardMaterial color={LINE} />
+		</mesh>
+		<mesh rotation={[-PI / 2, 0, 0]} position={[0, 0.013, -2]}>
+			<circleGeometry args={[0.3, 16]} />
+			<meshStandardMaterial color={LINE} />
+		</mesh>
+		{/* Side lines and goal line */}
+		<Line x={-30} z={-19} w={0.25} d={70} />
+		<Line x={30} z={-19} w={0.25} d={70} />
+		<Line x={0} z={-36} w={60.25} d={0.25} />
+		{/* Penalty box */}
+		<Line x={0} z={-26} w={30} d={0.25} />
+		<Line x={-15} z={-31} w={0.25} d={10} />
+		<Line x={15} z={-31} w={0.25} d={10} />
+		{/* Six-yard box */}
+		<Line x={0} z={-32.6} w={12} d={0.25} />
+		<Line x={-6} z={-34.3} w={0.25} d={3.4} />
+		<Line x={6} z={-34.3} w={0.25} d={3.4} />
+		<mesh rotation={[-PI / 2, 0, 0]} position={[0, 0.013, -28.5]}>
+			<circleGeometry args={[0.25, 12]} />
+			<meshStandardMaterial color={LINE} />
+		</mesh>
+		<mesh rotation={[-PI / 2, 0, PI]} position={[0, 0.012, -28.5]}>
+			<ringGeometry args={[6.6, 6.85, 40, 1, PI * 0.25, PI * 0.5]} />
+			<meshStandardMaterial color={LINE} />
+		</mesh>
+	</group>
+);
+
+export const Goal: React.FC<{z: number}> = ({z}) => (
+	<group position={[0, 0, z]}>
+		<RBox size={[0.3, 5, 0.3]} pos={[-7.3, 2.5, 0]} color="#f8f8f6" />
+		<RBox size={[0.3, 5, 0.3]} pos={[7.3, 2.5, 0]} color="#f8f8f6" />
+		<RBox size={[14.9, 0.3, 0.3]} pos={[0, 5, 0]} color="#f8f8f6" />
+		<mesh position={[0, 2.5, -1.6]}>
+			<boxGeometry args={[14.6, 5, 3.2, 28, 10, 6]} />
+			<meshStandardMaterial color="#ffffff" wireframe transparent opacity={0.45} />
+		</mesh>
+	</group>
+);
+
+const CornerFlag: React.FC<{pos: [number, number, number]}> = ({pos}) => (
+	<group position={pos}>
+		<mesh position={[0, 1.6, 0]}>
+			<cylinderGeometry args={[0.05, 0.05, 3.2, 6]} />
+			<meshStandardMaterial color="#f2f2f2" />
+		</mesh>
+		<RBox size={[0.04, 0.6, 0.9]} pos={[0, 2.9, 0.45]} color="#ff4a2a" />
+	</group>
+);
+
+// A proper football: white with black pentagon panels at the 12 icosahedron points.
+const ICO = (() => {
+	const t = (1 + Math.sqrt(5)) / 2;
+	const v = [
+		[-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0],
+		[0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t],
+		[t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1],
+	];
+	return v.map((p) => new THREE.Vector3(p[0], p[1], p[2]).normalize());
+})();
+
+export const SoccerBall: React.FC<{r?: number; spin?: number}> = ({r = 0.32, spin = 0}) => (
+	<group rotation={[spin, spin * 0.7, 0]}>
+		<mesh castShadow>
+			<icosahedronGeometry args={[r, 2]} />
+			<meshStandardMaterial color="#f8f8f6" roughness={0.5} flatShading />
+		</mesh>
+		{ICO.map((n, i) => {
+			const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
+			return (
+				<mesh key={i} position={n.clone().multiplyScalar(r * 0.985)} quaternion={q}>
+					<circleGeometry args={[r * 0.36, 5]} />
+					<meshStandardMaterial color="#161616" roughness={0.5} side={THREE.DoubleSide} />
+				</mesh>
+			);
+		})}
+	</group>
+);
+
 // ---------- 13-20. Stadium at night (club, rain, final) ----------
 
 export const Stadium: React.FC<{mode: 'club' | 'rain' | 'final' | 'sad'; frame: number; spot?: boolean}> = ({mode, frame, spot}) => {
-	const crowdCols =
-		mode === 'club' ? ['#1a3a8a', '#a3123a', '#f2c94c', '#1a3a8a'] : mode === 'final' ? ['#7cc3ee', '#ffffff', '#7cc3ee', '#1a2a4a'] : ['#3a4050', '#2a2e38', '#4a5060', '#7cc3ee'];
 	const dim = mode === 'rain' || mode === 'sad';
 	const rain = useMemo(() => {
 		const r = rnd(77);
@@ -1020,38 +1101,33 @@ export const Stadium: React.FC<{mode: 'club' | 'rain' | 'final' | 'sad'; frame: 
 	}, []);
 	return (
 		<group>
-			<Sky color={dim ? '#05070c' : '#060812'} fog={[30, 90]} />
+			<Sky color={dim ? '#070a12' : '#0b1430'} fog={[40, 120]} />
 			<hemisphereLight args={[dim ? '#6a7a98' : '#c8d0ff', '#1a1410', dim ? 0.3 : 0.4]} />
 			<Shadowed pos={[6, 30, 12]} color={dim ? '#b8c8e8' : '#fff2dc'} intensity={dim ? 1.2 : 2.6} size={22} far={90} />
 			<directionalLight position={[0, 7, 22]} intensity={dim ? 0.45 : 0.9} color="#fff2e2" />
 			<directionalLight position={[-18, 8, -10]} intensity={1.4} color={mode === 'club' ? '#a3123a' : '#7cc3ee'} />
 			<directionalLight position={[18, 8, -10]} intensity={1.1} color={mode === 'club' ? '#2a5ad8' : mode === 'final' ? '#ffd27a' : '#6a8ab8'} />
 			{spot ? <spotLight position={[0, 18, 4]} angle={0.22} penumbra={0.5} intensity={700} distance={50} decay={2} color="#fff4dc" castShadow /> : null}
-			{/* Pitch with mowing stripes and lines */}
-			{Array.from({length: 14}, (_, i) => (
-				<mesh key={i} rotation={[-PI / 2, 0, 0]} position={[0, 0, -40 + i * 6]} receiveShadow>
-					<planeGeometry args={[120, 6]} />
+			{/* The background is the pitch itself: stripes, full markings, a goal, corner flags */}
+			{Array.from({length: 22}, (_, i) => (
+				<mesh key={i} rotation={[-PI / 2, 0, 0]} position={[0, 0, -86 + i * 6]} receiveShadow>
+					<planeGeometry args={[140, 6]} />
 					<meshStandardMaterial color={dim ? (i % 2 ? '#2f5a34' : '#355f3a') : i % 2 ? '#3f8a3e' : '#479644'} roughness={dim ? 0.3 : 0.85} metalness={dim ? 0.1 : 0} />
 				</mesh>
 			))}
-			<mesh rotation={[-PI / 2, 0, 0]} position={[0, 0.01, -2]}>
-				<ringGeometry args={[6.8, 7.05, 64]} />
-				<meshStandardMaterial color="#f4f4f0" />
-			</mesh>
-			<mesh rotation={[-PI / 2, 0, 0]} position={[0, 0.01, -2]}>
-				<planeGeometry args={[0.25, 60]} />
-				<meshStandardMaterial color="#f4f4f0" />
-			</mesh>
-			{/* Ad boards */}
-			{Array.from({length: 10}, (_, i) => (
-				<RBox key={i} size={[7.8, 1.4, 0.4]} pos={[-36 + i * 8, 0.7, -12]} color={['#1a2a6a', '#c8102e', '#f2c94c', '#2a8a4a', '#ffffff'][i % 5]} emissive={dim ? '#000000' : ['#0a1440', '#600010', '#806010', '#104020', '#606060'][i % 5]} />
+			<PitchMarkings />
+			<Goal z={-36} />
+			{[-30, 30].map((x) => (
+				<CornerFlag key={x} pos={[x, 0, -36]} />
 			))}
-			<Crowd colors={crowdCols} bounce={mode === 'final' || mode === 'club' ? 0.25 : 0} frame={frame} z0={-15} rows={9} cols={36} width={80} />
-			{/* Floodlight towers */}
-			{[-28, 28].map((x) => (
-				<group key={x} position={[x, 0, -30]}>
-					<RBox size={[1, 34, 1]} pos={[0, 17, 0]} color="#3a3a42" />
-					<RBox size={[6, 3, 0.6]} pos={[0, 34, 0.6]} color="#ffffff" emissive="#ffffff" />
+			{/* Floodlight towers far behind the goal line */}
+			{[-40, 40].map((x) => (
+				<group key={x} position={[x, 0, -52]}>
+					<RBox size={[1.2, 40, 1.2]} pos={[0, 20, 0]} color="#3a3a42" />
+					<RBox size={[8, 4, 0.8]} pos={[0, 40, 0.8]} color="#ffffff" emissive="#ffffff" />
+					{Array.from({length: 6}, (_, k) => (
+						<RBox key={k} size={[1.1, 1.1, 0.2]} pos={[-3 + (k % 3) * 3, 39 + Math.floor(k / 3) * 2, 1.25]} color="#fffbe8" emissive="#fff4c8" />
+					))}
 				</group>
 			))}
 			{mode === 'rain'
