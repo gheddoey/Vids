@@ -377,10 +377,10 @@ export const PubOffice: React.FC<{frame: number; fax: number}> = ({frame, fax}) 
 			))}
 		</group>
 		{/* desk */}
-		<RBox size={[8, 0.4, 3.0]} pos={[0, 2.5, 3.0]} color="#f4f0e8" rough={0.3} />
-		<RBox size={[7.6, 2.3, 0.2]} pos={[0, 1.15, 4.3]} color="#d8d0c0" />
+		<RBox size={[8, 0.3, 2.4]} pos={[0, 2.3, 2.6]} color="#f4f0e8" rough={0.3} />
+		<RBox size={[7.6, 1.6, 0.2]} pos={[0, 1.4, 3.7]} color="#d8d0c0" />
 		{/* fax machine spitting paper */}
-		<group position={[2.6, 2.7, 2.6]}>
+		<group position={[2.6, 2.45, 2.4]}>
 			<RBox size={[1.6, 0.6, 1.2]} pos={[0, 0.3, 0]} color="#e8e4d8" />
 			<RBox size={[0.6, 0.06, 0.4]} pos={[-0.3, 0.62, 0.2]} color="#2a2a2a" />
 			<RBox size={[1.1, 0.02, 0.4 + fax * 1.2]} pos={[0, 0.5, 0.6 + fax * 0.6]} rot={[-0.2, 0, 0]} color="#ffffff" />

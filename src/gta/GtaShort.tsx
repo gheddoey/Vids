@@ -91,7 +91,7 @@ const HookLow: React.FC<ShotProps> = ({f, d, bugF}) => {
 	const b = (f - (bugF as number)) / 18;
 	return (
 		<>
-			<Cam frame={f} dur={d} p0={[5.6, 0.8, 0.9]} p1={[4.4, 0.7, 0.7]} t0={[1.4, 0.3, 1.0]} t1={[1.2, 0.45, 0.9]} fov={44} shake={{at: bugF as number, amp: 0.06, len: 10}} />
+			<Cam frame={f} dur={d} p0={[5.8, 0.75, 0.15]} p1={[4.8, 0.7, 0.1]} t0={[1.4, 0.3, 0.7]} t1={[1.2, 0.45, 0.7]} fov={44} shake={{at: bugF as number, amp: 0.06, len: 10}} />
 			<DioRoomLights />
 			<Diorama cars={[{kind: 'player', x: 2.8, z: 2.1, rot: -2.2}, {kind: 'cop', x: 0.6, z: 0.2, rot: -PI / 2 + 0.5, siren: Math.floor(f / 3) % 2, dent: 0.5}]} />
 			{/* steam from the crumpled bonnet */}
@@ -503,7 +503,7 @@ const Publicist: React.FC<ShotProps> = ({f, d, imgs, snapF}) => {
 	const S = snapF as number;
 	const pb = poseAt(
 		[
-			{f: 0, rotY: 0.2, ...SIT(P.publicist, 1.65), lean: -0.35, legLX: -1.2, legRX: -1.3, armLX: -2.6, armLZ: -0.6, headZ: -0.15, face: 'smug'},
+			{f: 0, rotY: 0.15, ...SIT(P.publicist, 1.65), lean: -0.15, armLX: -2.9, armLZ: -0.25, armRX: -0.7, armRZ: 0.1, headZ: 0.12, face: 'smug'},
 			{f: S - 5, armRX: -2.0, armRZ: -0.6},
 			{f: S, armRX: -2.6, armRZ: -0.3, face: 'grin', ease: 'snap'},
 			{f: S + 10, armRX: -1.2},
@@ -513,7 +513,7 @@ const Publicist: React.FC<ShotProps> = ({f, d, imgs, snapF}) => {
 	const hl = handOf(pb, 'L', [-1, 0, -0.2], P.publicist.h);
 	return (
 		<>
-			<Cam frame={f} dur={d} p0={[3.4, 7.0, 17.5]} p1={[2.0, 6.6, 15.5]} t0={[-0.8, 4.0, 0]} t1={[-0.9, 4.2, 0]} fov={40} />
+			<Cam frame={f} dur={d} p0={[2.8, 6.6, 14]} p1={[1.6, 6.2, 12.4]} t0={[-0.9, 4.6, 0]} t1={[-0.9, 4.8, 0]} fov={38} />
 			<PubOffice frame={f} fax={ramp(f, S, S + 24)} />
 			<Who p={P.publicist} imgs={imgs} pose={pb} at={[-1, 0, -0.2]} />
 			{/* brick phone in the left hand */}

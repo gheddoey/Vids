@@ -112,7 +112,7 @@ export const Car: React.FC<{kind?: CarKind; color?: string; pos?: V3; rotY?: num
 					<group position={[-0.25, by + 1.12, 0]}>
 						<Glow size={[0.36, 0.18, 1.2]} pos={[0, 0, -0.32]} color="#ff2a2a" i={siren > 0.5 ? 6 : 0.5} />
 						<Glow size={[0.36, 0.18, 1.2]} pos={[0, 0, 0.32]} color="#2a5aff" i={siren > 0.5 ? 0.5 : 6} />
-						<pointLight position={[0, 0.4, siren > 0.5 ? -1 : 1]} color={siren > 0.5 ? '#ff2a2a' : '#2a5aff'} intensity={lights ? 14 : 0} distance={10} />
+						<pointLight position={[0, 0.4, siren > 0.5 ? -1 : 1]} color={siren > 0.5 ? '#ff2a2a' : '#2a5aff'} intensity={lights ? 14 * scale * scale : 0} distance={10 * scale} />
 					</group>
 				) : null}
 				{/* headlights / taillights */}
