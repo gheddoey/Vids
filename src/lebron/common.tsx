@@ -203,7 +203,7 @@ type Timing = {duration: number; lines: {text: string; s: number; e: number; wor
 const GOLD = new Set(['lebron', 'james', 'chosen', 'lionel', 'messi']);
 
 // One word on screen at a time, held until the next word starts (no flicker in pauses).
-export const CaptionsFor: React.FC<{timing: Timing; top?: number}> = ({timing, top = 1180}) => {
+export const CaptionsFor: React.FC<{timing: Timing; top?: number; gold?: Set<string>; hide?: [number, number][]}> = ({timing, top = 1180, gold: goldSet = GOLD, hide = []}) => {
 	const words = React.useMemo(() => {
 		const all = timing.lines.flatMap((l) => l.words.map((w) => ({...w})));
 		all.forEach((w, i) => (w.e = Math.max(w.e, (all[i + 1]?.s ?? w.e + 0.6) - 0.01)));
@@ -213,11 +213,11 @@ export const CaptionsFor: React.FC<{timing: Timing; top?: number}> = ({timing, t
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
 	const w = words.find((k) => t >= k.s && t < k.e);
-	if (!w) return null;
+	if (!w || hide.some(([a, b]) => t >= a && t < b)) return null;
 	const pop = spring({frame: frame - Math.round(w.s * fps), fps, config: {damping: 14, stiffness: 260, mass: 0.5}});
 	const word = w.w.replace(/["]/g, '');
 	const key = word.replace(/[.,?!]/g, '').toLowerCase();
-	const gold = GOLD.has(key);
+	const gold = goldSet.has(key);
 	return (
 		<AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-start', top}}>
 			<div
