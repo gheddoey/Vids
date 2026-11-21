@@ -872,6 +872,267 @@ def messi_set():
     plain('ts_leo_pj', '#8ec5ea', '#6aa6d0', pyjama, lambda t, s_, k, r: t.fill(r, '#1f3a6a', y0=0.9, y1=0.96) if k in ('front', 'out', 'back', 'in') else None)
 
 
+def gta_set():
+    """Wardrobe for the GTA origins short: all new designs."""
+    def sleeve_cuff(c):
+        return lambda t, s, k, r: t.fill(r, c, y0=0.88, y1=1) if k in ('front', 'out', 'back', 'in') else None
+
+    # David Jones: navy 80s jumper, cream zig-zag chest band, shirt collar poking out
+    def jumper(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            t.fill(r, '#e8dcc0', y0=0.34, y1=0.5)
+            pts = [(i / 8, 0.36 if i % 2 == 0 else 0.48) for i in range(9)]
+            t.line(r, pts, '#b8462e', 2.2)
+            t.fill(r, '#1e2a4a', y0=0.9, y1=1)
+            for xx in [i / 16 for i in range(17)]:
+                t.line(r, [(xx, 0.9), (xx, 1)], '#16203a', 0.5)
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.5, 0.1), (0.64, 0), (0.6, 0.06), (0.5, 0.14), (0.4, 0.06)], '#1a2442')
+            t.poly(r, [(0.38, 0.0), (0.5, 0.1), (0.45, 0.16), (0.33, 0.04)], '#f4f2ea')
+            t.poly(r, [(0.62, 0.0), (0.5, 0.1), (0.55, 0.16), (0.67, 0.04)], '#f4f2ea')
+    plain('ts_g_jumper', '#2a3a64', '#1e2a4a', jumper, sleeve_cuff('#1e2a4a'))
+
+    # Mike Dailly: faded red band tee over grey long sleeves
+    def band(t, k, r):
+        if k == 'front':
+            t.dot(r, 0.5, -0.02, 15, '#00000000')
+            t.d.chord(t.box(r, 0.34, -0.12, 0.66, 0.12), 0, 180, fill=(0, 0, 0, 0))
+            t.d.arc(t.box(r, 0.34, -0.12, 0.66, 0.12), 0, 180, fill=rgb('#7a2626'), width=2 * S)
+            text(t, r, 'DUNDEE', 0.5, 0.42, 20, '#f2e6d0')
+            text(t, r, 'DRIVE', 0.5, 0.6, 22, '#f2c14a')
+            t.line(r, [(0.2, 0.72), (0.8, 0.72)], '#f2e6d0', 1.2)
+            for xx in (0.3, 0.45, 0.6, 0.75):
+                t.dot(r, xx, 0.82, 2.2, '#f2e6d0')
+    def grey_long(t, side, k, r):
+        if k in ('front', 'out', 'back', 'in'):
+            t.fill(r, '#9a9ea6', y0=0.45, y1=1)
+            t.fill(r, '#7e828a', y0=0.9, y1=1)
+            t.line(r, [(0, 0.45), (1, 0.45)], '#7a2626', 1.0)
+    plain('ts_g_band', '#b3403c', '#8a2e2c', band, grey_long)
+
+    # Tester Ali: orange/green rugby stripes, white collar
+    def rugby(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            for j in range(0, 8, 2):
+                t.fill(r, '#2e8a4a', y0=j / 8, y1=(j + 1) / 8)
+        if k == 'front':
+            t.poly(r, [(0.3, 0), (0.5, 0.12), (0.7, 0), (0.64, 0.14), (0.5, 0.18), (0.36, 0.14)], '#f4f4ee')
+            t.fill(r, '#f4f4ee', x0=0.46, x1=0.54, y0=0.12, y1=0.34)
+            for yy in (0.18, 0.28):
+                t.dot(r, 0.5, yy, 1.4, '#c8c8c0')
+    def rugby_arm(t, side, k, r):
+        if k in ('front', 'out', 'back', 'in'):
+            for j in range(0, 8, 2):
+                t.fill(r, '#2e8a4a', y0=j / 8, y1=(j + 1) / 8)
+            t.fill(r, '#f4f4ee', y0=0.9, y1=1)
+    plain('ts_g_rugby', '#f08a2a', '#c46a18', rugby, rugby_arm)
+
+    # Tester Fi: oversized denim jacket with patches over a yellow tee
+    def denim(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            for xx in [i / 10 for i in range(11)]:
+                t.line(r, [(xx, 0), (xx + 0.05, 1)], '#4f6f98', 0.4)
+            t.fill(r, '#3c5a80', y0=0.88, y1=1)
+        if k == 'front':
+            t.poly(r, [(0.38, 0), (0.62, 0), (0.58, 1), (0.42, 1)], '#f2d23a')
+            t.poly(r, [(0.38, 0), (0.28, 0), (0.36, 0.34), (0.42, 0.5)], '#4a6a92')
+            t.poly(r, [(0.62, 0), (0.72, 0), (0.64, 0.34), (0.58, 0.5)], '#4a6a92')
+            t.line(r, [(0.1, 0.3), (0.34, 0.3), (0.34, 0.46), (0.1, 0.46), (0.1, 0.3)], '#e8c060', 0.7)
+            t.line(r, [(0.66, 0.3), (0.9, 0.3), (0.9, 0.46), (0.66, 0.46), (0.66, 0.3)], '#e8c060', 0.7)
+            t.dot(r, 0.2, 0.66, 5, '#e85a8a', outline='#ffffff')
+            t.poly(r, [(0.76, 0.6), (0.8, 0.7), (0.9, 0.7), (0.82, 0.76), (0.85, 0.86), (0.76, 0.8), (0.67, 0.86), (0.7, 0.76), (0.62, 0.7), (0.72, 0.7)], '#f2d23a')
+        if k == 'back':
+            t.dot(r, 0.5, 0.45, 18, '#d84a3a', outline='#f4f4ee')
+            text(t, r, '89', 0.5, 0.45, 18, '#f4f4ee')
+    plain('ts_g_denim', '#5a7ca8', '#3c5a80', denim, lambda t, s, k, r: (t.fill(r, '#3c5a80', y0=0.86, y1=1) if k in ('front', 'out', 'back', 'in') else None))
+
+    # Tester Rab: open green check flannel over a white tee
+    def flannel(t, k, r):
+        x, y, w, h = r
+        for i in range(0, int(w), 14):
+            t.fill(r, '#1f4a2c', x0=i / w, x1=min(1, (i + 5) / w))
+        for j in range(0, int(h), 14):
+            t.fill(r, '#1f4a2c', y0=j / h, y1=min(1, (j + 5) / h))
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.62, 1), (0.38, 1)], '#f6f6f2')
+            t.line(r, [(0.36, 0), (0.38, 1)], '#14301e', 1.0)
+            t.line(r, [(0.64, 0), (0.62, 1)], '#14301e', 1.0)
+            t.d.chord(t.box(r, 0.4, -0.1, 0.6, 0.1), 0, 180, fill=(0, 0, 0, 0))
+    def flannel_arm(t, side, k, r):
+        x, y, w, h = r
+        if k == 'bottom':
+            return
+        for i in range(0, int(w), 14):
+            t.fill(r, '#1f4a2c', x0=i / w, x1=min(1, (i + 5) / w))
+        for j in range(0, int(h), 14):
+            t.fill(r, '#1f4a2c', y0=j / h, y1=min(1, (j + 5) / h))
+        if k != 'top':
+            t.fill(r, '#2e6a40', y0=0.5, y1=0.58)
+            t.d.rectangle(t.box(r, 0, 0.58, 1, 1), fill=(0, 0, 0, 0))
+    plain('ts_g_flannel', '#3f8a52', '#2e6a40', flannel, flannel_arm)
+
+    # Suits
+    def suit(name, body, dark, shirt, tie=None, chain=None, dbl=False, vest=None, open_collar=False):
+        def d(t, k, r):
+            if k == 'front':
+                t.poly(r, [(0.36, 0), (0.64, 0), (0.56, 0.5), (0.44, 0.5)], shirt)
+                if tie:
+                    t.poly(r, [(0.47, 0.04), (0.53, 0.04), (0.56, 0.46), (0.5, 0.54), (0.44, 0.46)], tie)
+                    t.poly(r, [(0.46, 0.02), (0.54, 0.02), (0.53, 0.09), (0.47, 0.09)], '#%02x%02x%02x' % shade(tie, -0.1)[:3])
+                if open_collar:
+                    t.poly(r, [(0.42, 0), (0.5, 0.18), (0.58, 0)], '#c88a64')
+                if vest:
+                    t.poly(r, [(0.38, 0.18), (0.62, 0.18), (0.6, 0.95), (0.4, 0.95)], vest)
+                    for yy in (0.4, 0.55, 0.7):
+                        t.dot(r, 0.5, yy, 1.4, '#c8b070')
+                if chain:
+                    t.line(r, [(0.42, 0.62), (0.5, 0.7), (0.6, 0.62)], chain, 0.9)
+                t.poly(r, [(0.36, 0), (0.22, 0), (0.32, 0.36), (0.44, 0.5)], dark)
+                t.poly(r, [(0.64, 0), (0.78, 0), (0.68, 0.36), (0.56, 0.5)], dark)
+                if dbl:
+                    for xx in (0.38, 0.62):
+                        for yy in (0.62, 0.8):
+                            t.dot(r, xx, yy, 1.6, '#1a1a1a')
+                else:
+                    t.line(r, [(0.5, 0.5), (0.5, 1)], dark, 0.7)
+                    t.dot(r, 0.5, 0.66, 1.4, '#1a1a1a')
+                t.line(r, [(0.12, 0.62), (0.3, 0.62)], dark, 0.8)
+                t.line(r, [(0.7, 0.62), (0.88, 0.62)], dark, 0.8)
+                t.fill(r, '#e8e4d8', x0=0.72, x1=0.84, y0=0.3, y1=0.34)
+        plain(name, body, dark, d, lambda t, s, k, r: (t.fill(r, shirt, y0=0.92, y1=1) if k in ('front', 'out', 'back', 'in') else None))
+    suit('ts_g_exec', '#6a6e76', '#4a4e56', '#f2f2ee', tie='#c81e2a', dbl=True)
+    suit('ts_g_cream', '#efe4cc', '#cbbb98', '#f8f4ea', chain='#e8b830', open_collar=True)
+    suit('ts_g_pol', '#2a2a32', '#1a1a20', '#f2f2ee', tie='#5a2a6a', vest='#3a3442', chain='#d8b048')
+
+    # Mum: floral housecoat
+    def floral(t, k, r):
+        import random
+        rr = random.Random(len(k) * 13)
+        for _ in range(14):
+            cx, cy = rr.uniform(0.05, 0.95), rr.uniform(0.05, 0.95)
+            for a in range(5):
+                import math
+                t.dot(r, cx + 0.05 * math.cos(a * 1.257), cy + 0.03 * math.sin(a * 1.257), 2.4, '#f08aa8')
+            t.dot(r, cx, cy, 1.6, '#f2d23a')
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.5, 0.22)], '#e6b996')
+            t.line(r, [(0.36, 0), (0.5, 0.22), (0.62, 1)], '#5a8ab0', 1.2)
+            t.fill(r, '#5a8ab0', y0=0.6, y1=0.66)
+    plain('ts_g_housecoat', '#9ccbe0', '#7aa8c0', floral, sleeve_cuff('#5a8ab0'))
+
+    # Grandad: tweed jacket with elbow patches, knitted tie
+    def tweed(t, k, r):
+        import random
+        rr = random.Random(len(k) * 7)
+        for _ in range(160):
+            t.dot(r, rr.random(), rr.random(), 0.5, rr.choice(['#6a5a40', '#a8946c', '#5a4a34']))
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.56, 0.5), (0.44, 0.5)], '#e8e0c8')
+            t.poly(r, [(0.47, 0.04), (0.53, 0.04), (0.54, 0.46), (0.46, 0.46)], '#7a2a2a')
+            t.poly(r, [(0.36, 0), (0.24, 0), (0.32, 0.36), (0.44, 0.5)], '#6a5a40')
+            t.poly(r, [(0.64, 0), (0.76, 0), (0.68, 0.36), (0.56, 0.5)], '#6a5a40')
+    def patch(t, side, k, r):
+        if k == 'back':
+            t.dot(r, 0.5, 0.55, 9, '#5a3a22')
+    plain('ts_g_tweed', '#8a7a58', '#6a5a40', tweed, patch)
+
+    # Sam: black bomber, white tee, orange lining at the zip
+    def bomber(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            t.fill(r, '#1a1a1c', y0=0.86, y1=1)
+            for xx in [i / 14 for i in range(15)]:
+                t.line(r, [(xx, 0.86), (xx, 1)], '#2a2a2e', 0.4)
+        if k == 'front':
+            t.poly(r, [(0.4, 0), (0.6, 0), (0.56, 0.86), (0.44, 0.86)], '#f4f4f0')
+            t.line(r, [(0.4, 0), (0.44, 0.86)], '#e8742a', 1.2)
+            t.line(r, [(0.6, 0), (0.56, 0.86)], '#e8742a', 1.2)
+            t.fill(r, '#1a1a1c', y0=0, y1=0.06)
+            t.line(r, [(0.68, 0.3), (0.82, 0.5)], '#3a3a3e', 1.0)
+    plain('ts_g_bomber', '#2c2c30', '#1c1c20', bomber, sleeve_cuff('#1a1a1c'))
+
+    # Dan: brown corduroy blazer over a navy hoodie
+    def cord(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            for xx in [i / 24 for i in range(25)]:
+                t.line(r, [(xx, 0), (xx, 1)], '#6a4a2c', 0.4)
+        if k == 'front':
+            t.poly(r, [(0.34, 0), (0.66, 0), (0.58, 1), (0.42, 1)], '#24325a')
+            t.line(r, [(0.46, 0.06), (0.46, 0.3)], '#e8e8e8', 0.7)
+            t.line(r, [(0.54, 0.06), (0.54, 0.3)], '#e8e8e8', 0.7)
+            t.poly(r, [(0.34, 0), (0.24, 0), (0.32, 0.4), (0.42, 0.6)], '#5a3c22')
+            t.poly(r, [(0.66, 0), (0.76, 0), (0.68, 0.4), (0.58, 0.6)], '#5a3c22')
+        if k == 'back':
+            t.poly(r, [(0.2, 0), (0.8, 0), (0.7, 0.25), (0.3, 0.25)], '#24325a')
+    plain('ts_g_cord', '#8a6440', '#6a4a2c', cord, sleeve_cuff('#24325a'))
+
+    # Player stand-in: plain grey hoodie, kangaroo pocket, drawstrings
+    def hood(t, k, r):
+        if k == 'front':
+            t.line(r, [(0.44, 0.02), (0.43, 0.32)], '#e8e8e8', 0.8)
+            t.line(r, [(0.56, 0.02), (0.57, 0.32)], '#e8e8e8', 0.8)
+            t.poly(r, [(0.22, 0.58), (0.78, 0.58), (0.86, 0.88), (0.14, 0.88)], '#727780')
+            t.line(r, [(0.22, 0.58), (0.14, 0.88)], '#5a5e66', 0.8)
+            t.line(r, [(0.78, 0.58), (0.86, 0.88)], '#5a5e66', 0.8)
+        if k == 'back':
+            t.poly(r, [(0.18, 0), (0.82, 0), (0.72, 0.32), (0.28, 0.32)], '#727780')
+        if k in ('front', 'back', 'left', 'right'):
+            t.fill(r, '#5a5e66', y0=0.92, y1=1)
+    plain('ts_g_hoodie', '#858a93', '#6a6e76', hood, sleeve_cuff('#5a5e66'))
+
+    # Shop clerk: teal polo, store name, lanyard
+    def polo(t, k, r):
+        if k == 'front':
+            t.poly(r, [(0.32, 0), (0.5, 0.1), (0.68, 0), (0.62, 0.12), (0.5, 0.16), (0.38, 0.12)], '#f2f2ee')
+            t.fill(r, '#1c7a76', x0=0.46, x1=0.54, y0=0.1, y1=0.32)
+            text(t, r, 'PIXEL PIT', 0.68, 0.36, 11, '#f2d23a')
+            t.line(r, [(0.36, 0.02), (0.44, 0.5), (0.5, 0.58), (0.56, 0.5), (0.64, 0.02)], '#d8402a', 1.0)
+            t.fill(r, '#f4f4ee', x0=0.42, x1=0.58, y0=0.58, y1=0.76)
+            t.fill(r, '#3a3a3a', x0=0.45, x1=0.55, y0=0.61, y1=0.67)
+    plain('ts_g_polo', '#23a19c', '#1c7a76', polo, long=False)
+
+    # Queue fans
+    def car_tee(t, k, r):
+        if k == 'front':
+            t.fill(r, '#1a1a1a', x0=0.2, x1=0.8, y0=0.4, y1=0.58)
+            t.fill(r, '#1a1a1a', x0=0.32, x1=0.68, y0=0.3, y1=0.42)
+            t.fill(r, '#8ad0f0', x0=0.36, x1=0.64, y0=0.32, y1=0.4)
+            t.dot(r, 0.32, 0.6, 5, '#333333', outline='#ffffff')
+            t.dot(r, 0.68, 0.6, 5, '#333333', outline='#ffffff')
+            text(t, r, 'VROOM', 0.5, 0.78, 14, '#1a1a1a')
+    plain('ts_g_fan1', '#f2c43a', '#c89c20', car_tee, long=False)
+    def star_tee(t, k, r):
+        if k == 'front':
+            import math
+            pts = []
+            for i in range(10):
+                rad = 0.22 if i % 2 == 0 else 0.09
+                a = -math.pi / 2 + i * math.pi / 5
+                pts.append((0.5 + rad * math.cos(a), 0.48 + rad * 1.0 * math.sin(a)))
+            t.poly(r, pts, '#f2e6ff')
+    plain('ts_g_fan2', '#6a3ab0', '#4a2a80', star_tee, long=False)
+    def stripe_kid(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            for j in range(1, 8, 2):
+                t.fill(r, '#f4f4ee', y0=j / 8, y1=(j + 0.5) / 8)
+    plain('ts_g_kid', '#e84a4a', '#b83030', stripe_kid, long=False)
+    def pj(t, k, r):
+        import random
+        rr = random.Random(5 + len(k))
+        for _ in range(16):
+            t.dot(r, rr.random(), rr.random(), 2.2, '#f4f4ee')
+        if k == 'front':
+            t.fill(r, '#1a4a8a', x0=0.47, x1=0.53, y0=0.0, y1=1)
+            for yy in (0.2, 0.4, 0.6, 0.8):
+                t.dot(r, 0.5, yy, 1.4, '#f4f4ee')
+    plain('ts_g_onesie', '#2a6ad0', '#1a4a8a', pj)
+    check_shirt('ts_g_dadcheck', '#a8402a', '#7a2a1a', '#e8c8a0', long=False)
+
+
+if __name__ == '__main__' and 'gta' in __import__('sys').argv:
+    gta_set()
+    raise SystemExit
+
+
 if __name__ == '__main__' and 'messi' in __import__('sys').argv:
     messi_set()
     raise SystemExit
