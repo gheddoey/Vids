@@ -203,8 +203,7 @@ Quiet whoosh on every cut. VO at −16 LUFS, bed ducked under VO.
 - Rockstar Games founded in New York in 1998 by Sam & Dan Houser and others. ✔ ("start" is a simplification)
 - GTA III (2001) took the series to 3D. ✔
 - GTA V (Sept 2013): $1B in three days, Guinness "fastest entertainment property to gross $1 billion". ✔
-- GTA VI: scheduled for **19 Nov 2026** (PS5 / Xbox Series). Confirm it actually launched before
-  posting; otherwise change the line to "is finally almost here."
+- GTA VI: released **19 Nov 2026** (PS5 / Xbox Series). ✔ (confirmed by user)
 
 ## Script (no break tags)
 
