@@ -39,6 +39,8 @@ const lerpEra = (t: number, c: THREE.Color) => {
 	return c.set(ERA[i]).lerp(new THREE.Color(ERA[i + 1]), x - i);
 };
 const paint = new THREE.MeshStandardMaterial({vertexColors: true, metalness: 0.1, roughness: 0.3, envMapIntensity: 0.25, flatShading: true});
+const white = new THREE.MeshStandardMaterial({color: '#f4f4ef', metalness: 0.1, roughness: 0.3, envMapIntensity: 0.25, flatShading: true});
+const money = new THREE.MeshStandardMaterial({color: '#2fb35a', metalness: 0.15, roughness: 0.28, envMapIntensity: 0.3, flatShading: true});
 const gold = new THREE.MeshStandardMaterial({color: '#ffc21a', metalness: 0.85, roughness: 0.25, flatShading: true});
 
 export const Word: React.FC<{text: string; size: number; y: number; face?: THREE.Material; tilt?: number; t?: [number, number]}> = ({text, size, y, face, tilt = 0, t}) => {
@@ -120,9 +122,9 @@ export const LogoBlock: React.FC = () => (
 		<Gravel />
 		<RBox size={[9.9, 0.35, 0.6]} pos={[0, 4.35, -0.65]} color="#2a2b30" />
 		<RBox size={[9.9, 0.35, 0.6]} pos={[0, -4.15, -0.65]} color="#2a2b30" />
-		<Word text="GRAND" size={1.85} y={2.6} t={[0, 0.36]} />
-		<Word text="THEFT" size={1.85} y={0.15} t={[0.36, 0.68]} />
-		<Word text="AUTO" size={2.35} y={-2.55} t={[0.68, 1]} />
+		<Word text="GRAND" size={1.85} y={2.6} face={white} />
+		<Word text="THEFT" size={1.85} y={0.15} face={white} />
+		<Word text="AUTO" size={2.35} y={-2.55} face={money} />
 		<Stripe y={-4.2 + 0.05} w={8.6} />
 	</group>
 );
