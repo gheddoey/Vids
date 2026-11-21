@@ -4,7 +4,7 @@ import {RBox, seeded, shade} from './parts';
 // All hair is built in head-local space. The head is a 1.2 cube centred on 0,
 // so the top of the scalp is y = 0.6 and the face points toward +z.
 
-export type HairType = 'swept' | 'spiky' | 'bob' | 'pompadour' | 'bun' | 'mop' | 'flattop' | 'braids' | 'short';
+export type HairType = 'swept' | 'spiky' | 'bob' | 'pompadour' | 'bun' | 'mop' | 'flattop' | 'braids' | 'short' | 'curly' | 'long' | 'receding' | 'wavy';
 
 const Shell: React.FC<{color: string; height?: number}> = ({color, height = 0.6}) => (
 	<>
@@ -191,6 +191,71 @@ const Short: React.FC<{color: string}> = ({color}) => (
 	</group>
 );
 
+// Tight curls: a shell covered in small faceted bumps.
+const Curly: React.FC<{color: string}> = ({color}) => {
+	const rand = seeded(19);
+	const bumps = Array.from({length: 34}, (_, i) => {
+		const a = rand() * Math.PI * 2;
+		const up = rand();
+		return {pos: [Math.sin(a) * (0.5 + up * 0.18), 0.28 + up * 0.55 + (Math.cos(a) < -0.3 ? -0.5 * rand() : 0), Math.cos(a) * (0.5 + up * 0.18) - 0.05] as [number, number, number], c: i % 3 ? color : shade(color, 0.06)};
+	});
+	return (
+		<group>
+			<Shell color={color} />
+			{bumps.map((b, i) => (
+				<mesh key={i} position={b.pos} castShadow>
+					<icosahedronGeometry args={[0.2, 0]} />
+					<meshStandardMaterial color={b.c} roughness={0.9} flatShading />
+				</mesh>
+			))}
+			<RBox size={[0.24, 0.9, 0.9]} pos={[-0.66, -0.1, -0.05]} color={color} />
+			<RBox size={[0.24, 0.9, 0.9]} pos={[0.66, -0.1, -0.05]} color={color} />
+		</group>
+	);
+};
+
+// Shoulder-length hair parted in the middle, tucked behind the ears.
+const Long: React.FC<{color: string}> = ({color}) => {
+	const dark = shade(color, -0.06);
+	return (
+		<group>
+			<Shell color={color} />
+			<RBox size={[0.04, 0.03, 1.0]} pos={[0, 0.725, 0.05]} color={dark} />
+			<RBox size={[0.6, 0.2, 0.16]} pos={[-0.34, 0.5, 0.6]} rot={[0, 0, -0.18]} color={color} />
+			<RBox size={[0.6, 0.2, 0.16]} pos={[0.34, 0.5, 0.6]} rot={[0, 0, 0.18]} color={dark} />
+			<RBox size={[0.22, 1.25, 0.6]} pos={[-0.66, -0.15, -0.15]} color={color} />
+			<RBox size={[0.22, 1.25, 0.6]} pos={[0.66, -0.15, -0.15]} color={dark} />
+			<RBox size={[1.32, 1.4, 0.3]} pos={[0, -0.2, -0.58]} color={dark} />
+		</group>
+	);
+};
+
+// Short grey sides with a high, thinning hairline.
+const Receding: React.FC<{color: string}> = ({color}) => (
+	<group>
+		<RBox size={[1.32, 0.3, 0.6]} pos={[0, 0.56, -0.38]} color={color} />
+		<RBox size={[1.3, 0.75, 0.24]} pos={[0, 0.12, -0.6]} color={color} />
+		<RBox size={[0.18, 0.62, 0.95]} pos={[-0.64, 0.12, -0.12]} color={color} />
+		<RBox size={[0.18, 0.62, 0.95]} pos={[0.64, 0.12, -0.12]} color={color} />
+	</group>
+);
+
+// Soft wavy fringe falling forward (young Leo).
+const Wavy: React.FC<{color: string}> = ({color}) => {
+	const light = shade(color, 0.06);
+	return (
+		<group>
+			<Shell color={color} />
+			{[-0.45, -0.15, 0.15, 0.45].map((x, i) => (
+				<RBox key={x} size={[0.34, 0.3, 0.2]} pos={[x, 0.48 - (i % 2) * 0.04, 0.6]} rot={[0.15, 0, (i - 1.5) * 0.12]} color={i % 2 ? light : color} />
+			))}
+			<RBox size={[0.2, 0.55, 0.6]} pos={[-0.66, 0.15, 0.1]} color={color} />
+			<RBox size={[0.2, 0.55, 0.6]} pos={[0.66, 0.15, 0.1]} color={color} />
+			<RBox size={[1.0, 0.25, 0.25]} pos={[0, -0.35, -0.62]} rot={[0.3, 0, 0]} color={light} />
+		</group>
+	);
+};
+
 export const Hair: React.FC<{type: HairType; color: string; accent?: string}> = ({type, color, accent = '#e04a7a'}) => {
 	switch (type) {
 		case 'swept':
@@ -211,5 +276,13 @@ export const Hair: React.FC<{type: HairType; color: string; accent?: string}> = 
 			return <Braids color={color} />;
 		case 'short':
 			return <Short color={color} />;
+		case 'curly':
+			return <Curly color={color} />;
+		case 'long':
+			return <Long color={color} />;
+		case 'receding':
+			return <Receding color={color} />;
+		case 'wavy':
+			return <Wavy color={color} />;
 	}
 };

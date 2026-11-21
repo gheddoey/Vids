@@ -1,11 +1,15 @@
-"""Tighten the LeBron voiceover (remove dead air) and write caption/scene timings.
+"""Polish a voiceover, remove dead air, and write caption/scene timings.
 
-- Every pause longer than GAP seconds is shortened to GAP (cut from its middle),
-  leading/trailing silence is trimmed, joins get a 12 ms crossfade.
-- Line timings (measured with pocketsphinx on the original take) are remapped onto
-  the tightened audio, and each line's words are spread across it by length.
+Usage: python3 tools/prep_vo.py <voiceover.mp3> <script.json> <name>
 
-Run: python3 tools/prep_vo.py <voiceover.mp3>
+script.json holds the script lines with their (start, end) in the original take
+(measured with pocketsphinx), optional exact word anchors, and optional pauses to
+keep longer (by line index) for dramatic beats.
+
+- Voice polish: rumble cut, a little presence, gentle compression, -16 LUFS.
+- Pauses longer than GAP are shortened to GAP (cut from their middle); the head and
+  tail are trimmed; joins get a 12 ms crossfade.
+- Output: public/vo/<name>.wav and src/<name>/timing.json.
 """
 
 import json
@@ -22,58 +26,50 @@ SR = 44100
 GAP = 0.22
 HEAD = 0.04
 TAIL = 0.35
-
-# Pauses found with: ffmpeg -af silencedetect=noise=-38dB:d=0.18
-SILENCES = [
-    (1.315, 1.515), (3.794, 4.204), (6.053, 6.429), (8.244, 8.652), (11.443, 11.873),
-    (13.893, 14.218), (17.165, 17.652), (20.605, 20.988), (22.017, 22.479), (23.034, 23.373),
-    (25.405, 25.704), (29.752, 30.108), (30.939, 31.279), (35.230, 35.556), (37.742, 38.106),
-    (39.583, 39.933), (41.833, 42.047),
-]
-SPEECH_START, SPEECH_END = 0.10, 43.31
-
-# Script lines with their (start, end) in the original take, from the word timings.
-LINES = [
-    ('This kid missed more than eighty days of school in one year.', 0.10, 3.81),
-    ('His mom was sixteen when she had him.', 4.18, 6.15),
-    ('No dad.', 6.40, 7.09),
-    ('No stable home.', 7.23, 8.25),
-    ('They kept moving, and nobody expected anything from him.', 8.64, 11.47),
-    ('Then a youth football coach took him in.', 11.84, 13.90),
-    ('Gave him a room, a routine, and a reason to show up.', 14.21, 17.27),
-    ('At sixteen, he was on the cover of Sports Illustrated.', 17.61, 20.61),
-    ('"The Chosen One."', 20.95, 22.04),
-    ('Eighteen.', 22.46, 23.04),
-    ('First pick in the NBA Draft.', 23.33, 25.44),
-    ('Down three games to one in the Finals, against a seventy-three-win team.', 25.68, 29.76),
-    ('He won.', 30.09, 30.90),
-    ('Twenty years later, he became the leading scorer in NBA history.', 31.26, 35.29),
-    ('Then he played alongside his own son.', 35.49, 37.77),
-    ('That kid who missed all that school?', 38.05, 39.65),
-    ('His name is LeBron James.', 39.90, 41.84),
-    ("And he's still not done.", 42.01, 43.31),
-]
+POLISH = 'highpass=f=80,equalizer=f=220:t=q:w=1.2:g=-1.5,equalizer=f=3200:t=q:w=1.0:g=2,acompressor=threshold=-20dB:ratio=2.5:attack=8:release=120:makeup=2,loudnorm=I=-16:TP=-1.5:LRA=9'
 
 
-def load(path):
-    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-f', 's16le', '-'], capture_output=True, check=True).stdout
+def load(path, filt=None):
+    cmd = ['ffmpeg', '-v', 'error', '-i', path]
+    if filt:
+        cmd += ['-af', filt]
+    cmd += ['-ac', '1', '-ar', str(SR), '-f', 's16le', '-']
+    raw = subprocess.run(cmd, capture_output=True, check=True).stdout
     return np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768
 
 
-def main(src):
-    x = load(src)
-    # Intervals of the original to keep.
-    keep, cur = [], max(0.0, SPEECH_START - HEAD)
-    for s, e in SILENCES:
-        d = e - s
-        if d > GAP:
-            cut0 = s + GAP / 2
-            cut1 = e - GAP / 2
-            keep.append((cur, cut0))
-            cur = cut1
-    keep.append((cur, min(len(x) / SR, SPEECH_END + TAIL)))
+def silences(path):
+    out = subprocess.run(['ffmpeg', '-i', path, '-af', 'silencedetect=noise=-38dB:d=0.18', '-f', 'null', '-'], capture_output=True, text=True).stderr
+    st = [float(x) for x in re.findall(r'silence_start: ([\d.]+)', out)]
+    en = [float(x) for x in re.findall(r'silence_end: ([\d.]+)', out)]
+    return list(zip(st, en))
 
-    # Stitch with short crossfades.
+
+def main(src, script_path, name):
+    script = json.load(open(script_path))
+    lines = script['lines']
+    keep_before = {int(k): v for k, v in script.get('keepGapBefore', {}).items()}
+    base_gap = script.get('gap', GAP)
+    x = load(src, POLISH)
+    sil = silences(src)
+    speech_start, speech_end = lines[0]['s'], lines[-1]['e']
+
+    def gap_for(s, e):
+        for i, l in enumerate(lines):
+            if i in keep_before and s < l['s'] <= e + 0.05:
+                return keep_before[i]
+        return base_gap
+
+    keep, cur = [], max(0.0, speech_start - HEAD)
+    for s, e in sil:
+        if e <= speech_start or s >= speech_end:
+            continue
+        g = gap_for(s, e)
+        if e - s > g:
+            keep.append((cur, s + g / 2))
+            cur = e - g / 2
+    keep.append((cur, min(len(x) / SR, speech_end + TAIL)))
+
     xf = int(SR * 0.012)
     out = np.zeros(0, dtype=np.float32)
     for a, b in keep:
@@ -87,13 +83,12 @@ def main(src):
     out[-fade:] *= np.linspace(1, 0, fade)
 
     os.makedirs(os.path.join(ROOT, 'public', 'vo'), exist_ok=True)
-    with wave.open(os.path.join(ROOT, 'public', 'vo', 'lebron.wav'), 'wb') as w:
+    with wave.open(os.path.join(ROOT, 'public', 'vo', f'{name}.wav'), 'wb') as w:
         w.setnchannels(1)
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes((np.clip(out, -1, 1) * 32767).astype(np.int16).tobytes())
 
-    # Map an original time onto the tightened timeline.
     def remap(t):
         acc = 0.0
         for i, (a, b) in enumerate(keep):
@@ -102,10 +97,11 @@ def main(src):
             acc += b - a
         return acc - (xf / SR) * (len(keep) - 1)
 
-    lines = []
-    for text, s, e in LINES:
-        ns, ne = remap(s), remap(e)
-        words = re.findall(r"[\w'\-]+[.,?!\"]*", text.replace('"', ''))
+    anchors = script.get('anchors', {})
+    res = []
+    for l in lines:
+        ns, ne = remap(l['s']), remap(l['e'])
+        words = re.findall(r"[\w'\-]+[.,?!\"]*", l['text'].replace('"', ''))
         weights = [len(w.strip('.,?!')) + 2 for w in words]
         tot = sum(weights)
         t, ws = ns, []
@@ -113,16 +109,20 @@ def main(src):
             d = (ne - ns) * k / tot
             ws.append({'w': w, 's': round(t, 3), 'e': round(t + d, 3)})
             t += d
-        lines.append({'text': text, 's': round(ns, 3), 'e': round(ne, 3), 'words': ws})
+        # Snap words that have measured times.
+        for wd in ws:
+            if wd['w'] in anchors and l['s'] - 0.05 <= anchors[wd['w']] <= l['e'] + 0.05:
+                wd['s'] = round(remap(anchors[wd['w']]), 3)
+        res.append({'text': l['text'], 's': round(ns, 3), 'e': round(ne, 3), 'words': ws})
 
-    os.makedirs(os.path.join(ROOT, 'src', 'lebron'), exist_ok=True)
     total = len(out) / SR
-    with open(os.path.join(ROOT, 'src', 'lebron', 'timing.json'), 'w') as f:
-        json.dump({'duration': round(total, 3), 'lines': lines}, f, indent=1)
+    os.makedirs(os.path.join(ROOT, 'src', name), exist_ok=True)
+    with open(os.path.join(ROOT, 'src', name, 'timing.json'), 'w') as f:
+        json.dump({'duration': round(total, 3), 'lines': res}, f, indent=1)
     print(f'original {len(x) / SR:.2f}s -> tightened {total:.2f}s')
-    for l in lines:
-        print(f"{l['s']:6.2f}-{l['e']:6.2f}  {l['text']}")
+    for i, l in enumerate(res):
+        print(f"{i:2d} {l['s']:6.2f}-{l['e']:6.2f}  {l['text']}")
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

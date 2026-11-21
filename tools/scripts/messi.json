@@ -1,0 +1,135 @@
+{
+ "lines": [
+  {
+   "text": "Doctors told this kid's parents he might never grow.",
+   "s": 0.1,
+   "e": 3.05
+  },
+  {
+   "text": "He was eleven, and smaller than every boy on the field.",
+   "s": 3.66,
+   "e": 6.66
+  },
+  {
+   "text": "His body wasn't making enough growth hormone.",
+   "s": 7.15,
+   "e": 9.16
+  },
+  {
+   "text": "The treatment cost almost a thousand dollars a month.",
+   "s": 9.68,
+   "e": 12.32
+  },
+  {
+   "text": "His dad worked in a steel factory.",
+   "s": 12.84,
+   "e": 14.44
+  },
+  {
+   "text": "They couldn't afford it.",
+   "s": 14.7,
+   "e": 15.52
+  },
+  {
+   "text": "So every night, this kid pushed a needle into his own legs.",
+   "s": 16.04,
+   "e": 19.75
+  },
+  {
+   "text": "Every. Single. Night.",
+   "s": 20.11,
+   "e": 21.94
+  },
+  {
+   "text": "His club stopped paying, and the big clubs wouldn't take the risk.",
+   "s": 22.47,
+   "e": 25.61
+  },
+  {
+   "text": "Then, at thirteen, he crossed an ocean for one tryout in Spain.",
+   "s": 26.06,
+   "e": 30.31
+  },
+  {
+   "text": "The coaches watched him play, and they didn't want to wait for paperwork.",
+   "s": 30.79,
+   "e": 34.13
+  },
+  {
+   "text": "So they signed him on a paper napkin.",
+   "s": 34.53,
+   "e": 36.61
+  },
+  {
+   "text": "At seventeen, he was playing for one of the biggest clubs in the world.",
+   "s": 37.03,
+   "e": 40.78
+  },
+  {
+   "text": "Then came the heartbreak.",
+   "s": 41.23,
+   "e": 42.62
+  },
+  {
+   "text": "He lost a World Cup final.",
+   "s": 43.18,
+   "e": 44.65
+  },
+  {
+   "text": "Then two more finals for his country.",
+   "s": 45.12,
+   "e": 47.1
+  },
+  {
+   "text": "Three years in a row.",
+   "s": 47.27,
+   "e": 48.71
+  },
+  {
+   "text": "He quit the national team.",
+   "s": 49.25,
+   "e": 50.45
+  },
+  {
+   "text": "But he came back.",
+   "s": 50.98,
+   "e": 52.2
+  },
+  {
+   "text": "And at thirty-five, he finally lifted the World Cup.",
+   "s": 52.55,
+   "e": 55.69
+  },
+  {
+   "text": "Eight Ballon d'Ors. More than anyone in history.",
+   "s": 56.02,
+   "e": 58.92
+  },
+  {
+   "text": "That kid who might never grow?",
+   "s": 59.34,
+   "e": 60.81
+  },
+  {
+   "text": "His name is Lionel Messi.",
+   "s": 61.14,
+   "e": 62.89
+  },
+  {
+   "text": "And he still stands just five foot seven.",
+   "s": 63.09,
+   "e": 65.38
+  }
+ ],
+ "anchors": {
+  "Every.": 20.11,
+  "Single.": 20.74,
+  "Night.": 21.47,
+  "Lionel": 61.88
+ },
+ "keepGapBefore": {
+  "21": 0.32,
+  "22": 0.32
+ },
+ "gap": 0.29
+}

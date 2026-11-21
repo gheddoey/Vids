@@ -60,7 +60,7 @@ const faceMaterials = (img: HTMLImageElement | null, rects: Rect[], skin: string
 // smug     - half-lidded eyes, one raised brow, side smirk
 // talkA/B  - neutral eyes, mouth open / closed (speaking)
 // squint   - suspicious narrowed eyes, flat brows, tight mouth
-export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouch' | 'dizzy' | 'chewA' | 'chewB' | 'smug' | 'talkA' | 'talkB' | 'squint';
+export type FaceType = 'smile' | 'serious' | 'mustache' | 'grin' | 'calm' | 'ouch' | 'dizzy' | 'chewA' | 'chewB' | 'smug' | 'talkA' | 'talkB' | 'squint' | 'shock';
 
 const INK = '#1b1b1b';
 
@@ -249,6 +249,7 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 		talkA: {brow: 0.2},
 		talkB: {brow: 0.2},
 		squint: {lid: 0.5, brow: 0.7},
+		shock: {pupil: 15, raise: [16, 16], brow: -0.5},
 	};
 	drawEyes(EYES[face]);
 
@@ -330,6 +331,10 @@ const drawFace = (skin: string, face: FaceType, eyeColor = '#8e2f8a', mark?: Fac
 	}
 	if (face === 'talkB') line(8, [[226, 336], [286, 336]]);
 	if (face === 'squint') line(8, [[232, 340], [282, 336]]);
+	if (face === 'shock') {
+		ellipse(256, 346, 26, 34, INK);
+		ellipse(256, 360, 14, 10, '#c4545a');
+	}
 
 	// Marks drawn over the top.
 	if (mark === 'scar') {
@@ -401,7 +406,7 @@ export const REST: Pose = {
 	legRX: 0,
 };
 
-const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm', 'ouch', 'dizzy', 'chewA', 'chewB', 'smug', 'talkA', 'talkB', 'squint'];
+const FACES: FaceType[] = ['smile', 'serious', 'mustache', 'grin', 'calm', 'ouch', 'dizzy', 'chewA', 'chewB', 'smug', 'talkA', 'talkB', 'squint', 'shock'];
 
 export type CharacterProps = {
 	shirt: string;
@@ -419,6 +424,10 @@ export type CharacterProps = {
 	// Facial hair block and sunglasses, worn on the head.
 	beard?: string;
 	shades?: boolean;
+	// Unique features: glasses (frame colour), mustache (colour), earrings (colour).
+	glasses?: string;
+	mustache?: string;
+	earrings?: string;
 	position?: [number, number, number];
 	rotY?: number;
 	pose?: Partial<Pose>;
@@ -448,6 +457,9 @@ export const Character: React.FC<CharacterProps> = ({
 	hat,
 	beard,
 	shades,
+	glasses,
+	mustache,
+	earrings,
 	position = [0, 0, 0],
 	rotY = 0,
 	pose = {},
@@ -481,6 +493,38 @@ export const Character: React.FC<CharacterProps> = ({
 					<RBox size={[0.16, 0.8, 0.9]} pos={[-0.62, -0.3, 0.1]} color={beard} />
 					<RBox size={[0.16, 0.8, 0.9]} pos={[0.62, -0.3, 0.1]} color={beard} />
 					<RBox size={[0.7, 0.12, 0.08]} pos={[0, -0.2, 0.63]} color={beard} />
+				</group>
+			) : null}
+			{glasses ? (
+				<group>
+					{[-0.24, 0.24].map((x) => (
+						<group key={x} position={[x, -0.01, 0.625]}>
+							<RBox size={[0.38, 0.045, 0.04]} pos={[0, 0.15, 0]} color={glasses} rough={0.3} />
+							<RBox size={[0.38, 0.045, 0.04]} pos={[0, -0.15, 0]} color={glasses} rough={0.3} />
+							<RBox size={[0.045, 0.3, 0.04]} pos={[-0.17, 0, 0]} color={glasses} rough={0.3} />
+							<RBox size={[0.045, 0.3, 0.04]} pos={[0.17, 0, 0]} color={glasses} rough={0.3} />
+							<mesh position={[0, 0, -0.005]}>
+								<planeGeometry args={[0.32, 0.26]} />
+								<meshStandardMaterial color="#dff2ff" transparent opacity={0.18} roughness={0.05} />
+							</mesh>
+						</group>
+					))}
+					<RBox size={[0.12, 0.04, 0.04]} pos={[0, 0.06, 0.625]} color={glasses} rough={0.3} />
+					<RBox size={[0.035, 0.045, 0.78]} pos={[-0.62, 0.08, 0.24]} color={glasses} rough={0.3} />
+					<RBox size={[0.035, 0.045, 0.78]} pos={[0.62, 0.08, 0.24]} color={glasses} rough={0.3} />
+				</group>
+			) : null}
+			{mustache ? (
+				<group>
+					<RBox size={[0.56, 0.11, 0.07]} pos={[0, -0.215, 0.62]} color={mustache} />
+					<RBox size={[0.12, 0.14, 0.07]} pos={[-0.26, -0.27, 0.62]} color={mustache} />
+					<RBox size={[0.12, 0.14, 0.07]} pos={[0.26, -0.27, 0.62]} color={mustache} />
+				</group>
+			) : null}
+			{earrings ? (
+				<group>
+					<RBox size={[0.06, 0.12, 0.06]} pos={[-0.63, -0.3, 0.12]} color={earrings} rough={0.2} />
+					<RBox size={[0.06, 0.12, 0.06]} pos={[0.63, -0.3, 0.12]} color={earrings} rough={0.2} />
 				</group>
 			) : null}
 			{shades ? (

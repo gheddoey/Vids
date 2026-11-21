@@ -616,6 +616,244 @@ def lebron_set():
     jersey('ts_blue8', '#1d428a', '#ffc72c', '8', '#ffc72c', '#ffffff')
 
 
+# ======================= Messi short =======================
+
+def kit(name, cols, num, numc='#ffffff', numo='#1a1a1a', halves=False, stripes=7, sleeve=None, trim='#ffffff', front_num=True, robe=False):
+    """Football shirt: vertical stripes (or halves), collar, short sleeves, numbers.
+    robe=True draws the black-and-gold robe over the shirt (the trophy lift)."""
+    t = T()
+
+    def stripe_fill(r, k):
+        x, y, w, h = r
+        if halves:
+            t.fill(r, cols[0], x1=0.5)
+            t.fill(r, cols[1], x0=0.5)
+            return
+        n = stripes if k in ('front', 'back') else 3
+        for i in range(n):
+            t.fill(r, cols[i % 2], x0=i / n, x1=(i + 1) / n)
+
+    def torso(k, r):
+        stripe_fill(r, k)
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, '#000000', 3, 0.2, 0.9, seed=len(k) * 43)
+        if k == 'front':
+            # Collar and placket
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.56, 0.12), (0.44, 0.12)], trim)
+            t.poly(r, [(0.4, 0), (0.6, 0), (0.53, 0.08), (0.47, 0.08)], (0, 0, 0, 0))
+            if front_num:
+                text(t, r, num, 0.72, 0.3, 16, numc, numo, 1)
+            t.fill(r, trim, y0=0.95, y1=1)
+        if k == 'back':
+            t.fill(r, trim, y0=0, y1=0.06, x0=0.36, x1=0.64)
+            text(t, r, num, 0.5, 0.52, 54, numc, numo, 3)
+            t.fill(r, trim, y0=0.95, y1=1)
+        if robe and k in ('front', 'back', 'left', 'right'):
+            sheer = (18, 18, 22, 215)
+            if k == 'front':
+                t.fill(r, sheer, x1=0.3)
+                t.fill(r, sheer, x0=0.7)
+                t.fill(r, '#d8b44a', x0=0.28, x1=0.31)
+                t.fill(r, '#d8b44a', x0=0.69, x1=0.72)
+            else:
+                t.fill(r, sheer)
+                if k == 'back':
+                    t.fill(r, '#d8b44a', y0=0.0, y1=0.05)
+        if robe and k == 'top':
+            t.fill(r, (18, 18, 22, 215), x1=0.3)
+            t.fill(r, (18, 18, 22, 215), x0=0.7)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        if robe:
+            t.fill(r, (18, 18, 22, 225))
+            if k in ('front', 'out', 'back', 'in'):
+                t.fill(r, '#d8b44a', y0=0.9, y1=0.96)
+            return
+        if k == 'bottom':
+            return
+        c = sleeve or cols[0]
+        if k == 'top':
+            t.fill(r, c)
+            return
+        t.fill(r, c, y0=0, y1=0.46)
+        t.fill(r, trim, y0=0.42, y1=0.47)
+
+    arms(t, arm)
+    t.save(name)
+
+
+def check_shirt(name, base, line1, line2, long=True, pocket=True):
+    """Flannel / check shirt."""
+    t = T()
+
+    def pattern(r):
+        t.fill(r, base)
+        x, y, w, h = r
+        for i in range(0, int(w), 16):
+            t.fill(r, line1, x0=i / w, x1=(i + 6) / w)
+        for j in range(0, int(h), 16):
+            t.fill(r, line1, y0=j / h, y1=(j + 6) / h)
+        for i in range(8, int(w), 16):
+            t.fill(r, line2, x0=i / w, x1=(i + 1.5) / w)
+
+    def torso(k, r):
+        pattern(r)
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, '#000000', 3, seed=len(k) * 47)
+        if k == 'front':
+            t.poly(r, [(0.32, 0), (0.5, 0.14), (0.68, 0), (0.6, 0.18), (0.5, 0.2), (0.4, 0.18)], line1)
+            t.line(r, [(0.5, 0.16), (0.5, 1)], '#1a1a1a', 0.6)
+            for yy in (0.32, 0.5, 0.68, 0.86):
+                t.dot(r, 0.5, yy, 1.4, '#e8e2d0')
+            if pocket:
+                t.line(r, [(0.16, 0.3), (0.38, 0.3), (0.38, 0.5), (0.16, 0.5), (0.16, 0.3)], '#1a1a1a', 0.6)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        if k == 'bottom':
+            return
+        pattern(r)
+        if not long and k != 'top':
+            t.d.rectangle(t.box(r, 0, 0.5, 1, 1), fill=(0, 0, 0, 0))
+        elif k in ('front', 'out', 'back', 'in'):
+            t.fill(r, line1, y0=0.86, y1=0.96)
+
+    arms(t, arm)
+    t.save(name)
+
+
+def plain(name, body, dark, details=None, arm_fn=None, long=True):
+    t = T()
+
+    def torso(k, r):
+        t.vgrad(r, body, '#%02x%02x%02x' % shade(body, -0.06)[:3])
+        if k in ('front', 'back', 'left', 'right'):
+            t.folds(r, dark, 3, seed=len(k) * 53 + len(name))
+        if details:
+            details(t, k, r)
+
+    all_torso(t, torso)
+
+    def arm(side, k, r):
+        if k == 'bottom':
+            return
+        t.vgrad(r, body, '#%02x%02x%02x' % shade(body, -0.06)[:3])
+        if not long and k != 'top':
+            t.d.rectangle(t.box(r, 0, 0.48, 1, 1), fill=(0, 0, 0, 0))
+            t.line(r, [(0, 0.46), (1, 0.46)], dark, 0.8)
+        if arm_fn:
+            arm_fn(t, side, k, r)
+
+    arms(t, arm)
+    t.save(name)
+
+
+def messi_set():
+    # Leo's childhood club shirt: red and black halves
+    kit('ts_leo11', ('#c8102e', '#161616'), '10', halves=True, trim='#ffffff')
+    for n, c in (('ts_bib_o', '#ff7a1a'), ('ts_bib_y', '#e6d82a'), ('ts_bib_g', '#3ab05a')):
+        def bib(t, k, r, c=c):
+            if k in ('front', 'back'):
+                t.fill(r, c, x0=0.08, x1=0.92, y0=0.06)
+                for xx in [i / 12 for i in range(13)]:
+                    for yy in [j / 12 for j in range(1, 13)]:
+                        t.dot(r, 0.08 + xx * 0.84, yy, 0.35, '#000000')
+                t.poly(r, [(0.3, 0), (0.7, 0), (0.5, 0.2)], '#f4f4f0')
+                text(t, r, '7' if 'o' in n else ('4' if 'y' in n else '9'), 0.5, 0.55, 40, '#ffffff', '#00000055', 0)
+        plain(n, '#f4f4f0', '#cfcfc8', bib, long=False)
+
+    def hoodie(t, k, r):
+        if k == 'front':
+            t.d.chord(t.box(r, 0.33, -0.16, 0.67, 0.16), 0, 180, fill=(0, 0, 0, 0))
+            t.line(r, [(0.42, 0.08), (0.42, 0.42)], '#e6e6e6', 0.8)
+            t.line(r, [(0.58, 0.08), (0.58, 0.42)], '#e6e6e6', 0.8)
+            t.poly(r, [(0.2, 0.6), (0.8, 0.6), (0.88, 0.88), (0.12, 0.88)], '#5f6b78')
+            t.fill(r, '#3d4650', y0=0.92, y1=1)
+        if k == 'back':
+            t.poly(r, [(0.2, 0), (0.8, 0), (0.7, 0.3), (0.3, 0.3)], '#5f6b78')
+            # backpack straps
+        if k in ('left', 'right'):
+            t.fill(r, '#3d4650', y0=0.92, y1=1)
+    plain('ts_leo13', '#6c7a88', '#4f5a66', hoodie, lambda t, s, k, r: t.fill(r, '#3d4650', y0=0.9, y1=1) if k in ('front', 'out', 'back', 'in') else None)
+
+    kit('ts_barca30', ('#1a3a8a', '#a3123a'), '30', numc='#f2c94c', numo='#1a1a1a', stripes=5, sleeve='#1a3a8a', trim='#f2c94c')
+    for num in ('10', '7', '11', '23'):
+        kit(f'ts_arg{num}', ('#7cc3ee', '#ffffff'), num, numc='#1a2a4a', numo='#ffffff', stripes=5, sleeve='#ffffff', trim='#1a2a4a')
+    kit('ts_bisht', ('#7cc3ee', '#ffffff'), '10', numc='#1a2a4a', numo='#ffffff', stripes=5, sleeve='#ffffff', trim='#1a2a4a', robe=True)
+
+    def doctor(t, k, r):
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.58, 0.55), (0.42, 0.55)], '#8fb4d8')
+            t.poly(r, [(0.47, 0.04), (0.53, 0.04), (0.55, 0.5), (0.5, 0.56), (0.45, 0.5)], '#2c3e66')
+            t.poly(r, [(0.36, 0), (0.22, 0), (0.3, 0.36), (0.42, 0.55)], '#ffffff')
+            t.poly(r, [(0.64, 0), (0.78, 0), (0.7, 0.36), (0.58, 0.55)], '#ffffff')
+            t.line(r, [(0.22, 0), (0.3, 0.36), (0.42, 0.55)], '#c8ccd0', 0.8)
+            t.line(r, [(0.78, 0), (0.7, 0.36), (0.58, 0.55)], '#c8ccd0', 0.8)
+            # Stethoscope
+            t.line(r, [(0.3, 0.02), (0.34, 0.32), (0.42, 0.46)], '#2a2a2e', 1.4)
+            t.line(r, [(0.7, 0.02), (0.66, 0.32), (0.58, 0.46)], '#2a2a2e', 1.4)
+            t.dot(r, 0.5, 0.52, 3.5, '#b8bcc2', outline='#6a6e74')
+            # Pocket with pens
+            t.line(r, [(0.68, 0.44), (0.86, 0.44), (0.86, 0.6), (0.68, 0.6), (0.68, 0.44)], '#c8ccd0', 0.7)
+            t.fill(r, '#2f6fd0', x0=0.72, x1=0.74, y0=0.38, y1=0.47)
+            t.fill(r, '#d03030', x0=0.77, x1=0.79, y0=0.39, y1=0.47)
+            t.line(r, [(0.5, 0.56), (0.5, 1)], '#c8ccd0', 0.7)
+            text(t, r, 'Dr.', 0.22, 0.48, 10, '#2c3e66')
+    plain('ts_doctor', '#f6f7f8', '#d4d8dc', doctor)
+
+    check_shirt('ts_flannel', '#3c5a7a', '#2a3e58', '#a8b8c8')
+    check_shirt('ts_flannel_r', '#8a3a2e', '#5a221a', '#d8b8a0', long=False)
+
+    def coverall(t, k, r):
+        if k in ('front', 'back', 'left', 'right'):
+            t.fill(r, '#c8ccd2', y0=0.62, y1=0.68)
+            t.fill(r, '#e8eaee', y0=0.635, y1=0.665)
+        if k == 'front':
+            t.line(r, [(0.5, 0.05), (0.5, 1)], '#a84a10', 0.8)
+            t.line(r, [(0.6, 0.22), (0.84, 0.22), (0.84, 0.4), (0.6, 0.4), (0.6, 0.22)], '#a84a10', 0.8)
+            t.poly(r, [(0.36, 0), (0.5, 0.12), (0.64, 0)], '#a84a10')
+    plain('ts_coverall', '#e8681c', '#b04a10', coverall, lambda t, s, k, r: t.fill(r, '#c8ccd2', y0=0.6, y1=0.66) if k in ('front', 'out', 'back', 'in') else None)
+
+    def cardigan(t, k, r):
+        if k == 'front':
+            t.poly(r, [(0.36, 0), (0.64, 0), (0.58, 1), (0.42, 1)], '#f1e8d8')
+            for yy in (0.3, 0.48, 0.66, 0.84):
+                t.dot(r, 0.39, yy, 1.6, '#e8d8b8')
+            t.fill(r, '#7a4a62', y0=0.9, y1=1, x1=0.4)
+            t.fill(r, '#7a4a62', y0=0.9, y1=1, x0=0.6)
+    plain('ts_cardigan', '#94607a', '#6e4458', cardigan, lambda t, s, k, r: t.fill(r, '#7a4a62', y0=0.88, y1=1) if k in ('front', 'out', 'back', 'in') else None)
+
+    def track(c1, c2, label):
+        def d(t, k, r):
+            if k == 'front':
+                t.fill(r, '#d8dce2', x0=0.49, x1=0.51)
+                t.fill(r, c2, y0=0, y1=0.1, x0=0.3, x1=0.7)
+                if label:
+                    t.line(r, [(0.36, 0.05), (0.5, 0.42), (0.64, 0.05)], '#e8e8e8', 1.0)
+                    t.fill(r, '#c9ccd2', x0=0.46, x1=0.56, y0=0.42, y1=0.5)
+            if k in ('left', 'right'):
+                t.fill(r, c2, x0=0.4, x1=0.6)
+        return d
+    plain('ts_track_red', '#b81e2a', '#801420', track('#b81e2a', '#ffffff', False), lambda t, s, k, r: t.fill(r, '#ffffff', x0=0.4, x1=0.6) if k == 'out' else None)
+    plain('ts_track_navy', '#1c2a50', '#121c38', track('#1c2a50', '#c8102e', True), lambda t, s, k, r: t.fill(r, '#c8102e', x0=0.4, x1=0.6) if k == 'out' else None)
+
+    def sweater(t, k, r):
+        if k == 'front':
+            t.poly(r, [(0.34, 0), (0.66, 0), (0.5, 0.3)], '#bcd2ea')
+            t.poly(r, [(0.4, 0), (0.5, 0.1), (0.6, 0), (0.56, 0.06), (0.5, 0.14), (0.44, 0.06)], '#e8f0f8')
+            for xx in [i / 10 for i in range(11)]:
+                t.line(r, [(xx, 0.9), (xx, 1)], '#5a5e66', 0.5)
+    plain('ts_sweater', '#7a7e88', '#5a5e66', sweater)
+
+
+if __name__ == '__main__' and 'messi' in __import__('sys').argv:
+    messi_set()
+    raise SystemExit
+
+
 if __name__ == '__main__':
     import sys as _s
     if 'lebron' in _s.argv:

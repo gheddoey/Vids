@@ -4,7 +4,7 @@ import {RBox, shade} from './parts';
 // Head objects, in head-local space (head is a 1.2 cube centred on 0, face toward +z).
 // Built from hard-edged blocks so they read like the blocky reference style.
 
-export type HatType = 'cap' | 'fedora' | 'beanie' | 'goggles' | 'headphones' | 'badgecap' | 'safari' | 'schoolcap' | 'headband';
+export type HatType = 'cap' | 'fedora' | 'beanie' | 'goggles' | 'headphones' | 'badgecap' | 'safari' | 'schoolcap' | 'headband' | 'hardhat';
 
 type P = {color: string; accent: string};
 
@@ -162,6 +162,17 @@ const Headband: React.FC<P> = ({color, accent}) => (
 	</group>
 );
 
+// Factory hard hat with a ridge and a wide front lip.
+const Hardhat: React.FC<P> = ({color, accent}) => (
+	<group>
+		<RBox size={[1.46, 0.5, 1.5]} pos={[0, 0.62, 0]} color={color} rough={0.35} />
+		<RBox size={[1.2, 0.16, 1.24]} pos={[0, 0.94, 0]} color={color} rough={0.35} />
+		<RBox size={[0.22, 0.12, 1.34]} pos={[0, 1.06, 0]} color={shade(color, -0.06)} rough={0.35} />
+		<RBox size={[1.66, 0.07, 1.84]} pos={[0, 0.39, 0.06]} color={shade(color, -0.04)} rough={0.35} />
+		<RBox size={[1.48, 0.1, 0.04]} pos={[0, 0.5, 0.76]} color={accent} rough={0.3} />
+	</group>
+);
+
 export const Hat: React.FC<{type: HatType; color: string; accent?: string}> = ({type, color, accent = '#ffffff'}) => {
 	const p = {color, accent};
 	switch (type) {
@@ -183,5 +194,7 @@ export const Hat: React.FC<{type: HatType; color: string; accent?: string}> = ({
 			return <SchoolCap {...p} />;
 		case 'headband':
 			return <Headband {...p} />;
+		case 'hardhat':
+			return <Hardhat {...p} />;
 	}
 };

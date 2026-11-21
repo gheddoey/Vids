@@ -363,6 +363,115 @@ def bed():
     return out * fade
 
 
+# ======================= Messi short =======================
+def whistle():
+    d = 0.6
+    t = t_axis(d)
+    f = 2800 * (1 + 0.04 * np.sign(np.sin(2 * np.pi * 28 * t)))
+    tone = np.sin(2 * np.pi * np.cumsum(f) / SR) + band(noise(d), 2400, 3600) * 0.3
+    return tone * np.clip(t / 0.02, 0, 1) * np.clip((d - t) / 0.06, 0, 1)
+
+
+def clang():
+    d = 1.4
+    x = sum(a * np.sin(2 * np.pi * f * t_axis(d)) * env(d, 0.001, dk) for f, a, dk in [(220, 1, 0.5), (563, 0.7, 0.35), (1180, 0.5, 0.2), (2310, 0.3, 0.12)])
+    return x + pad(band(noise(0.04), 1500, 8000) * env(0.04, 0.0005, 0.01), d) * 0.8
+
+
+def crickets():
+    d = 4.0
+    out = np.zeros(int(SR * d))
+    for at in np.arange(0, d - 0.2, 0.42):
+        for k in range(3):
+            place(out, np.sin(2 * np.pi * 4600 * t_axis(0.025)) * env(0.025, 0.002, 0.008) * 0.5, at + k * 0.045)
+    return out + band(noise(d), 100, 500) * 0.05
+
+
+def engine():
+    d = 2.2
+    t = t_axis(d)
+    hum = band(noise(d), 80, 900) * (0.6 + 0.4 * np.sin(np.pi * t / d))
+    return hum + 0.2 * np.sin(2 * np.pi * 110 * t) * np.sin(np.pi * t / d)
+
+
+def kick():
+    d = 0.2
+    return sweep(180, 70, d, 0.4) * env(d, 0.001, 0.03) + band(noise(d), 500, 2500) * env(d, 0.0005, 0.01) * 0.6
+
+
+def rain():
+    d = 3.0
+    out = band(noise(d), 1500, 9000) * 0.25
+    for at in rng.uniform(0, d - 0.05, 160):
+        place(out, band(noise(0.01), 2000, 8000) * env(0.01, 0.0003, 0.003) * rng.uniform(0.1, 0.4), at)
+    t = t_axis(d)
+    return out * np.clip(t / 0.3, 0, 1) * np.clip((d - t) / 0.4, 0, 1)
+
+
+def firework():
+    d = 2.0
+    out = boom()[: int(SR * d)] * 0.5
+    for at in rng.uniform(0.15, 1.5, 50):
+        place(out, band(noise(0.015), 2000, 9000) * env(0.015, 0.0003, 0.004) * rng.uniform(0.1, 0.4), at)
+    return out
+
+
+def ding():
+    d = 0.9
+    return sum(a * np.sin(2 * np.pi * f * t_axis(d)) for f, a in [(1568, 1), (3136, 0.3), (4704, 0.12)]) * env(d, 0.002, 0.3)
+
+
+def tick():
+    d = 0.06
+    return band(noise(d), 2000, 7000) * env(d, 0.0005, 0.006)
+
+
+def scribble():
+    d = 0.6
+    t = t_axis(d)
+    return band(noise(d), 1500, 6000) * (0.4 + 0.6 * np.abs(np.sin(2 * np.pi * 7 * t))) * np.sin(np.pi * t / d) * 0.6
+
+
+def bed_messi():
+    """Emotional bed: minor pad; drums from the move to Spain; a dip for the heartbreak;
+    a full lift at the World Cup; silence before the name; resolve after."""
+    dur, bpm = 61.0, 88
+    beat = 60 / bpm
+    out = np.zeros(int(SR * dur))
+    chords = [(220.0, 261.6, 329.6), (174.6, 220.0, 261.6), (261.6, 329.6, 392.0), (196.0, 246.9, 293.7)]
+    bar = beat * 4
+    for i in range(int(dur / (bar * 2)) + 1):
+        c = chords[i % 4]
+        tt = t_axis(bar * 2)
+        tone = sum(np.sin(2 * np.pi * f * tt) + 0.25 * np.sin(2 * np.pi * f * 2 * tt) + 0.12 * np.sin(2 * np.pi * f / 2 * tt) for f in c)
+        tone *= np.clip(tt / 0.5, 0, 1) * np.clip((bar * 2 - tt) / 0.5, 0, 1) * 0.07
+        place(out, tone, i * bar * 2)
+    k = 0
+    while k * beat < dur:
+        at = k * beat
+        in_drums = (23.4 <= at < 37.8) or (47.6 <= at < 54.0)
+        if in_drums:
+            place(out, (sweep(110, 45, 0.3, 0.3) * env(0.3, 0.001, 0.07)) * 0.55, at)
+            place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.0005, 0.012) * 0.22, at + beat / 2)
+            if k % 2 == 1:
+                place(out, band(noise(0.12), 900, 5000) * env(0.12, 0.001, 0.04) * 0.3, at)
+            if at >= 47.6:
+                place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.0005, 0.01) * 0.15, at + beat / 4)
+        k += 1
+    g = np.ones_like(out)
+    seg = lambda a, b, v0, v1: g.__setitem__(slice(int(SR * a), int(SR * b)), np.linspace(v0, v1, int(SR * b) - int(SR * a)))
+    seg(37.6, 38.4, 1.0, 0.55)  # heartbreak: thinner
+    g[int(SR * 38.4) : int(SR * 47.4)] = 0.55
+    seg(47.4, 47.8, 0.55, 1.25)  # the lift
+    g[int(SR * 47.8) : int(SR * 53.9)] = 1.25
+    seg(53.9, 54.3, 1.25, 0.0)  # silence before the name
+    g[int(SR * 54.3) : int(SR * 56.55)] = 0.0
+    g[int(SR * 56.55) :] = 0.9
+    tail = int(SR * 59.6)
+    g[tail:] *= np.linspace(1, 0, len(g) - tail)
+    return out * g
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     save('ambience', ambience(), 0.5)
@@ -386,6 +495,8 @@ if __name__ == '__main__':
     save('pour', pour(), 0.7)
     save('ice', ice(), 0.6)
     save('glass', glass(), 0.6)
+    for n in ('whistle', 'clang', 'crickets', 'engine', 'kick', 'rain', 'firework', 'ding', 'tick', 'scribble', 'bed_messi'):
+        save(n, globals()[n](), 0.8)
     for n in ('crowd', 'buzzer', 'netswish', 'bounce', 'shutter', 'riser', 'boom', 'alarm', 'bed'):
         save(n, globals()[n](), 0.8)
     print('wrote', sorted(os.listdir(OUT)))

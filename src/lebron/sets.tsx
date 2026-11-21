@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {RBox, shade} from '../parts';
 import {Canvas2D, Hoop, PI, font} from './common';
 
-const Shadowed: React.FC<{pos: number[]; color: string; intensity: number; size?: number; far?: number}> = ({pos, color, intensity, size = 18, far = 80}) => (
+export const Shadowed: React.FC<{pos: number[]; color: string; intensity: number; size?: number; far?: number}> = ({pos, color, intensity, size = 18, far = 80}) => (
 	<directionalLight
 		position={pos as [number, number, number]}
 		intensity={intensity}

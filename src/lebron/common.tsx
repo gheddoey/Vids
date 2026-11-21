@@ -176,11 +176,11 @@ export const Canvas2D: React.FC<{
 export const font = (px: number, weight = 900) => `${weight} ${px}px "Inter Display", "Inter", sans-serif`;
 
 // Deterministic confetti falling through a box of space.
-export const Confetti: React.FC<{frame: number; n?: number; area?: [number, number, number]; y0?: number}> = ({frame, n = 90, area = [16, 14, 8], y0 = 16}) => {
+export const Confetti: React.FC<{frame: number; n?: number; area?: [number, number, number]; y0?: number; cols?: string[]}> = ({frame, n = 90, area = [16, 14, 8], y0 = 16, cols: colsIn}) => {
 	const bits = useMemo(() => {
 		let s = 11;
 		const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
-		const cols = ['#ffb81c', '#ffffff', '#6f263d', '#ffd84a', '#c8102e'];
+		const cols = colsIn ?? ['#ffb81c', '#ffffff', '#6f263d', '#ffd84a', '#c8102e'];
 		return Array.from({length: n}, () => ({x: (r() - 0.5) * area[0], z: (r() - 0.5) * area[2], d: r() * area[1], v: 0.05 + r() * 0.05, s: r() * 6, c: cols[Math.floor(r() * cols.length)]}));
 	}, [n, area]);
 	const f = onTwos(frame);
@@ -198,27 +198,28 @@ export const Confetti: React.FC<{frame: number; n?: number; area?: [number, numb
 
 // ---------- Captions ----------
 
+type Timing = {duration: number; lines: {text: string; s: number; e: number; words: {w: string; s: number; e: number}[]}[]};
+
+const GOLD = new Set(['lebron', 'james', 'chosen', 'lionel', 'messi']);
+
 // One word on screen at a time, held until the next word starts (no flicker in pauses).
-const WORDS = (() => {
-	const all = T.lines.flatMap((l) => l.words.map((w) => ({...w})));
-	all.forEach((w, i) => (w.e = Math.max(w.e, (all[i + 1]?.s ?? w.e + 0.6) - 0.01)));
-	return all;
-})();
-
-const GOLD = new Set(['lebron', 'james', 'chosen']);
-
-export const Captions: React.FC = () => {
+export const CaptionsFor: React.FC<{timing: Timing; top?: number}> = ({timing, top = 1180}) => {
+	const words = React.useMemo(() => {
+		const all = timing.lines.flatMap((l) => l.words.map((w) => ({...w})));
+		all.forEach((w, i) => (w.e = Math.max(w.e, (all[i + 1]?.s ?? w.e + 0.6) - 0.01)));
+		return all;
+	}, [timing]);
 	const frame = useCurrentFrame();
 	const {fps} = useVideoConfig();
 	const t = frame / fps;
-	const w = WORDS.find((k) => t >= k.s && t < k.e);
+	const w = words.find((k) => t >= k.s && t < k.e);
 	if (!w) return null;
 	const pop = spring({frame: frame - Math.round(w.s * fps), fps, config: {damping: 14, stiffness: 260, mass: 0.5}});
 	const word = w.w.replace(/["]/g, '');
 	const key = word.replace(/[.,?!]/g, '').toLowerCase();
 	const gold = GOLD.has(key);
 	return (
-		<AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-start', top: 1180}}>
+		<AbsoluteFill style={{alignItems: 'center', justifyContent: 'flex-start', top}}>
 			<div
 				style={{
 					transform: `scale(${0.86 + 0.14 * pop})`,
@@ -239,3 +240,5 @@ export const Captions: React.FC = () => {
 		</AbsoluteFill>
 	);
 };
+
+export const Captions: React.FC = () => <CaptionsFor timing={T} />;
