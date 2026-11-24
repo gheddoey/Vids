@@ -34,7 +34,7 @@ const M = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters> =
 const Glow = (color: string, i = 2.5) => new THREE.MeshStandardMaterial({color, emissive: color, emissiveIntensity: i, toneMapped: false});
 
 // ---------- sky dome with vertex-colour gradient + sun ----------
-const Sky: React.FC = () => {
+export const Sky: React.FC = () => {
 	const {scene} = useThree();
 	useMemo(() => {
 		scene.background = new THREE.Color('#2a1640');
@@ -86,7 +86,7 @@ const Sky: React.FC = () => {
 };
 
 // ---------- terrain pieces ----------
-const Mountains: React.FC = () => {
+export const Mountains: React.FC = () => {
 	const items = useMemo(() => {
 		const r = rnd(5);
 		return Array.from({length: 14}, (_, i) => ({x: (i < 7 ? -1 : 1) * (55 + (i % 7) * 30 + r() * 12), z: -210 - r() * 60, h: 40 + r() * 70, w: 40 + r() * 30, col: ['#5a3a7a', '#6a3a80', '#4a2e6a', '#7a4a8a'][i % 4], seg: 5 + Math.floor(r() * 3)}));
@@ -101,7 +101,7 @@ const Mountains: React.FC = () => {
 	);
 };
 
-const Ground: React.FC = () => {
+export const Ground: React.FC = () => {
 	const g = useMemo(() => {
 		const geo = new THREE.PlaneGeometry(420, 420, 36, 36);
 		geo.rotateX(-PI / 2);
@@ -306,7 +306,7 @@ const Rock: React.FC<{p: V3; s: number; col?: string; seed?: number}> = ({p, s, 
 	return <mesh geometry={g} material={M(col)} position={p} scale={[s * 1.3, s * 0.8, s]} castShadow />;
 };
 
-const Street: React.FC<{f: number}> = ({f}) => {
+export const Street: React.FC<{f: number}> = ({f}) => {
 	const blocks = useMemo(() => {
 		const r = rnd(21);
 		const cols = ['#e86a7a', '#f2a65a', '#5ab0c8', '#8a6ad0', '#f2d06a', '#5ac08a', '#e88ab0'];
