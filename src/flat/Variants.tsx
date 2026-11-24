@@ -7,7 +7,7 @@ type P2 = [number, number];
 const circ = (cx: number, cy: number, rx: number, ry: number, n = 14): P2[] => Array.from({length: n}, (_, i) => [cx + Math.cos((i / n) * Math.PI * 2) * rx, cy + Math.sin((i / n) * Math.PI * 2) * ry]);
 
 // Body silhouettes, drawn from the neck (0,0) down to the seat (0,h). w = half width at the widest point.
-type BodyKind = 'bean' | 'pear' | 'egg' | 'sack' | 'tallbean' | 'chubby' | 'peanut' | 'gumdrop';
+type BodyKind = 'bean' | 'pear' | 'egg' | 'sack' | 'tallbean' | 'chubby' | 'peanut' | 'gumdrop' | 'potato' | 'pill' | 'tri' | 'barrel' | 'tear' | 'lumpy' | 'hourglass' | 'wedge' | 'blob' | 'noodle' | 'mushroom' | 'cloud';
 const bodyPts = (k: BodyKind, w: number, h: number): P2[] => {
 	switch (k) {
 		case 'pear':
@@ -24,6 +24,30 @@ const bodyPts = (k: BodyKind, w: number, h: number): P2[] => {
 			return [[-w * 0.6, 4], [-w * 0.85, h * 0.22], [-w * 0.7, h * 0.48], [-w * 0.95, h * 0.78], [-w * 0.6, h * 1.0], [0, h * 1.03], [w * 0.6, h * 1.0], [w * 0.95, h * 0.78], [w * 0.7, h * 0.48], [w * 0.85, h * 0.22], [w * 0.6, 4], [0, -4]];
 		case 'gumdrop':
 			return [[-w * 0.3, 2], [-w * 0.7, h * 0.4], [-w * 1.0, h * 0.95], [0, h * 1.0], [w * 1.0, h * 0.95], [w * 0.7, h * 0.4], [w * 0.3, 2], [0, -4]];
+		case 'potato':
+			return [[-w * 0.55, 6], [-w * 0.9, h * 0.2], [-w * 0.78, h * 0.5], [-w * 1.0, h * 0.82], [-w * 0.5, h * 1.02], [w * 0.2, h * 0.98], [w * 0.85, h * 1.0], [w * 0.95, h * 0.62], [w * 0.8, h * 0.3], [w * 0.6, 2], [0, -6]];
+		case 'pill':
+			return [[-w * 0.7, h * 0.12], [-w * 0.72, h * 0.5], [-w * 0.7, h * 0.88], [-w * 0.4, h * 1.02], [0, h * 1.04], [w * 0.4, h * 1.02], [w * 0.7, h * 0.88], [w * 0.72, h * 0.5], [w * 0.7, h * 0.12], [w * 0.4, -4], [0, -8], [-w * 0.4, -4]];
+		case 'tri':
+			return [[-w * 0.25, 0], [-w * 0.6, h * 0.45], [-w * 1.05, h * 0.98], [0, h * 1.02], [w * 1.05, h * 0.98], [w * 0.6, h * 0.45], [w * 0.25, 0], [0, -4]];
+		case 'barrel':
+			return [[-w * 0.75, 0], [-w * 0.95, h * 0.25], [-w * 1.0, h * 0.55], [-w * 0.92, h * 0.88], [-w * 0.7, h * 1.0], [0, h * 1.02], [w * 0.7, h * 1.0], [w * 0.92, h * 0.88], [w * 1.0, h * 0.55], [w * 0.95, h * 0.25], [w * 0.75, 0], [0, -2]];
+		case 'tear':
+			return [[-w * 0.2, 0], [-w * 0.55, h * 0.3], [-w * 0.95, h * 0.72], [-w * 0.6, h * 1.0], [0, h * 1.05], [w * 0.6, h * 1.0], [w * 0.95, h * 0.72], [w * 0.55, h * 0.3], [w * 0.2, 0], [0, -6]];
+		case 'lumpy':
+			return [[-w * 0.5, 4], [-w * 0.95, h * 0.18], [-w * 0.72, h * 0.38], [-w * 1.0, h * 0.6], [-w * 0.78, h * 0.82], [-w * 0.6, h * 1.0], [0, h * 0.96], [w * 0.6, h * 1.02], [w * 0.9, h * 0.8], [w * 0.75, h * 0.6], [w * 0.98, h * 0.38], [w * 0.7, h * 0.15], [w * 0.5, 2], [0, -4]];
+		case 'hourglass':
+			return [[-w * 0.75, 2], [-w * 0.85, h * 0.2], [-w * 0.5, h * 0.5], [-w * 0.95, h * 0.85], [-w * 0.6, h * 1.02], [0, h * 1.04], [w * 0.6, h * 1.02], [w * 0.95, h * 0.85], [w * 0.5, h * 0.5], [w * 0.85, h * 0.2], [w * 0.75, 2], [0, -2]];
+		case 'wedge':
+			return [[-w * 1.0, 0], [-w * 0.95, h * 0.3], [-w * 0.6, h * 0.8], [-w * 0.35, h * 1.02], [0, h * 1.04], [w * 0.35, h * 1.02], [w * 0.6, h * 0.8], [w * 0.95, h * 0.3], [w * 1.0, 0], [0, -4]];
+		case 'blob':
+			return [[-w * 0.6, h * 0.06], [-w * 1.1, h * 0.32], [-w * 0.95, h * 0.7], [-w * 1.15, h * 0.95], [-w * 0.3, h * 1.05], [w * 0.4, h * 0.98], [w * 1.1, h * 1.02], [w * 0.98, h * 0.6], [w * 1.08, h * 0.25], [w * 0.55, h * 0.02], [0, -10]];
+		case 'noodle':
+			return [[-w * 0.4, 0], [-w * 0.48, h * 0.5], [-w * 0.42, h * 1.0], [0, h * 1.04], [w * 0.42, h * 1.0], [w * 0.48, h * 0.5], [w * 0.4, 0], [0, -4]];
+		case 'mushroom':
+			return [[-w * 0.95, 0], [-w * 1.1, h * 0.2], [-w * 0.85, h * 0.36], [-w * 0.5, h * 0.42], [-w * 0.55, h * 0.95], [0, h * 1.02], [w * 0.55, h * 0.95], [w * 0.5, h * 0.42], [w * 0.85, h * 0.36], [w * 1.1, h * 0.2], [w * 0.95, 0], [0, -6]];
+		case 'cloud':
+			return [[-w * 0.5, 2], [-w * 0.95, h * 0.2], [-w * 1.1, h * 0.5], [-w * 0.9, h * 0.75], [-w * 1.05, h * 0.95], [-w * 0.4, h * 1.08], [w * 0.0, h * 0.98], [w * 0.45, h * 1.08], [w * 1.05, h * 0.95], [w * 0.9, h * 0.75], [w * 1.1, h * 0.5], [w * 0.95, h * 0.2], [w * 0.5, 2], [0, -4]];
 		case 'bean':
 		default:
 			return [[-w * 0.5, 4], [-w * 0.82, h * 0.3], [-w * 0.9, h * 0.72], [-w * 0.65, h * 0.98], [0, h * 1.04], [w * 0.65, h * 0.98], [w * 0.9, h * 0.72], [w * 0.82, h * 0.3], [w * 0.5, 4], [0, -4]];
@@ -32,6 +56,7 @@ const bodyPts = (k: BodyKind, w: number, h: number): P2[] => {
 
 type LegKind = 'stick' | 'stub' | 'tube' | 'noodle' | 'boots' | 'pants';
 type ArmKind = 'line' | 'noodle' | 'tube' | 'mitten';
+type HandKind = 'open' | 'point' | 'thumb' | 'peace' | 'fist' | 'relaxed' | 'claw' | 'ok';
 type V = {
 	n: number;
 	body: BodyKind;
@@ -49,8 +74,65 @@ type V = {
 	hairCol?: string;
 	eyes: 'dot' | 'lid' | 'wide' | 'happy' | 'flat';
 	mouth: 'smirk' | 'flat' | 'grin' | 'o' | 'frown';
-	pose: 'idle' | 'wave' | 'walk' | 'hips' | 'shrug' | 'point' | 'cheer' | 'think';
+	pose: 'idle' | 'wave' | 'walk' | 'hips' | 'shrug' | 'point' | 'cheer' | 'think' | 'thumbs' | 'peace' | 'jazz' | 'flex';
+	hands?: [HandKind, HandKind];
+	sc?: number;
 	extra?: 'tie' | 'collar' | 'stripe' | 'scarf' | 'glasses' | 'shades' | 'belt' | 'pocket';
+};
+
+
+// Hand with drawn fingers. (x, y) = wrist, dir = forearm direction (radians), side mirrors the thumb.
+const Hand: React.FC<{x: number; y: number; dir: number; side: number; kind: HandKind; seed: number; skin?: string}> = ({x, y, dir, side, kind, seed, skin = HEAD}) => {
+	const f = 0;
+	const pr = 27;
+	const px = x + Math.cos(dir) * pr * 0.8;
+	const py = y + Math.sin(dir) * pr * 0.8;
+	const fing = (ang: number, len0: number, k: number, curl = 0) => {
+		const len = len0 * 1.3;
+		const a = dir + ang;
+		const sx = px + Math.cos(a) * pr * 0.85;
+		const sy = py + Math.sin(a) * pr * 0.85;
+		const mx = sx + Math.cos(a) * len * 0.55;
+		const my = sy + Math.sin(a) * len * 0.55;
+		const a2 = a + curl * side;
+		return <Line key={k} pts={[[sx, sy], [mx, my], [mx + Math.cos(a2) * len * 0.45, my + Math.sin(a2) * len * 0.45]]} f={f} seed={seed + k} w={LW * 0.75} amt={0.5} />;
+	};
+	const up = -Math.PI / 2;
+	let fingers: React.ReactNode[] = [];
+	switch (kind) {
+		case 'open':
+			fingers = [-0.6, -0.2, 0.2, 0.6].map((a, i) => fing(a, 34, i)).concat(fing(1.35 * side, 26, 9));
+			break;
+		case 'point':
+			fingers = [fing(0, 46, 0), fing(0.5 * side, 16, 1, 1.4), fing(0.9 * side, 14, 2, 1.4), fing(-1.2 * side, 22, 3)];
+			break;
+		case 'thumb': {
+			const tx = px + Math.cos(up) * 10;
+			fingers = [<Line key="t" pts={[[tx, py - 12], [tx + 2, py - 40], [tx - 2, py - 56]]} f={f} seed={seed + 5} w={LW * 0.8} amt={0.5} />, ...[0, 1, 2].map((i) => <Line key={i} pts={[[px - 14 + i * 12, py + 4], [px - 14 + i * 12, py + 14]]} f={f} seed={seed + 10 + i} w={LW * 0.55} amt={0.3} />)];
+			break;
+		}
+		case 'peace':
+			fingers = [fing(-0.3, 42, 0), fing(0.3, 42, 1), fing(0.8 * side, 14, 2, 1.5), fing(-1.3 * side, 18, 3, 1)];
+			break;
+		case 'fist':
+			fingers = [0, 1, 2].map((i) => <Line key={i} pts={[[px - 12 + i * 12, py - 6], [px - 12 + i * 12, py + 8]]} f={f} seed={seed + 10 + i} w={LW * 0.55} amt={0.3} />);
+			break;
+		case 'claw':
+			fingers = [-0.7, -0.25, 0.2, 0.65].map((a, i) => fing(a, 34, i, 1.2)).concat(fing(1.3 * side, 24, 9, 1));
+			break;
+		case 'ok':
+			fingers = [fing(-0.5, 34, 0), fing(-0.1, 36, 1), fing(0.3, 32, 2), <circle key="o" cx={px + Math.cos(dir + 0.9 * side) * 30} cy={py + Math.sin(dir + 0.9 * side) * 30} r={13} fill="none" stroke={INK} strokeWidth={LW * 0.7} />];
+			break;
+		case 'relaxed':
+		default:
+			fingers = [-0.35, 0, 0.35].map((a, i) => fing(a, 24, i, 0.6)).concat(fing(1.2 * side, 18, 9));
+	}
+	return (
+		<g>
+			{fingers}
+			<Shape pts={circ(px, py, pr, pr * 0.9, 9)} fill={skin} f={f} seed={seed + 30} w={LW * 0.8} amt={0.6} />
+		</g>
+	);
 };
 
 const Figure: React.FC<{v: V; x: number; y: number}> = ({v, x, y}) => {
@@ -123,6 +205,10 @@ const Figure: React.FC<{v: V; x: number; y: number}> = ({v, x, y}) => {
 		point: [[0.2, 0.1], [1.55, 0.0]],
 		cheer: [[2.5, 0.3], [2.5, 0.3]],
 		think: [[-0.6, -1.4], [-0.9, -2.3]],
+		thumbs: [[0.25, 0.15], [0.9, 1.1]],
+		peace: [[0.3, 0.2], [2.0, 0.9]],
+		jazz: [[1.6, 0.6], [1.6, 0.6]],
+		flex: [[1.5, 1.6], [1.5, 1.6]],
 	};
 	const shY = neck + 34;
 	const shX = bw * 0.62;
@@ -136,11 +222,25 @@ const Figure: React.FC<{v: V; x: number; y: number}> = ({v, x, y}) => {
 		const th2 = th1 - e * side;
 		const hx = ex + Math.cos(th2) * L2;
 		const hy = ey + Math.sin(th2) * L2;
+		const hk = v.hands ? v.hands[side < 0 ? 0 : 1] : null;
+		const H = hk ? <Hand x={hx} y={hy} dir={th2} side={side} kind={hk} seed={s + 300 + (side > 0 ? 20 : 0)} /> : null;
+		if (H && v.arms !== 'tube')
+			return (
+				<g>
+					{v.arms === 'noodle' ? <Line pts={[[ox, shY], [(ox + ex) / 2 + side * 14, (shY + ey) / 2], [ex, ey], [hx, hy]]} f={f} seed={s + 60 + side} /> : <Line pts={[[ox, shY], [ex, ey], [hx, hy]]} f={f} seed={s + 60 + side} />}
+					{H}
+				</g>
+			);
 		if (v.arms === 'tube') {
 			const nx = (a2: number) => [Math.cos(a2 + Math.PI / 2) * 18, Math.sin(a2 + Math.PI / 2) * 18];
 			const n1 = nx(th1);
 			const n2 = nx(th2);
-			return <Shape pts={[[ox + n1[0], shY + n1[1]], [ex + n1[0], ey + n1[1]], [hx + n2[0], hy + n2[1]], [hx - n2[0], hy - n2[1]], [ex - n1[0], ey - n1[1]], [ox - n1[0], shY - n1[1]]]} fill={v.col} f={f} seed={s + 60 + side} w={LW * 0.85} amt={1} />;
+			return (
+				<g>
+					<Shape pts={[[ox + n1[0], shY + n1[1]], [ex + n1[0], ey + n1[1]], [hx + n2[0], hy + n2[1]], [hx - n2[0], hy - n2[1]], [ex - n1[0], ey - n1[1]], [ox - n1[0], shY - n1[1]]]} fill={v.col} f={f} seed={s + 60 + side} w={LW * 0.85} amt={1} />
+					{H}
+				</g>
+			);
 		}
 		if (v.arms === 'mitten')
 			return (
@@ -282,7 +382,7 @@ const Figure: React.FC<{v: V; x: number; y: number}> = ({v, x, y}) => {
 	const P2 = P[v.pose];
 	const thinkHand = v.pose === 'think';
 	return (
-		<g transform={`translate(${x} ${y}) scale(0.62)`}>
+		<g transform={`translate(${x} ${y}) scale(${v.sc ?? 0.62})`}>
 			{legs}
 			<Shape pts={bodyPts(v.body, bw, bh).map(([px, py]) => [px, neck + py] as P2)} fill={v.col} f={f} seed={s + 10} />
 			{extra}
@@ -326,6 +426,49 @@ export const Variants: React.FC = () => (
 						<Figure v={v} x={cx} y={base} />
 						<circle cx={cx - 140} cy={base - 390} r={30} fill={INK} />
 						<text x={cx - 140} y={base - 380} textAnchor="middle" fontFamily="Inter" fontWeight={800} fontSize={32} fill="#ececec">
+							{v.n}
+						</text>
+					</g>
+				);
+			})}
+		</svg>
+	</AbsoluteFill>
+);
+
+// Second sheet: 16 more body types, all with drawn fingers.
+const MORE: V[] = [
+	{n: 13, body: 'potato', bw: 140, bh: 250, headR: 104, neck: 22, legs: 'stick', legLen: 110, arms: 'line', col: '#b89a6a', hair: 'messy', hairCol: '#5a3a28', eyes: 'dot', mouth: 'grin', pose: 'wave', hands: ['relaxed', 'open']},
+	{n: 14, body: 'pill', bw: 120, bh: 280, headR: 98, neck: 18, legs: 'pants', legLen: 120, pants: '#2e3a52', arms: 'line', col: '#e8e2d2', hair: 'swoop', hairCol: '#1a1a1a', eyes: 'lid', mouth: 'smirk', pose: 'point', hands: ['relaxed', 'point'], extra: 'tie'},
+	{n: 15, body: 'tri', bw: 150, bh: 260, headR: 100, neck: 16, legs: 'noodle', legLen: 110, arms: 'noodle', col: '#d06a5a', hair: 'bun', hairCol: '#e0b060', eyes: 'happy', mouth: 'grin', pose: 'jazz', hands: ['open', 'open']},
+	{n: 16, body: 'barrel', bw: 150, bh: 240, headR: 104, neck: 26, legs: 'stub', legLen: 80, pants: '#4a3a2a', arms: 'tube', col: '#6a8a9a', hair: 'tuft', hairCol: '#2a1c18', eyes: 'dot', mouth: 'flat', pose: 'thumbs', hands: ['fist', 'thumb'], extra: 'belt'},
+	{n: 17, body: 'tear', bw: 135, bh: 260, headR: 106, neck: 20, legs: 'stick', legLen: 120, arms: 'line', col: '#8a6ab0', hair: 'curly', hairCol: '#2a1c18', eyes: 'wide', mouth: 'o', pose: 'peace', hands: ['relaxed', 'peace'], extra: 'glasses'},
+	{n: 18, body: 'lumpy', bw: 140, bh: 250, headR: 100, neck: 20, legs: 'boots', legLen: 110, shoe: '#3a2a20', arms: 'line', col: '#7a8a5a', hair: 'spiky', hairCol: '#e0d040', eyes: 'flat', mouth: 'frown', pose: 'hips', hands: ['fist', 'fist']},
+	{n: 19, body: 'hourglass', bw: 130, bh: 270, headR: 100, neck: 18, legs: 'stick', legLen: 125, arms: 'noodle', col: '#c86a8a', hair: 'bob', hairCol: '#8a3a2a', eyes: 'dot', mouth: 'smirk', pose: 'shrug', hands: ['open', 'open'], extra: 'scarf'},
+	{n: 20, body: 'wedge', bw: 150, bh: 260, headR: 98, neck: 16, legs: 'pants', legLen: 130, pants: '#3a3a44', arms: 'tube', col: '#4a6aa0', hair: 'cap', hairCol: '#c84a3a', eyes: 'lid', mouth: 'grin', pose: 'flex', hands: ['fist', 'fist']},
+	{n: 21, body: 'blob', bw: 135, bh: 240, headR: 110, neck: 28, legs: 'stub', legLen: 75, pants: '#6a5a4a', arms: 'line', col: '#9ac0a0', hair: 'messy', hairCol: '#a8a8a8', eyes: 'happy', mouth: 'grin', pose: 'cheer', hands: ['claw', 'claw']},
+	{n: 22, body: 'noodle', bw: 110, bh: 320, headR: 92, neck: 14, legs: 'stick', legLen: 150, arms: 'noodle', col: '#d8b84a', hair: 'swoop', hairCol: '#2a1c18', eyes: 'dot', mouth: 'flat', pose: 'think', hands: ['relaxed', 'ok']},
+	{n: 23, body: 'mushroom', bw: 140, bh: 260, headR: 100, neck: 18, legs: 'tube', legLen: 110, pants: '#5a4a3a', arms: 'line', col: '#b8483a', hair: 'tuft', hairCol: '#2a1c18', eyes: 'wide', mouth: 'grin', pose: 'wave', hands: ['relaxed', 'open'], extra: 'collar'},
+	{n: 24, body: 'cloud', bw: 140, bh: 240, headR: 108, neck: 26, legs: 'noodle', legLen: 100, arms: 'noodle', col: '#e8e8f0', hair: 'curly', hairCol: '#c8a070', eyes: 'happy', mouth: 'smirk', pose: 'jazz', hands: ['open', 'peace']},
+	{n: 25, body: 'egg', bw: 135, bh: 240, headR: 112, neck: 24, legs: 'boots', legLen: 100, shoe: '#6a4a30', arms: 'line', col: '#3a5a4a', hair: 'bun', hairCol: '#5a3a28', eyes: 'lid', mouth: 'smirk', pose: 'point', hands: ['fist', 'point'], extra: 'pocket'},
+	{n: 26, body: 'pear', bw: 145, bh: 250, headR: 100, neck: 20, legs: 'stick', legLen: 115, arms: 'tube', col: '#a3876b', hair: 'swoop', hairCol: '#c4602a', eyes: 'dot', mouth: 'grin', pose: 'thumbs', hands: ['relaxed', 'thumb'], extra: 'tie'},
+	{n: 27, body: 'potato', bw: 150, bh: 230, headR: 115, neck: 30, legs: 'stub', legLen: 70, pants: '#3a3a44', arms: 'line', col: '#5a6278', hair: 'spiky', hairCol: '#2a1c18', eyes: 'wide', mouth: 'frown', pose: 'shrug', hands: ['claw', 'claw'], extra: 'stripe'},
+	{n: 28, body: 'tallbean', bw: 118, bh: 300, headR: 96, neck: 16, legs: 'pants', legLen: 135, pants: '#e6dcc4', shoe: '#a8483a', arms: 'line', col: '#e6dcc4', hair: 'cap', hairCol: '#2a2a2e', eyes: 'dot', mouth: 'smirk', pose: 'peace', hands: ['relaxed', 'peace'], extra: 'shades'},
+];
+
+export const Variants2: React.FC = () => (
+	<AbsoluteFill style={{background: BG}}>
+		<svg width={1080} height={1920} viewBox="0 0 1080 1920">
+			<rect width={1080} height={1920} fill={BG} />
+			{MORE.map((v, i) => {
+				const col = i % 4;
+				const row = Math.floor(i / 4);
+				const cx = 128 + col * 268;
+				const base = 440 + row * 465;
+				return (
+					<g key={v.n}>
+						<Figure v={{...v, sc: 0.5}} x={cx} y={base} />
+						<circle cx={cx - 100} cy={base - 390} r={26} fill={INK} />
+						<text x={cx - 100} y={base - 381} textAnchor="middle" fontFamily="Inter" fontWeight={800} fontSize={26} fill="#ececec">
 							{v.n}
 						</text>
 					</g>
