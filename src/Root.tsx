@@ -11,7 +11,7 @@ import {GtaCast} from './gta/cast';
 import {FlatTest} from './flat/FlatTest';
 import {Variants, Variants2} from './flat/Variants';
 import {GuyCast, GuySheet} from './flat/Guy';
-import {StickCast, StickSheet} from './flat/Stick';
+import {StickCast, StickCastCards, StickCards, StickSheet} from './flat/Stick';
 import {GTA_FRAMES, GtaShort} from './gta/GtaShort';
 
 export const Root: React.FC = () => (
@@ -21,6 +21,8 @@ export const Root: React.FC = () => (
 		<Composition id="IcedTea" component={IcedTea} durationInFrames={ICED_TEA_FRAMES} fps={24} width={1920} height={1080} />
 		<Composition id="LastSlice" component={LastSlice} durationInFrames={LAST_SLICE_FRAMES} fps={24} width={1920} height={1080} />
 		<Composition id="GtaShort" component={GtaShort} durationInFrames={GTA_FRAMES} fps={30} width={1080} height={1920} />
+		<Still id="StickCards" component={StickCards} width={1080} height={1920} />
+		<Still id="StickCastCards" component={StickCastCards} width={1080} height={1920} />
 		<Still id="StickSheet" component={StickSheet} width={1080} height={1920} />
 		<Still id="StickCast" component={StickCast} width={1080} height={1920} />
 		<Still id="GuySheet" component={GuySheet} width={1080} height={1920} />

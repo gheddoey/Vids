@@ -46,11 +46,11 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 	const P = {...SREST, ...pose};
 	const k = look.h ?? 1;
 	const t = P.turn;
-	const THIGH = 118;
-	const SHIN = 112;
-	const TORSO = 210;
-	const TW = 46 * (1 - t * 0.25); // half torso width
-	const R = 96;
+	const THIGH = 100;
+	const SHIN = 96;
+	const TORSO = 178;
+	const TW = 54 * (1 - t * 0.25); // half torso width
+	const R = 128;
 	const hipY = -(THIGH + SHIN) * (1 - P.crouch * 0.35);
 	const neck = hipY - TORSO;
 	const hcX = t * 16;
@@ -71,7 +71,7 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 			<g key={side}>
 				{look.pants ? <Line pts={[[x0, hipY], [kx, ky], [fx, fy]]} f={f} seed={seed + 30 + side} w={w + LW * 1.1} amt={0.6} /> : null}
 				<Line pts={[[x0, hipY], [kx, ky], [fx, fy]]} f={f} seed={seed + 30 + side} w={look.pants ? w : LW} color={look.pants ?? INK} amt={0.6} />
-				<Shape pts={[[fx - toe * 18, fy - 12], [fx + toe * 26, fy - 14], [fx + toe * 40, fy + 2], [fx + toe * 30, fy + 9], [fx - toe * 20, fy + 8]]} fill={look.shoes ?? INK} f={f} seed={seed + 34 + side} w={LW * 0.8} amt={0.5} />
+				<Shape pts={[[fx - toe * 24, fy - 18], [fx + toe * 20, fy - 22], [fx + toe * 46, fy - 6], [fx + toe * 44, fy + 10], [fx - toe * 26, fy + 12]]} fill={look.shoes ?? INK} f={f} seed={seed + 34 + side} w={LW * 0.8} amt={0.5} />
 			</g>
 		);
 	};
@@ -96,16 +96,16 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 		const thumbA = th2 - 1.1 * side;
 		const H =
 			hand === 'fist' ? (
-				<Shape pts={circ(px, py, 18, 16, 9, th2)} fill={HEAD} f={f} seed={seed + 50 + side} w={LW * 0.8} amt={0.3} />
+				<Shape pts={circ(px, py, 23, 21, 9, th2)} fill={HEAD} f={f} seed={seed + 50 + side} w={LW * 0.8} amt={0.3} />
 			) : (
 				<g>
-					<Shape pts={circ(px + c * (hand === 'open' ? 8 : 4), py + sn * (hand === 'open' ? 8 : 4), hand === 'open' ? 26 : 22, 15, 10, th2)} fill={HEAD} f={f} seed={seed + 52 + side} w={LW * 0.8} amt={0.3} />
-					<Shape pts={circ(px + Math.cos(thumbA) * 16, py + Math.sin(thumbA) * 16, 11, 7, 8, thumbA)} fill={HEAD} f={f} seed={seed + 54 + side} w={LW * 0.7} amt={0.2} />
+					<Shape pts={circ(px + c * (hand === 'open' ? 8 : 4), py + sn * (hand === 'open' ? 8 : 4), hand === 'open' ? 31 : 27, 20, 10, th2)} fill={HEAD} f={f} seed={seed + 52 + side} w={LW * 0.8} amt={0.3} />
+					<Shape pts={circ(px + Math.cos(thumbA) * 21, py + Math.sin(thumbA) * 21, 14, 9, 8, thumbA)} fill={HEAD} f={f} seed={seed + 54 + side} w={LW * 0.7} amt={0.2} />
 				</g>
 			);
 		return (
 			<g key={side}>
-				<Line pts={[[ox, shY], [ex, ey], [hx, hy]]} f={f} seed={seed + 40 + side} amt={0.6} />
+				<Line pts={[[ox, shY], [(ox + ex) / 2 + side * 6, (shY + ey) / 2], [ex, ey], [(ex + hx) / 2 + side * 5, (ey + hy) / 2], [hx, hy]]} f={f} seed={seed + 40 + side} w={LW * 1.15} amt={0.6} />
 				{H}
 			</g>
 		);
@@ -125,7 +125,7 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 	// ---------- face ----------
 	const fx = hcX + t * R * 0.5;
 	const eyeY = hcY - 2;
-	const sep = 30 * (1 - t * 0.5);
+	const sep = 38 * (1 - t * 0.5);
 	type EyeK = 'oval' | 'dot' | 'happy' | 'closed' | 'half' | 'wide' | 'tiny';
 	const EX: Record<SExpr, {eye: EyeK; brow: number; browUp?: number; mouth: 'flat' | 'smile' | 'open' | 'wobble' | 'o' | 'frown' | 'grin' | 'smirk' | 'teeth'; look?: number}> = {
 		neutral: {eye: 'oval', brow: 0, mouth: 'flat'},
@@ -154,44 +154,47 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 			case 'tiny':
 				return (
 					<g key={side}>
-						<ellipse cx={cx} cy={eyeY} rx={17 * far} ry={21} fill="#fff" stroke={INK} strokeWidth={LW * 0.6} />
-						<circle cx={cx} cy={eyeY + 2} r={4} fill={INK} />
+						<ellipse cx={cx} cy={eyeY} rx={24 * far} ry={30} fill="#fff" stroke={INK} strokeWidth={LW * 0.65} />
+						<circle cx={cx} cy={eyeY + 2} r={5} fill={INK} />
 					</g>
 				);
 			case 'wide':
 				return (
 					<g key={side}>
-						<ellipse cx={cx} cy={eyeY - 2} rx={20 * far} ry={25} fill="#fff" stroke={INK} strokeWidth={LW * 0.6} />
-						<circle cx={cx + lk * 0.3} cy={eyeY} r={7} fill={INK} />
+						<ellipse cx={cx} cy={eyeY - 4} rx={28 * far} ry={34} fill="#fff" stroke={INK} strokeWidth={LW * 0.65} />
+						<circle cx={cx + lk * 0.3} cy={eyeY} r={9} fill={INK} />
+						<circle cx={cx + lk * 0.3 + 4} cy={eyeY - 4} r={3} fill="#fff" />
 					</g>
 				);
 			case 'half':
 				return (
 					<g key={side}>
-						<ellipse cx={cx} cy={eyeY + 2} rx={15 * far} ry={13} fill="#fff" stroke={INK} strokeWidth={LW * 0.6} />
-						<circle cx={cx + lk} cy={eyeY + 5} r={6} fill={INK} />
-						<Line pts={[[cx - 17 * far, eyeY - 4], [cx + 17 * far, eyeY - 4]]} f={f} seed={seed + 64 + side} w={LW * 0.8} amt={0.2} />
+						<ellipse cx={cx} cy={eyeY + 4} rx={22 * far} ry={18} fill="#fff" stroke={INK} strokeWidth={LW * 0.65} />
+						<circle cx={cx + lk} cy={eyeY + 9} r={10} fill={INK} />
+						<circle cx={cx + lk + 4} cy={eyeY + 5} r={3.5} fill="#fff" />
+						<Line pts={[[cx - 24 * far, eyeY - 4], [cx + 24 * far, eyeY - 4]]} f={f} seed={seed + 64 + side} w={LW * 0.8} amt={0.2} />
 					</g>
 				);
 			case 'dot':
-				return <ellipse key={side} cx={cx} cy={eyeY} rx={8 * far} ry={10} fill={INK} />;
+				return <ellipse key={side} cx={cx} cy={eyeY} rx={11 * far} ry={14} fill={INK} />;
 			case 'oval':
 			default:
 				return (
 					<g key={side}>
-						<ellipse cx={cx} cy={eyeY} rx={15 * far} ry={19} fill="#fff" stroke={INK} strokeWidth={LW * 0.6} />
-						<circle cx={cx + lk} cy={eyeY + 3} r={7} fill={INK} />
+						<ellipse cx={cx} cy={eyeY} rx={23 * far} ry={29} fill="#fff" stroke={INK} strokeWidth={LW * 0.65} />
+						<circle cx={cx + lk} cy={eyeY + 5} r={12} fill={INK} />
+						<circle cx={cx + lk + 5} cy={eyeY} r={4.5} fill="#fff" />
 					</g>
 				);
 		}
 	};
 	const brow = (side: -1 | 1) => {
 		const cx = fx + side * sep;
-		const by = eyeY - 30 + (E.browUp ?? 0);
+		const by = eyeY - 42 + (E.browUp ?? 0);
 		const b = E.brow; // + angry: inner end down
-		return <Line key={`b${side}`} pts={[[cx - side * 18, by + b * 11], [cx, by - 3 - Math.abs(b) * 1.5], [cx + side * 18, by - b * 5]]} f={f} seed={seed + 66 + side} w={LW * 1.1} amt={0.3} />;
+		return <Line key={`b${side}`} pts={[[cx - side * 22, by + b * 13], [cx, by - 4 - Math.abs(b) * 2], [cx + side * 22, by - b * 6]]} f={f} seed={seed + 66 + side} w={LW * 1.3} amt={0.3} />;
 	};
-	const my = hcY + 44;
+	const my = hcY + 62;
 	const mx = fx + 4;
 	const mouth = (() => {
 		switch (E.mouth) {
@@ -206,7 +209,12 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 			case 'frown':
 				return <Line pts={[[mx - 18, my + 8], [mx, my - 3], [mx + 18, my + 8]]} f={f} seed={seed + 74} w={LW * 0.8} amt={0.3} />;
 			case 'grin':
-				return <Shape pts={[[mx - 26, my - 8], [mx + 26, my - 8], [mx + 14, my + 18], [mx - 14, my + 18]]} fill="#7a3a30" f={f} seed={seed + 75} w={LW * 0.7} amt={0.3} />;
+				return (
+					<g>
+						<Shape pts={[[mx - 32, my - 10], [mx + 32, my - 10], [mx + 18, my + 24], [mx - 18, my + 24]]} fill="#7a3a30" f={f} seed={seed + 75} w={LW * 0.75} amt={0.3} />
+						<Shape pts={circ(mx, my + 16, 14, 7, 8)} fill="#e07a7a" f={f} seed={seed + 175} w={0} amt={0.2} />
+					</g>
+				);
 			case 'smirk':
 				return <Line pts={[[mx - 22, my + 2], [mx + 6, my + 4], [mx + 22, my - 10]]} f={f} seed={seed + 76} w={LW * 0.8} amt={0.3} />;
 			case 'teeth':
@@ -283,6 +291,11 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 	const head = (
 		<g transform={`rotate(${(P.tilt * 180) / Math.PI} ${hcX} ${neck})`}>
 			<Shape pts={circ(hcX, hcY, R, R * 0.97, 16)} fill={HEAD} f={f} seed={seed + 10} amt={1} />
+			{/* soft flat shine and cheeks */}
+			<ellipse cx={hcX - R * 0.45} cy={hcY - R * 0.45} rx={R * 0.16} ry={R * 0.09} transform={`rotate(-35 ${hcX - R * 0.45} ${hcY - R * 0.45})`} fill="#ffffff" opacity={0.9} />
+			{(['happy', 'laugh', 'talk', 'shock', 'unsure', 'scared', 'sad'] as SExpr[]).includes(expr)
+				? ([-1, 1] as const).map((sd) => <ellipse key={sd} cx={fx + sd * (sep + 22)} cy={hcY + 34} rx={20 * (t > 0.2 && sd < 0 ? 0.5 : 1)} ry={11} fill="#f08a8a" opacity={0.45} />)
+				: null}
 			{hair}
 			{([-1, 1] as const).map(eye)}
 			{([-1, 1] as const).map(brow)}
@@ -306,6 +319,7 @@ export const Stick: React.FC<{look: StickLook; expr?: SExpr; pose?: Partial<SPos
 
 	return (
 		<g transform={`translate(${x} ${y - P.hop}) scale(${s * k})`}>
+			<ellipse cx={t * 10} cy={P.hop / (s * k) + 10} rx={95 - Math.min(40, P.hop * 0.6)} ry={16} fill="#000" opacity={0.12} />
 			{t > 0.5 ? (
 				<g transform={`rotate(${(P.lean * 180) / Math.PI} 0 ${hipY})`}>{arm(-1, P.armL, P.handL ?? 'mitt')}</g>
 			) : null}
@@ -375,6 +389,69 @@ export const StickCast: React.FC = () => (
 			{CAST.map(([c, e, p], i) => (
 				<Stick key={i} look={c} expr={e} pose={p} x={190 + (i % 3) * 350} y={880 + Math.floor(i / 3) * 900} s={0.85} seed={i * 17 + 5} />
 			))}
+		</svg>
+	</AbsoluteFill>
+);
+
+// ---------------- Eye-candy sheets (colour cards) ----------------
+const Card: React.FC<{x: number; y: number; w: number; h: number; col: string; seed: number}> = ({x, y, w, h, col, seed}) => (
+	<g>
+		<rect x={x + 8} y={y + 10} width={w} height={h} rx={38} fill="#000" opacity={0.1} />
+		<Shape pts={[[x + 30, y], [x + w / 2, y - 2], [x + w - 30, y], [x + w, y + 30], [x + w + 1, y + h / 2], [x + w, y + h - 30], [x + w - 30, y + h], [x + w / 2, y + h + 2], [x + 30, y + h], [x, y + h - 30], [x - 1, y + h / 2], [x, y + 30]]} fill={col} f={0} seed={seed} w={LW * 0.9} amt={0.8} />
+	</g>
+);
+const Sparkle: React.FC<{x: number; y: number; r?: number; col?: string}> = ({x, y, r = 18, col = '#fff6d0'}) => (
+	<path d={`M ${x} ${y - r} Q ${x + r * 0.18} ${y - r * 0.18} ${x + r} ${y} Q ${x + r * 0.18} ${y + r * 0.18} ${x} ${y + r} Q ${x - r * 0.18} ${y + r * 0.18} ${x - r} ${y} Q ${x - r * 0.18} ${y - r * 0.18} ${x} ${y - r} Z`} fill={col} stroke={INK} strokeWidth={6} strokeLinejoin="round" />
+);
+
+const PAL = ['#f3c6a5', '#b9d7c4', '#c9c2e8', '#f5d98b', '#a9cde8', '#efb2c0', '#cfe0a0', '#f0c0a0', '#bfe3e0'];
+
+export const StickCards: React.FC = () => (
+	<AbsoluteFill style={{background: '#e9e4da'}}>
+		<svg width={1080} height={1920} viewBox="0 0 1080 1920">
+			<rect width={1080} height={1920} fill="#e9e4da" />
+			{/* hero turnaround */}
+			<Card x={40} y={40} w={1000} h={600} col="#a9cde8" seed={900} />
+			<Sparkle x={110} y={110} />
+			<Sparkle x={975} y={150} r={13} />
+			{[0, 0.5, 1].map((turn, i) => (
+				<Stick key={i} look={HERO} expr={(['happy', 'talk', 'neutral'] as SExpr[])[i]} pose={{turn, ...(i === 1 ? {armR: [1.0, 1.1], handR: 'open'} : {})}} x={210 + i * 330} y={600} s={0.82} seed={3} />
+			))}
+			{/* expressions */}
+			<Card x={40} y={680} w={1000} h={420} col="#f5d98b" seed={901} />
+			{(['happy', 'laugh', 'talk', 'shock', 'unsure', 'scared', 'angry', 'sly', 'sad', 'determined', 'bored', 'neutral'] as SExpr[]).map((e, i) => (
+				<Stick key={e} look={HERO} expr={e} x={120 + (i % 6) * 168} y={810 + Math.floor(i / 6) * 190} s={0.5} headOnly seed={3} />
+			))}
+			{/* poses */}
+			{POSES.slice(0, 6).map(([e, p], i) => {
+				const cx = 40 + (i % 3) * 340;
+				const cy = 1140 + Math.floor(i / 3) * 385;
+				return (
+					<g key={i}>
+						<Card x={cx} y={cy} w={320} h={360} col={PAL[i]} seed={910 + i} />
+						<Stick look={HERO} expr={e} pose={p} x={cx + 160} y={cy + 330} s={0.5} seed={3} />
+					</g>
+				);
+			})}
+		</svg>
+	</AbsoluteFill>
+);
+
+export const StickCastCards: React.FC = () => (
+	<AbsoluteFill style={{background: '#e9e4da'}}>
+		<svg width={1080} height={1920} viewBox="0 0 1080 1920">
+			<rect width={1080} height={1920} fill="#e9e4da" />
+			{CAST.map(([c, e, p], i) => {
+				const cx = 40 + (i % 2) * 510;
+				const cy = 40 + Math.floor(i / 2) * 625;
+				return (
+					<g key={i}>
+						<Card x={cx} y={cy} w={490} h={600} col={PAL[(i + 3) % PAL.length]} seed={950 + i} />
+						<Sparkle x={cx + 60} y={cy + 70} r={14} />
+						<Stick look={c} expr={e} pose={p} x={cx + 245} y={cy + 565} s={0.8} seed={i * 17 + 5} />
+					</g>
+				);
+			})}
 		</svg>
 	</AbsoluteFill>
 );
