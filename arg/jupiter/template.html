@@ -1,0 +1,321 @@
+<title>11-0829-JX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- __B64__ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=VT323&display=swap">
+<style>
+/* layout: one recovered dossier, sections stack as they unseal; terminal at the foot */
+:root {
+  --bg: #050605; --panel: #0b0d0b; --line: #1d221d;
+  --fg: #c4ccbf; --dim: #5f685c; --red: #e0402f; --amb: #d6a13e; --grn: #6fd08c;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --crt: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+html, body { background: var(--bg) }
+body {
+  color: var(--fg); font: 300 13px/1.65 var(--mono); letter-spacing: .02em;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 80px; min-height: 100%;
+  text-transform: uppercase;
+}
+body::after { /* scanlines + vignette */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+}
+main { max-width: 760px; margin: 0 auto; display: grid; gap: 56px; animation: flick 7s infinite steps(1) }
+@keyframes flick { 0%,96%,100% { opacity: 1 } 97% { opacity: .86 } 98% { opacity: 1 } 99% { opacity: .92 } }
+
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg);
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding-block: 14px 10px; border-bottom: 1px solid var(--line); color: var(--dim); font-size: 10.5px;
+  max-width: 760px; margin: 0 auto;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
+.rec { color: var(--red) } .rec::before { content: "● "; animation: blink 1.2s steps(1) infinite }
+@keyframes blink { 50% { opacity: 0 } }
+
+.crumb { color: var(--dim); font-size: 10.5px; letter-spacing: .08em; margin-bottom: 18px }
+.crumb span { color: var(--line) }
+h1 { font: 400 clamp(40px, 11vw, 76px)/.9 var(--crt); letter-spacing: .04em; margin: 8px 0 18px; color: var(--fg); text-wrap: balance }
+h1 em { color: var(--red); font-style: normal }
+p { margin: 0 0 12px; max-width: 62ch }
+.type { font-size: 14px; font-weight: 400 }
+.red { color: var(--red) } .amb { color: var(--amb) } .grn { color: var(--grn) } .dim { color: var(--dim) }
+.big { font: 400 32px/1 var(--crt) }
+.stage, .gatebox { animation: in .9s ease-out both; min-width: 0 }
+@keyframes in { from { filter: blur(3px) brightness(2) } to { filter: none } }
+
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 22px; margin: 14px 0; font-size: 12px }
+.kv b { font-weight: 400; color: var(--dim) } .kv i { font-style: normal; min-width: 0 } .kv em { font-style: normal; color: var(--dim) }
+
+pre { white-space: pre-wrap; word-break: break-word; font: inherit; margin: 14px 0; max-width: 100% }
+.cipher { font: 400 21px/1.3 var(--crt); letter-spacing: .12em; color: var(--amb); padding: 14px 16px; background: var(--panel); border-left: 2px solid var(--amb); user-select: all }
+.note, .log, .final { color: var(--fg); padding: 12px 0 }
+.final { font-size: 14px; font-weight: 400 }
+.hex { font: 400 20px/1.3 var(--crt); color: var(--grn); letter-spacing: .1em }
+.conflict { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 11px; color: var(--dim) }
+.conflict u { text-decoration: none; border: 1px solid var(--red); padding: 0 5px; margin-left: 6px; transform: rotate(-4deg); display: inline-block }
+
+.wave { height: 46px; display: flex; align-items: center; gap: 2px; margin: 10px 0 }
+.wave i { flex: 1; background: var(--fg); opacity: .75; min-width: 1px }
+
+.files { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 10px 0 22px }
+.file { display: flex; gap: 10px; font-size: 11px; border: 1px solid var(--line); padding: 8px; min-width: 0 }
+.file b { display: block; font-weight: 600 } .file i { display: block; font-style: normal }
+.ph { flex: none; width: 42px; height: 52px; background: linear-gradient(#2a2f29, #0e100e); display: grid; place-items: center; font: 28px var(--crt); color: var(--dim) }
+.void { position: relative; opacity: .7 }
+.void::after { content: "VOID"; position: absolute; right: 8px; bottom: 8px; color: var(--red); border: 1px solid var(--red); padding: 0 4px; transform: rotate(-8deg) }
+.dossier { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start }
+.redact { width: 130px; height: 160px; border: 1px solid var(--line); display: grid; place-content: center; text-align: center; color: var(--dim);
+  background: repeating-linear-gradient(45deg, #0d0f0d 0 6px, #090a09 6px 12px) }
+.redact small { display: block; font-size: 9px; margin-top: 4px }
+
+.beacon { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 18px 0 }
+.lamp { width: 64px; height: 64px; border-radius: 50%; background: #2a0d0a; border: 2px solid #3a1612; transition: background .03s, box-shadow .03s }
+.lamp.on { background: var(--red); box-shadow: 0 0 28px 6px rgba(224,64,47,.6) }
+
+.tl { display: grid; grid-template-columns: repeat(3, 1fr); position: relative; margin: 14px 0 22px; text-align: center }
+.tl::before { content: ""; position: absolute; left: 16%; right: 16%; top: 7px; height: 1px; background: var(--dim) }
+.tl b, .tl i { display: block; font-style: normal; font-weight: 400 } .tl b { color: var(--red) }
+.dot { display: block; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--red); background: rgba(224,64,47,.35); margin: 0 auto 6px; position: relative }
+
+.vent-wrap { overflow-x: auto; margin: 10px 0 } .vent { width: 100%; max-width: 100%; height: auto; display: block; background: var(--panel) }
+.hello { font: 400 34px var(--crt); color: var(--red); min-height: 40px; margin-top: 10px }
+.end { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--dim) }
+
+form.gate { margin-top: 26px; display: grid; gap: 8px }
+form.gate label { color: var(--fg); font-weight: 400; font-size: 13px }
+.row { display: flex; gap: 8px; min-width: 0 }
+input { flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--line); color: var(--grn); font: 400 22px var(--crt); letter-spacing: .14em;
+  padding: 8px 12px; text-transform: uppercase; caret-color: var(--grn); border-radius: 0 }
+input:focus { outline: none; border-color: var(--grn) }
+button { font: 400 13px var(--mono); letter-spacing: .1em; background: transparent; color: var(--fg); border: 1px solid var(--dim); padding: 8px 14px; cursor: pointer; border-radius: 0 }
+button:hover, button:focus-visible { border-color: var(--grn); color: var(--grn); outline: none }
+.ghost { padding: 2px 8px; font-size: 11px }
+.err { color: var(--red); min-height: 1.6em; font-size: 12px }
+.solved form.gate { opacity: .45; pointer-events: none }
+.solved form.gate input { color: var(--dim) }
+
+.ghostline { position: fixed; inset: 0; display: grid; place-items: center; z-index: 60; pointer-events: none; background: #000;
+  font: 400 clamp(28px, 8vw, 64px) var(--crt); color: var(--red); letter-spacing: .1em; text-align: center; padding: 20px }
+.toc { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10.5px; color: var(--dim); margin-top: 22px }
+.toc span.lit { color: var(--fg) }
+@media (prefers-reduced-motion: reduce) { main, .stage, .gatebox, .rec::before { animation: none } }
+</style>
+
+<header class="top"><span>N.K.S.A. / OFFICE OF RECORDS / FLIGHT 11-0829</span><span class="rec" id="clock">08/29/2011 07:30:06 UTC</span></header>
+<main id="main">
+  <section class="gatebox" data-n="0">
+    <div class="crumb">ARCHIVE NODE 7 <span>//</span> SEALED 08/29/2011</div>
+    <h1>THIS FILE WAS<br><em>NOT RELEASED.</em></h1>
+    <p class="type">IT HAS BEEN OPENED 4 TIMES. FOUR PEOPLE STOPPED ANSWERING THEIR PHONES.</p>
+    <div class="kv">
+      <b>INCOMING CALL</b><i class="red">NOT ANSWERED</i>
+      <b>SOURCE</b><i>VESSEL 11-0829 (CREW 4)</i>
+      <b>POSITION</b><i>JUPITER SYSTEM</i>
+      <b class="red">FLIGHT PLAN</b><i class="red">NOT ON FILE</i>
+      <b>CLASS SUFFIX</b><i>TARGET[0] + COUNT(SECTIONS)</i>
+    </div>
+    <div class="toc" aria-label="File sections">
+      <span>I</span><span>II</span><span>III</span><span>IV</span><span>V</span><span>VI</span><span>VII</span><span>VIII</span><span>IX</span><span>X</span>
+    </div>
+    <form class="gate" data-for="0" autocomplete="off">
+      <label for="a0">STATE THE FILE DESIGNATION.</label>
+      <div class="row"><input id="a0" spellcheck="false" autocapitalize="characters" placeholder="__-____-__"><button>OPEN</button></div>
+      <p class="err" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+
+<script>
+(() => {
+const BLOBS = __BLOBS__;
+const CHECKS = __CHECKS__;
+const enc = new TextEncoder(), dec = new TextDecoder();
+const KEY = "jx-progress";
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(KEY) || "[]") } catch (e) { return [] } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)) } catch (e) {} },
+  clear() { try { localStorage.removeItem(KEY) } catch (e) {} }
+};
+const sha = async b => new Uint8Array(await crypto.subtle.digest("SHA-256", b));
+const hex = u => [...u].map(x => x.toString(16).padStart(2, "0")).join("");
+function norm(s) {
+  s = s.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (s.startsWith("THE") && s.length > 3) s = s.slice(3);
+  for (let n = 1; n <= s.length / 2; n++)
+    if (s.length % n === 0 && s.slice(0, n).repeat(s.length / n) === s) return s.slice(0, n);
+  return s;
+}
+async function decrypt(b64, ans) {
+  const key = await sha(enc.encode("11-0829-JX/" + ans));
+  const data = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const out = new Uint8Array(data.length);
+  for (let i = 0; i < data.length; i += 32) {
+    const ctr = new Uint8Array(36); ctr.set(key); new DataView(ctr.buffer).setUint32(32, i / 32);
+    const block = await sha(ctr);
+    for (let j = 0; j < 32 && i + j < data.length; j++) out[i + j] = data[i + j] ^ block[j];
+  }
+  return dec.decode(out);
+}
+const main = document.getElementById("main");
+const fails = [0, 0, 0, 0, 0];
+const TAUNTS = ["NO.", "ATTEMPT LOGGED.", "INCORRECT. THE TERMINAL IS COUNTING.", "STOP GUESSING.", "IT CAN HEAR YOU TYPING."];
+
+async function unlock(n, ans, instant) {
+  const html = await decrypt(BLOBS[n], ans);
+  const box = main.querySelector(`[data-n="${n}"]`);
+  box.classList.add("solved");
+  box.querySelector("input").value = ans;
+  const w = document.createElement("div"); w.innerHTML = html.trim();
+  const sec = w.firstElementChild; main.appendChild(sec);
+  initStage(sec);
+  if (!instant) setTimeout(() => sec.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+  else sec.style.animation = "none";
+}
+
+main.addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, n = +f.dataset.for, err = f.querySelector(".err");
+  const ans = norm(f.querySelector("input").value);
+  if (!ans) return;
+  const ok = hex(await sha(enc.encode("chk/" + ans))) === CHECKS[n];
+  if (!ok) {
+    err.textContent = TAUNTS[Math.min(fails[n]++, TAUNTS.length - 1)];
+    if (fails[n] === 7) glitch("WE CAN SEE THE CURSOR");
+    return;
+  }
+  err.textContent = "";
+  const p = store.get(); p[n] = ans; store.set(p);
+  glitch(n === 4 ? "THEY ARE IN THE VENTS" : "", n === 4 ? 420 : 90);
+  setTimeout(() => unlock(n, ans), n === 4 ? 450 : 100);
+});
+
+function glitch(text, ms = 90) {
+  const g = document.createElement("div"); g.className = "ghostline"; g.textContent = text;
+  document.body.appendChild(g); setTimeout(() => g.remove(), ms);
+}
+
+function initStage(sec) {
+  sec.querySelectorAll(".wave").forEach(w => {
+    let s = +w.dataset.seed || 7;
+    for (let i = 0; i < 90; i++) { s = (s * 9301 + 49297) % 233280; const b = document.createElement("i");
+      b.style.height = (8 + (s / 233280) * 90 * Math.abs(Math.sin(i / 7))) + "%"; w.appendChild(b); }
+  });
+  const lamp = sec.querySelector(".lamp");
+  if (lamp) morseLamp(lamp, sec.querySelector("[data-tone]"));
+  const cv = sec.querySelector("canvas.vent");
+  if (cv) vents(cv, sec);
+  sec.querySelectorAll("[data-purge]").forEach(b => b.addEventListener("click", () => {
+    store.clear(); b.textContent = "PURGED. IT STILL REMEMBERS YOU."; setTimeout(() => location.reload(), 1400);
+  }));
+}
+
+/* ---- POD 2 beacon: morse lamp + optional tone ---- */
+function morseLamp(lamp, btn) {
+  const code = lamp.dataset.morse, U = 170, seq = [];
+  for (let i = 0; i < code.length; i++) {
+    const c = code[i];
+    if (c === ".") seq.push([1, U], [0, U]);
+    else if (c === "-") seq.push([1, 3 * U], [0, U]);
+    else if (c === " ") seq.push([0, 2 * U]);
+  }
+  seq.push([0, 14 * U]);
+  let ctx = null, gain = null, playing = false;
+  if (btn) btn.addEventListener("click", () => {
+    try {
+      if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(); o.frequency.value = 612; gain = ctx.createGain(); gain.gain.value = 0;
+        o.connect(gain).connect(ctx.destination); o.start(); }
+      playing = !playing; btn.textContent = playing ? "MUTE TONE" : "PLAY TONE";
+      if (ctx.state === "suspended") ctx.resume();
+    } catch (e) { btn.textContent = "NO CARRIER"; }
+  });
+  let i = 0;
+  (function step() {
+    const [on, d] = seq[i]; lamp.classList.toggle("on", !!on);
+    if (gain && ctx) gain.gain.setTargetAtTime(on && playing ? .12 : 0, ctx.currentTime, .004);
+    i = (i + 1) % seq.length; setTimeout(step, d);
+  })();
+}
+
+/* ---- ENTITY: schematic with contacts moving through the vents ---- */
+function vents(cv, sec) {
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const rooms = [[30, 150, 130, 120, "COCKPIT"], [160, 185, 300, 50, "CORRIDOR"], [460, 60, 150, 125, "CREW QTRS"],
+                 [460, 235, 150, 125, "POD BAY"], [610, 140, 90, 140, "ENGINE"]];
+  const duct = [[700, 120], [700, 30], [400, 30], [400, 120], [20, 120], [20, 300], [300, 300], [300, 390], [640, 390], [640, 300]];
+  const you = [300, 210];
+  let pts = Array.from({ length: 3 }, (_, k) => ({ t: k * .27, sp: .0006 + k * .0002, out: 0 }));
+  const contacts = sec.querySelector("[data-contacts]"), nowEl = sec.querySelector("[data-now]"), hello = sec.querySelector("[data-hello]");
+  if (nowEl) nowEl.textContent = new Date().toLocaleString().toUpperCase();
+  function along(t) {
+    const seg = []; let L = 0;
+    for (let i = 0; i < duct.length - 1; i++) { const a = duct[i], b = duct[i + 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L += l; }
+    let d = (t % 1) * L;
+    for (const [a, b, l] of seg) { if (d <= l) return [a[0] + (b[0] - a[0]) * d / l, a[1] + (b[1] - a[1]) * d / l]; d -= l; }
+    return duct[duct.length - 1];
+  }
+  const start = performance.now();
+  function draw(now) {
+    const el = (now - start) / 1000;
+    if (pts.length < 23 && Math.random() < .006 + el * .0004) pts.push({ t: Math.random(), sp: .0005 + Math.random() * .0012, out: 0 });
+    g.fillStyle = "#0b0d0b"; g.fillRect(0, 0, W, H);
+    g.strokeStyle = "#c4ccbf"; g.lineWidth = 1.2; g.font = "11px IBM Plex Mono, monospace"; g.fillStyle = "#5f685c";
+    for (const [x, y, w, h, n] of rooms) { g.strokeRect(x, y, w, h); g.fillText(n, x + 6, y + 15); }
+    g.setLineDash([5, 6]); g.strokeStyle = "rgba(224,64,47,.55)"; g.beginPath();
+    duct.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); g.setLineDash([]);
+    const lateness = Math.min(1, el / 50);
+    for (const p of pts) {
+      p.t += p.sp; let [x, y] = along(p.t);
+      if (lateness > .4) { p.out = Math.min(1, p.out + .0015 * lateness); x += (you[0] - x) * p.out * .9; y += (you[1] - y) * p.out * .9; }
+      g.fillStyle = "#e0402f"; g.shadowColor = "#e0402f"; g.shadowBlur = 10;
+      g.beginPath(); g.arc(x + Math.sin(now / 90 + p.t * 50), y, 4, 0, 7); g.fill(); g.shadowBlur = 0;
+    }
+    const blinkOn = Math.floor(now / 500) % 2;
+    g.strokeStyle = blinkOn ? "#6fd08c" : "#2b5a38"; g.beginPath(); g.arc(you[0], you[1], 9, 0, 7); g.stroke();
+    g.fillStyle = "#6fd08c"; g.fillText("YOU", you[0] - 11, you[1] + 26);
+    g.fillStyle = "#e0402f"; g.fillText("CONTACTS: " + pts.length, W - 130, H - 12);
+    if (contacts) contacts.textContent = pts.length;
+    if (hello) {
+      const k = Math.floor(el / 4);
+      hello.textContent = el > 14 ? (k % 3 === 0 ? "HELLO?" : k % 3 === 1 ? "HELLO?  HELLO?" : " ") : " ";
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+/* ---- atmosphere ---- */
+const clock = document.getElementById("clock");
+const base = Date.UTC(2011, 7, 29, 7, 30, 6), t0 = Date.now();
+setInterval(() => {
+  const d = new Date(base + (Date.now() - t0));
+  const p = x => String(x).padStart(2, "0");
+  clock.textContent = `${p(d.getUTCMonth() + 1)}/${p(d.getUTCDate())}/${d.getUTCFullYear()} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`;
+}, 1000);
+const title = document.title;
+document.addEventListener("visibilitychange", () => { document.title = document.hidden ? "HELLO?" : title; });
+(function haunt() {
+  setTimeout(() => { if (!document.hidden) glitch(["IT'S IN THE VENTS", "HELLO?", "SEAT FOUR", "DON'T TURN AROUND"][Math.floor(Math.random() * 4)], 70); haunt(); },
+    40000 + Math.random() * 60000);
+})();
+console.log("%cN.K.S.A. // OFFICE OF RECORDS", "color:#e0402f;font:16px monospace");
+console.log("%cIF YOU ARE READING THE CONSOLE, SO IS IT.", "color:#c4ccbf;font:12px monospace");
+
+/* ---- resume ---- */
+(async () => {
+  const p = store.get();
+  for (let n = 0; n < p.length; n++) {
+    if (!p[n] || hex(await sha(enc.encode("chk/" + p[n]))) !== CHECKS[n]) break;
+    await unlock(n, p[n], true);
+  }
+})();
+})();
+</script>

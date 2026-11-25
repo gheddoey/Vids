@@ -1,0 +1,321 @@
+<title>11-0829-JX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- VEhFUkUgSVMgTk8gU0VDVElPTiAwMC4gWU9VIEFSRSBJTiBJVC4= -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&family=VT323&display=swap">
+<style>
+/* layout: one recovered dossier, sections stack as they unseal; terminal at the foot */
+:root {
+  --bg: #050605; --panel: #0b0d0b; --line: #1d221d;
+  --fg: #c4ccbf; --dim: #5f685c; --red: #e0402f; --amb: #d6a13e; --grn: #6fd08c;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --crt: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+html, body { background: var(--bg) }
+body {
+  color: var(--fg); font: 300 13px/1.65 var(--mono); letter-spacing: .02em;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 80px; min-height: 100%;
+  text-transform: uppercase;
+}
+body::after { /* scanlines + vignette */
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+}
+main { max-width: 760px; margin: 0 auto; display: grid; gap: 56px; animation: flick 7s infinite steps(1) }
+@keyframes flick { 0%,96%,100% { opacity: 1 } 97% { opacity: .86 } 98% { opacity: 1 } 99% { opacity: .92 } }
+
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg);
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding-block: 14px 10px; border-bottom: 1px solid var(--line); color: var(--dim); font-size: 10.5px;
+  max-width: 760px; margin: 0 auto;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
+.rec { color: var(--red) } .rec::before { content: "● "; animation: blink 1.2s steps(1) infinite }
+@keyframes blink { 50% { opacity: 0 } }
+
+.crumb { color: var(--dim); font-size: 10.5px; letter-spacing: .08em; margin-bottom: 18px }
+.crumb span { color: var(--line) }
+h1 { font: 400 clamp(40px, 11vw, 76px)/.9 var(--crt); letter-spacing: .04em; margin: 8px 0 18px; color: var(--fg); text-wrap: balance }
+h1 em { color: var(--red); font-style: normal }
+p { margin: 0 0 12px; max-width: 62ch }
+.type { font-size: 14px; font-weight: 400 }
+.red { color: var(--red) } .amb { color: var(--amb) } .grn { color: var(--grn) } .dim { color: var(--dim) }
+.big { font: 400 32px/1 var(--crt) }
+.stage, .gatebox { animation: in .9s ease-out both; min-width: 0 }
+@keyframes in { from { filter: blur(3px) brightness(2) } to { filter: none } }
+
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 22px; margin: 14px 0; font-size: 12px }
+.kv b { font-weight: 400; color: var(--dim) } .kv i { font-style: normal; min-width: 0 } .kv em { font-style: normal; color: var(--dim) }
+
+pre { white-space: pre-wrap; word-break: break-word; font: inherit; margin: 14px 0; max-width: 100% }
+.cipher { font: 400 21px/1.3 var(--crt); letter-spacing: .12em; color: var(--amb); padding: 14px 16px; background: var(--panel); border-left: 2px solid var(--amb); user-select: all }
+.note, .log, .final { color: var(--fg); padding: 12px 0 }
+.final { font-size: 14px; font-weight: 400 }
+.hex { font: 400 20px/1.3 var(--crt); color: var(--grn); letter-spacing: .1em }
+.conflict { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 11px; color: var(--dim) }
+.conflict u { text-decoration: none; border: 1px solid var(--red); padding: 0 5px; margin-left: 6px; transform: rotate(-4deg); display: inline-block }
+
+.wave { height: 46px; display: flex; align-items: center; gap: 2px; margin: 10px 0 }
+.wave i { flex: 1; background: var(--fg); opacity: .75; min-width: 1px }
+
+.files { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 10px 0 22px }
+.file { display: flex; gap: 10px; font-size: 11px; border: 1px solid var(--line); padding: 8px; min-width: 0 }
+.file b { display: block; font-weight: 600 } .file i { display: block; font-style: normal }
+.ph { flex: none; width: 42px; height: 52px; background: linear-gradient(#2a2f29, #0e100e); display: grid; place-items: center; font: 28px var(--crt); color: var(--dim) }
+.void { position: relative; opacity: .7 }
+.void::after { content: "VOID"; position: absolute; right: 8px; bottom: 8px; color: var(--red); border: 1px solid var(--red); padding: 0 4px; transform: rotate(-8deg) }
+.dossier { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start }
+.redact { width: 130px; height: 160px; border: 1px solid var(--line); display: grid; place-content: center; text-align: center; color: var(--dim);
+  background: repeating-linear-gradient(45deg, #0d0f0d 0 6px, #090a09 6px 12px) }
+.redact small { display: block; font-size: 9px; margin-top: 4px }
+
+.beacon { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 18px 0 }
+.lamp { width: 64px; height: 64px; border-radius: 50%; background: #2a0d0a; border: 2px solid #3a1612; transition: background .03s, box-shadow .03s }
+.lamp.on { background: var(--red); box-shadow: 0 0 28px 6px rgba(224,64,47,.6) }
+
+.tl { display: grid; grid-template-columns: repeat(3, 1fr); position: relative; margin: 14px 0 22px; text-align: center }
+.tl::before { content: ""; position: absolute; left: 16%; right: 16%; top: 7px; height: 1px; background: var(--dim) }
+.tl b, .tl i { display: block; font-style: normal; font-weight: 400 } .tl b { color: var(--red) }
+.dot { display: block; width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--red); background: rgba(224,64,47,.35); margin: 0 auto 6px; position: relative }
+
+.vent-wrap { overflow-x: auto; margin: 10px 0 } .vent { width: 100%; max-width: 100%; height: auto; display: block; background: var(--panel) }
+.hello { font: 400 34px var(--crt); color: var(--red); min-height: 40px; margin-top: 10px }
+.end { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--dim) }
+
+form.gate { margin-top: 26px; display: grid; gap: 8px }
+form.gate label { color: var(--fg); font-weight: 400; font-size: 13px }
+.row { display: flex; gap: 8px; min-width: 0 }
+input { flex: 1; min-width: 0; background: var(--panel); border: 1px solid var(--line); color: var(--grn); font: 400 22px var(--crt); letter-spacing: .14em;
+  padding: 8px 12px; text-transform: uppercase; caret-color: var(--grn); border-radius: 0 }
+input:focus { outline: none; border-color: var(--grn) }
+button { font: 400 13px var(--mono); letter-spacing: .1em; background: transparent; color: var(--fg); border: 1px solid var(--dim); padding: 8px 14px; cursor: pointer; border-radius: 0 }
+button:hover, button:focus-visible { border-color: var(--grn); color: var(--grn); outline: none }
+.ghost { padding: 2px 8px; font-size: 11px }
+.err { color: var(--red); min-height: 1.6em; font-size: 12px }
+.solved form.gate { opacity: .45; pointer-events: none }
+.solved form.gate input { color: var(--dim) }
+
+.ghostline { position: fixed; inset: 0; display: grid; place-items: center; z-index: 60; pointer-events: none; background: #000;
+  font: 400 clamp(28px, 8vw, 64px) var(--crt); color: var(--red); letter-spacing: .1em; text-align: center; padding: 20px }
+.toc { display: flex; gap: 10px; flex-wrap: wrap; font-size: 10.5px; color: var(--dim); margin-top: 22px }
+.toc span.lit { color: var(--fg) }
+@media (prefers-reduced-motion: reduce) { main, .stage, .gatebox, .rec::before { animation: none } }
+</style>
+
+<header class="top"><span>N.K.S.A. / OFFICE OF RECORDS / FLIGHT 11-0829</span><span class="rec" id="clock">08/29/2011 07:30:06 UTC</span></header>
+<main id="main">
+  <section class="gatebox" data-n="0">
+    <div class="crumb">ARCHIVE NODE 7 <span>//</span> SEALED 08/29/2011</div>
+    <h1>THIS FILE WAS<br><em>NOT RELEASED.</em></h1>
+    <p class="type">IT HAS BEEN OPENED 4 TIMES. FOUR PEOPLE STOPPED ANSWERING THEIR PHONES.</p>
+    <div class="kv">
+      <b>INCOMING CALL</b><i class="red">NOT ANSWERED</i>
+      <b>SOURCE</b><i>VESSEL 11-0829 (CREW 4)</i>
+      <b>POSITION</b><i>JUPITER SYSTEM</i>
+      <b class="red">FLIGHT PLAN</b><i class="red">NOT ON FILE</i>
+      <b>CLASS SUFFIX</b><i>TARGET[0] + COUNT(SECTIONS)</i>
+    </div>
+    <div class="toc" aria-label="File sections">
+      <span>I</span><span>II</span><span>III</span><span>IV</span><span>V</span><span>VI</span><span>VII</span><span>VIII</span><span>IX</span><span>X</span>
+    </div>
+    <form class="gate" data-for="0" autocomplete="off">
+      <label for="a0">STATE THE FILE DESIGNATION.</label>
+      <div class="row"><input id="a0" spellcheck="false" autocapitalize="characters" placeholder="__-____-__"><button>OPEN</button></div>
+      <p class="err" aria-live="polite"></p>
+    </form>
+  </section>
+</main>
+
+<script>
+(() => {
+const BLOBS = ["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"];
+const CHECKS = ["f1cd3e008bf2e3a651e750539b4e8d5850cce97f144713927c1f1ec590a09b4a", "39d315a52aeb15a3d700b9251cf645a00d64ba14c4fadbbf0995624356bd113e", "15f49b7165044da8fbf5745e11caa8dbdb759fc6a05ba81a7e7771059cd7a2e0", "ff7b3e444e7447d4a178e70e5fd0101622359ce2ef377f3a3d25a9909d3b64bf", "d2cb6286fc1369214d19a0169929b2681c54116be3de3ce8947f37119f4525e6"];
+const enc = new TextEncoder(), dec = new TextDecoder();
+const KEY = "jx-progress";
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(KEY) || "[]") } catch (e) { return [] } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)) } catch (e) {} },
+  clear() { try { localStorage.removeItem(KEY) } catch (e) {} }
+};
+const sha = async b => new Uint8Array(await crypto.subtle.digest("SHA-256", b));
+const hex = u => [...u].map(x => x.toString(16).padStart(2, "0")).join("");
+function norm(s) {
+  s = s.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (s.startsWith("THE") && s.length > 3) s = s.slice(3);
+  for (let n = 1; n <= s.length / 2; n++)
+    if (s.length % n === 0 && s.slice(0, n).repeat(s.length / n) === s) return s.slice(0, n);
+  return s;
+}
+async function decrypt(b64, ans) {
+  const key = await sha(enc.encode("11-0829-JX/" + ans));
+  const data = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const out = new Uint8Array(data.length);
+  for (let i = 0; i < data.length; i += 32) {
+    const ctr = new Uint8Array(36); ctr.set(key); new DataView(ctr.buffer).setUint32(32, i / 32);
+    const block = await sha(ctr);
+    for (let j = 0; j < 32 && i + j < data.length; j++) out[i + j] = data[i + j] ^ block[j];
+  }
+  return dec.decode(out);
+}
+const main = document.getElementById("main");
+const fails = [0, 0, 0, 0, 0];
+const TAUNTS = ["NO.", "ATTEMPT LOGGED.", "INCORRECT. THE TERMINAL IS COUNTING.", "STOP GUESSING.", "IT CAN HEAR YOU TYPING."];
+
+async function unlock(n, ans, instant) {
+  const html = await decrypt(BLOBS[n], ans);
+  const box = main.querySelector(`[data-n="${n}"]`);
+  box.classList.add("solved");
+  box.querySelector("input").value = ans;
+  const w = document.createElement("div"); w.innerHTML = html.trim();
+  const sec = w.firstElementChild; main.appendChild(sec);
+  initStage(sec);
+  if (!instant) setTimeout(() => sec.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+  else sec.style.animation = "none";
+}
+
+main.addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, n = +f.dataset.for, err = f.querySelector(".err");
+  const ans = norm(f.querySelector("input").value);
+  if (!ans) return;
+  const ok = hex(await sha(enc.encode("chk/" + ans))) === CHECKS[n];
+  if (!ok) {
+    err.textContent = TAUNTS[Math.min(fails[n]++, TAUNTS.length - 1)];
+    if (fails[n] === 7) glitch("WE CAN SEE THE CURSOR");
+    return;
+  }
+  err.textContent = "";
+  const p = store.get(); p[n] = ans; store.set(p);
+  glitch(n === 4 ? "THEY ARE IN THE VENTS" : "", n === 4 ? 420 : 90);
+  setTimeout(() => unlock(n, ans), n === 4 ? 450 : 100);
+});
+
+function glitch(text, ms = 90) {
+  const g = document.createElement("div"); g.className = "ghostline"; g.textContent = text;
+  document.body.appendChild(g); setTimeout(() => g.remove(), ms);
+}
+
+function initStage(sec) {
+  sec.querySelectorAll(".wave").forEach(w => {
+    let s = +w.dataset.seed || 7;
+    for (let i = 0; i < 90; i++) { s = (s * 9301 + 49297) % 233280; const b = document.createElement("i");
+      b.style.height = (8 + (s / 233280) * 90 * Math.abs(Math.sin(i / 7))) + "%"; w.appendChild(b); }
+  });
+  const lamp = sec.querySelector(".lamp");
+  if (lamp) morseLamp(lamp, sec.querySelector("[data-tone]"));
+  const cv = sec.querySelector("canvas.vent");
+  if (cv) vents(cv, sec);
+  sec.querySelectorAll("[data-purge]").forEach(b => b.addEventListener("click", () => {
+    store.clear(); b.textContent = "PURGED. IT STILL REMEMBERS YOU."; setTimeout(() => location.reload(), 1400);
+  }));
+}
+
+/* ---- POD 2 beacon: morse lamp + optional tone ---- */
+function morseLamp(lamp, btn) {
+  const code = lamp.dataset.morse, U = 170, seq = [];
+  for (let i = 0; i < code.length; i++) {
+    const c = code[i];
+    if (c === ".") seq.push([1, U], [0, U]);
+    else if (c === "-") seq.push([1, 3 * U], [0, U]);
+    else if (c === " ") seq.push([0, 2 * U]);
+  }
+  seq.push([0, 14 * U]);
+  let ctx = null, gain = null, playing = false;
+  if (btn) btn.addEventListener("click", () => {
+    try {
+      if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(); o.frequency.value = 612; gain = ctx.createGain(); gain.gain.value = 0;
+        o.connect(gain).connect(ctx.destination); o.start(); }
+      playing = !playing; btn.textContent = playing ? "MUTE TONE" : "PLAY TONE";
+      if (ctx.state === "suspended") ctx.resume();
+    } catch (e) { btn.textContent = "NO CARRIER"; }
+  });
+  let i = 0;
+  (function step() {
+    const [on, d] = seq[i]; lamp.classList.toggle("on", !!on);
+    if (gain && ctx) gain.gain.setTargetAtTime(on && playing ? .12 : 0, ctx.currentTime, .004);
+    i = (i + 1) % seq.length; setTimeout(step, d);
+  })();
+}
+
+/* ---- ENTITY: schematic with contacts moving through the vents ---- */
+function vents(cv, sec) {
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const rooms = [[30, 150, 130, 120, "COCKPIT"], [160, 185, 300, 50, "CORRIDOR"], [460, 60, 150, 125, "CREW QTRS"],
+                 [460, 235, 150, 125, "POD BAY"], [610, 140, 90, 140, "ENGINE"]];
+  const duct = [[700, 120], [700, 30], [400, 30], [400, 120], [20, 120], [20, 300], [300, 300], [300, 390], [640, 390], [640, 300]];
+  const you = [300, 210];
+  let pts = Array.from({ length: 3 }, (_, k) => ({ t: k * .27, sp: .0006 + k * .0002, out: 0 }));
+  const contacts = sec.querySelector("[data-contacts]"), nowEl = sec.querySelector("[data-now]"), hello = sec.querySelector("[data-hello]");
+  if (nowEl) nowEl.textContent = new Date().toLocaleString().toUpperCase();
+  function along(t) {
+    const seg = []; let L = 0;
+    for (let i = 0; i < duct.length - 1; i++) { const a = duct[i], b = duct[i + 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L += l; }
+    let d = (t % 1) * L;
+    for (const [a, b, l] of seg) { if (d <= l) return [a[0] + (b[0] - a[0]) * d / l, a[1] + (b[1] - a[1]) * d / l]; d -= l; }
+    return duct[duct.length - 1];
+  }
+  const start = performance.now();
+  function draw(now) {
+    const el = (now - start) / 1000;
+    if (pts.length < 23 && Math.random() < .006 + el * .0004) pts.push({ t: Math.random(), sp: .0005 + Math.random() * .0012, out: 0 });
+    g.fillStyle = "#0b0d0b"; g.fillRect(0, 0, W, H);
+    g.strokeStyle = "#c4ccbf"; g.lineWidth = 1.2; g.font = "11px IBM Plex Mono, monospace"; g.fillStyle = "#5f685c";
+    for (const [x, y, w, h, n] of rooms) { g.strokeRect(x, y, w, h); g.fillText(n, x + 6, y + 15); }
+    g.setLineDash([5, 6]); g.strokeStyle = "rgba(224,64,47,.55)"; g.beginPath();
+    duct.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); g.setLineDash([]);
+    const lateness = Math.min(1, el / 50);
+    for (const p of pts) {
+      p.t += p.sp; let [x, y] = along(p.t);
+      if (lateness > .4) { p.out = Math.min(1, p.out + .0015 * lateness); x += (you[0] - x) * p.out * .9; y += (you[1] - y) * p.out * .9; }
+      g.fillStyle = "#e0402f"; g.shadowColor = "#e0402f"; g.shadowBlur = 10;
+      g.beginPath(); g.arc(x + Math.sin(now / 90 + p.t * 50), y, 4, 0, 7); g.fill(); g.shadowBlur = 0;
+    }
+    const blinkOn = Math.floor(now / 500) % 2;
+    g.strokeStyle = blinkOn ? "#6fd08c" : "#2b5a38"; g.beginPath(); g.arc(you[0], you[1], 9, 0, 7); g.stroke();
+    g.fillStyle = "#6fd08c"; g.fillText("YOU", you[0] - 11, you[1] + 26);
+    g.fillStyle = "#e0402f"; g.fillText("CONTACTS: " + pts.length, W - 130, H - 12);
+    if (contacts) contacts.textContent = pts.length;
+    if (hello) {
+      const k = Math.floor(el / 4);
+      hello.textContent = el > 14 ? (k % 3 === 0 ? "HELLO?" : k % 3 === 1 ? "HELLO?  HELLO?" : " ") : " ";
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+
+/* ---- atmosphere ---- */
+const clock = document.getElementById("clock");
+const base = Date.UTC(2011, 7, 29, 7, 30, 6), t0 = Date.now();
+setInterval(() => {
+  const d = new Date(base + (Date.now() - t0));
+  const p = x => String(x).padStart(2, "0");
+  clock.textContent = `${p(d.getUTCMonth() + 1)}/${p(d.getUTCDate())}/${d.getUTCFullYear()} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`;
+}, 1000);
+const title = document.title;
+document.addEventListener("visibilitychange", () => { document.title = document.hidden ? "HELLO?" : title; });
+(function haunt() {
+  setTimeout(() => { if (!document.hidden) glitch(["IT'S IN THE VENTS", "HELLO?", "SEAT FOUR", "DON'T TURN AROUND"][Math.floor(Math.random() * 4)], 70); haunt(); },
+    40000 + Math.random() * 60000);
+})();
+console.log("%cN.K.S.A. // OFFICE OF RECORDS", "color:#e0402f;font:16px monospace");
+console.log("%cIF YOU ARE READING THE CONSOLE, SO IS IT.", "color:#c4ccbf;font:12px monospace");
+
+/* ---- resume ---- */
+(async () => {
+  const p = store.get();
+  for (let n = 0; n < p.length; n++) {
+    if (!p[n] || hex(await sha(enc.encode("chk/" + p[n]))) !== CHECKS[n]) break;
+    await unlock(n, p[n], true);
+  }
+})();
+})();
+</script>
