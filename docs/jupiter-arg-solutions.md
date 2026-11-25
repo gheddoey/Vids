@@ -17,3 +17,18 @@ Hidden extras: base64 HTML comment ("THERE IS NO SECTION 00. YOU ARE IN IT."), c
 tab title becomes "HELLO?" when you leave, rare 70 ms flash frames, taunts after wrong guesses,
 progress remembered per browser (PURGE button at the end).
 Diegetic disclaimer kept from the source lore: "AUTHENTICITY: NONE (CREEPYPASTA)".
+
+# N.K.S.A. Public Site — the 180 (SPOILERS)
+
+Page: `arg/nksa/index.html`. Looks like a dull agency site. Four actions, in order, flip it:
+
+1. **Tap the seal 3 times** (within ~1.5 s). Clue: FAQ "some visitors report it responds if tapped three times".
+   → a red 4th star appears, archive shows the withheld row 11-0829, news says "some records remain restricted".
+2. **Search `11-0829`** → "1 restricted record · Crew 4 · Returned 3 … visit Kids Corner and count carefully".
+3. **Kids Corner: answer 3** (the 4th astronaut is hollow, no face). Kiki: "…you noticed. Go say hello to the office."
+4. **Contact form: send a message containing "hello"** → black screen, a voice says "hello?", alarm,
+   takeover page that replays everything the visitor did with timestamps, Kies crawl toward "YOU",
+   links to FILE 11-0829-JX.
+
+"Return to public site" leaves it permanently wrong: "Every crew comes home. We're glad you're back. Please
+don't do that again." Hidden "FORGET ME" link at the bottom of the takeover resets it.

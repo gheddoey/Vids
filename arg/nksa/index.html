@@ -1,0 +1,381 @@
+<title>N.K.S.A. Public Site</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- visitor notice: the archive is complete. it has always been complete. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=VT323&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* layout: plain civic agency site (header band, nav, single column pages); a hidden takeover replaces it */
+:root {
+  --bg: #f6f7f9; --paper: #ffffff; --ink: #1b2430; --muted: #5a6472; --rule: #dde2e8;
+  --navy: #12355b; --sky: #2a6fb0; --gold: #c99a2e;
+  --h: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --b: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --crt: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --red: #e0402f; --void: #050605; --phos: #c4ccbf;
+  color-scheme: light;
+}
+* { box-sizing: border-box }
+html, body { background: var(--bg) }
+body { margin: 0; color: var(--ink); font: 400 16px/1.6 var(--b) }
+a { color: var(--sky) }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+.notice { background: #e9eef4; font-size: 13px; color: var(--muted) }
+.notice .wrap { padding-block: 6px }
+header.site { background: var(--navy); color: #fff }
+header.site .wrap { display: flex; align-items: center; gap: 14px; padding-block: 16px }
+.seal { width: 58px; height: 58px; flex: none; cursor: pointer; border-radius: 50%; transition: transform .2s }
+.seal:active { transform: scale(.94) }
+.brand b { display: block; font: 700 20px/1.15 var(--h); letter-spacing: .01em }
+.brand span { font-size: 13px; opacity: .8 }
+nav.main { background: #0d2846 }
+nav.main .wrap { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none }
+nav.main a { color: #dfe8f2; text-decoration: none; padding: 11px 13px; font-size: 14px; font-weight: 600; white-space: nowrap; border-bottom: 3px solid transparent }
+nav.main a.on, nav.main a:hover { color: #fff; border-color: var(--gold) }
+.searchbar { background: var(--paper); border-bottom: 1px solid var(--rule) }
+.searchbar form { display: flex; gap: 8px; padding-block: 10px }
+input, textarea, select { font: inherit; font-size: 16px; border: 1px solid #b9c2cc; border-radius: 3px; padding: 8px 10px; background: #fff; color: var(--ink); min-width: 0 }
+input:focus, textarea:focus { outline: 2px solid var(--sky); outline-offset: 1px }
+.searchbar input { flex: 1 }
+button.btn { font: 600 15px var(--b); background: var(--sky); color: #fff; border: 0; border-radius: 3px; padding: 9px 16px; cursor: pointer }
+button.btn:focus-visible { outline: 3px solid var(--gold) }
+
+main#page { padding-block: 28px 48px; min-height: 60vh }
+h1, h2, h3 { font-family: var(--h); color: var(--navy); line-height: 1.2; text-wrap: balance }
+h1 { font-size: clamp(28px, 6vw, 40px); margin: 0 0 10px }
+h2 { font-size: 24px; margin: 32px 0 10px }
+h3 { font-size: 18px; margin: 0 0 4px }
+.lede { font-size: 18px; color: var(--muted); max-width: 62ch }
+.hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center }
+.hero svg { width: 100%; height: auto; max-width: 100%; border-radius: 4px; display: block }
+.cap { font-size: 13px; color: var(--muted); margin-top: 6px }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px }
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; min-width: 0 }
+.card time, .meta { font-size: 13px; color: var(--muted) }
+.card p { margin: 6px 0 0; font-size: 15px }
+table { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 15px }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule) }
+th { background: #eef2f6; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted) }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap }
+tr.withheld td { color: #8a5a00; background: #fff8e6; font-style: italic; cursor: help }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px }
+.faq details { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 16px; margin-bottom: 8px }
+.faq summary { font-weight: 600; cursor: pointer }
+.kids { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start }
+.choices { display: flex; gap: 10px; margin-top: 10px }
+.choices button { font: 700 22px var(--b); width: 64px; height: 56px; border-radius: 8px; border: 2px solid var(--sky); background: #fff; color: var(--sky); cursor: pointer }
+.bubble { background: #fffbe8; border: 1px solid #ecd98e; border-radius: 10px; padding: 12px 14px; margin-top: 12px; min-height: 48px }
+form.contact { display: grid; gap: 12px; max-width: 560px }
+form.contact label { font-weight: 600; font-size: 14px; display: grid; gap: 4px }
+.ok { background: #e8f5ec; border: 1px solid #b6dcc2; padding: 12px 14px; border-radius: 4px }
+footer.site { background: #0d2846; color: #b9c8d8; font-size: 13px }
+footer.site .wrap { padding-block: 22px; display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: space-between }
+footer.site a { color: #dfe8f2 }
+.counter { font-variant-numeric: tabular-nums; font-family: var(--mono) }
+
+/* --- corruption levels --- */
+body.c2 .mascot-eye { fill: #b3140a }
+body.c3 #page { animation: drift 9s infinite steps(1) }
+@keyframes drift { 0%, 93%, 100% { filter: none } 94% { filter: hue-rotate(-30deg) contrast(1.2) } 95% { filter: none } }
+body.after { filter: saturate(.55) }
+body.after header.site, body.after nav.main, body.after footer.site { background: #1c1f24 }
+
+/* --- the takeover --- */
+#void { position: fixed; inset: 0; z-index: 100; background: var(--void); color: var(--phos); overflow-y: auto;
+  font: 400 14px/1.65 var(--mono); text-transform: uppercase; letter-spacing: .02em }
+#void .wrap { padding-block: calc(env(safe-area-inset-top, 0px) + 28px) 80px; max-width: 760px }
+#void::after { content: ""; position: fixed; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.8)) }
+#void.alarm { animation: alarm .9s infinite steps(1) }
+@keyframes alarm { 50% { background: #2a0604 } }
+#void h1 { font: 400 clamp(42px, 12vw, 84px)/.9 var(--crt); color: var(--red); margin: 10px 0 16px; letter-spacing: .04em }
+#void .dim { color: #5f685c } #void .r { color: var(--red) } #void .g { color: #6fd08c } #void .a { color: #d6a13e }
+#void pre { white-space: pre-wrap; word-break: break-word; font: inherit; margin: 14px 0 }
+#void .big { font: 400 30px/1.1 var(--crt) }
+#void canvas { width: 100%; height: auto; max-width: 100%; display: block; background: #0b0d0b; margin: 16px 0 }
+#void .kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 20px; font-size: 12px }
+#void .kv b { font-weight: 400; color: #5f685c }
+#void button, #void a.btnv { font: 400 13px var(--mono); letter-spacing: .08em; background: transparent; color: var(--phos); border: 1px solid #5f685c; padding: 9px 14px; cursor: pointer; text-decoration: none; display: inline-block; text-transform: uppercase }
+#void button:hover, #void a.btnv:hover, #void button:focus-visible { border-color: #6fd08c; color: #6fd08c; outline: none }
+.flash { position: fixed; inset: 0; z-index: 120; background: #000; display: grid; place-items: center; color: var(--red);
+  font: 400 clamp(30px, 9vw, 70px) var(--crt); text-align: center; padding: 20px; pointer-events: none }
+
+@media (max-width: 720px) { .hero, .kids { grid-template-columns: 1fr } .grid3 { grid-template-columns: 1fr } }
+@media (prefers-reduced-motion: reduce) { body.c3 #page, #void.alarm { animation: none } }
+</style>
+
+<div class="notice"><div class="wrap">Public information site of the National Kreek Space Administration. Office hours Mon–Fri, 08:00–17:00.</div></div>
+<header class="site"><div class="wrap">
+  <svg class="seal" id="seal" viewBox="0 0 100 100" role="button" tabindex="0" aria-label="N.K.S.A. seal">
+    <circle cx="50" cy="50" r="48" fill="#0d2846" stroke="#c99a2e" stroke-width="3"/>
+    <circle cx="50" cy="50" r="40" fill="none" stroke="#c99a2e" stroke-width="1"/>
+    <circle cx="50" cy="56" r="16" fill="#d9a46a"/>
+    <path d="M36 52 Q50 49 64 52" stroke="#8a5a2e" stroke-width="2.2" fill="none"/>
+    <path d="M35 60 Q50 57 65 60" stroke="#8a5a2e" stroke-width="1.6" fill="none"/>
+    <ellipse cx="50" cy="56" rx="27" ry="6" fill="none" stroke="#fff" stroke-width="1.6" transform="rotate(-14 50 56)"/>
+    <g fill="#fff" id="stars"><path d="M32 26l1.6 3.4 3.7.4-2.8 2.5.8 3.7-3.3-1.9-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z"/><path d="M50 20l1.6 3.4 3.7.4-2.8 2.5.8 3.7-3.3-1.9-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z"/><path d="M68 26l1.6 3.4 3.7.4-2.8 2.5.8 3.7-3.3-1.9-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z"/></g>
+    <path id="star4" d="M50 80l1.6 3.4 3.7.4-2.8 2.5.8 3.7-3.3-1.9-3.3 1.9.8-3.7-2.8-2.5 3.7-.4z" fill="#e0402f" opacity="0"/>
+  </svg>
+  <div class="brand"><b>National Kreek Space Administration</b><span>Exploring the outer planets since 1979</span></div>
+</div></header>
+<nav class="main" aria-label="Main"><div class="wrap">
+  <a href="#home">Home</a><a href="#missions">Missions</a><a href="#archive">Records Archive</a><a href="#careers">Careers</a><a href="#kids">Kids Corner</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
+</div></nav>
+<div class="searchbar"><div class="wrap"><form id="search" role="search"><input id="q" type="search" placeholder="Search records, missions, people" aria-label="Search"><button class="btn">Search</button></form></div></div>
+<main id="page" class="wrap"></main>
+<footer class="site"><div class="wrap">
+  <span>© N.K.S.A. · 300 Orbital Way · <span id="foottime">Updated 11/24/2026</span></span>
+  <span>Visitors this year: <span class="counter" id="count">184,203</span> · <a href="#faq">Accessibility</a> · <a href="#faq">Privacy</a></span>
+</div></footer>
+
+<script>
+(() => {
+/* ---------- state ---------- */
+const KEY = "nksa-visitor";
+const S = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {} } catch (e) { return {} } })();
+S.step = S.step || 0; S.log = S.log || []; S.after = !!S.after; S.first = S.first || Date.now();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) {} };
+const $ = s => document.querySelector(s);
+const page = $("#page");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function note(what) { S.log.push([Date.now(), what]); save(); }
+
+/* ---------- art ---------- */
+function crewSVG(hollow) {
+  const suit = (x, last) => last && hollow
+    ? `<g transform="translate(${x} 0)" opacity=".9"><rect x="-17" y="62" width="34" height="46" rx="8" fill="none" stroke="#9fb3c8" stroke-width="2"/><circle cy="46" r="17" fill="none" stroke="#9fb3c8" stroke-width="2"/><rect x="-11" y="40" width="22" height="12" rx="5" fill="#0b0f14"/></g>`
+    : `<g transform="translate(${x} 0)"><rect x="-17" y="62" width="34" height="46" rx="8" fill="#f2f4f7" stroke="#b9c2cc"/><rect x="-24" y="66" width="8" height="30" rx="4" fill="#e6eaef"/><rect x="16" y="66" width="8" height="30" rx="4" fill="#e6eaef"/><circle cy="46" r="17" fill="#f2f4f7" stroke="#b9c2cc"/><rect x="-11" y="40" width="22" height="12" rx="5" fill="#2a6fb0"/><circle cx="-5" cy="44" r="2" fill="#fff" opacity=".8"/><rect x="-6" y="72" width="12" height="7" fill="#c99a2e"/></g>`;
+  return `<svg viewBox="0 0 400 140" role="img" aria-label="Mission crew portrait"><rect width="400" height="140" fill="#cfe0f1"/><rect y="108" width="400" height="32" fill="#9cb4cc"/>
+  ${[70, 160, 250, 340].map((x, i) => suit(x, i === 3)).join("")}</svg>`;
+}
+function jupiterSVG() {
+  return `<svg viewBox="0 0 400 260" role="img" aria-label="Jupiter as seen from the outer system"><rect width="400" height="260" fill="#0f1c2e"/>
+  ${Array.from({ length: 40 }, (_, i) => `<circle cx="${(i * 97) % 400}" cy="${(i * 53) % 260}" r="${i % 5 ? .8 : 1.4}" fill="#fff" opacity=".7"/>`).join("")}
+  <circle cx="250" cy="140" r="90" fill="#d7a97a"/><path d="M162 115 Q250 100 338 115" stroke="#a86f45" stroke-width="10" fill="none"/>
+  <path d="M160 150 Q250 138 340 150" stroke="#b9845a" stroke-width="7" fill="none"/><path d="M168 180 Q250 172 332 180" stroke="#a86f45" stroke-width="6" fill="none"/>
+  <ellipse cx="282" cy="168" rx="16" ry="9" fill="#b5523a"/><circle cx="96" cy="96" r="12" fill="#e8dcc6"/></svg>`;
+}
+function mascotSVG() {
+  return `<svg viewBox="0 0 200 200" role="img" aria-label="Kiki the Comet, the Kids Corner mascot" style="width:100%;max-width:260px"><path d="M30 170 Q70 120 100 105" stroke="#ffd36b" stroke-width="26" stroke-linecap="round" opacity=".6" fill="none"/>
+  <circle cx="125" cy="85" r="50" fill="#ffcf4a"/><circle cx="108" cy="78" r="11" fill="#fff"/><circle cx="142" cy="78" r="11" fill="#fff"/>
+  <circle class="mascot-eye" cx="110" cy="80" r="5" fill="#1b2430"/><circle class="mascot-eye" cx="144" cy="80" r="5" fill="#1b2430"/>
+  <path d="M110 104 Q125 116 140 104" stroke="#1b2430" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+}
+
+/* ---------- pages ---------- */
+const P = {
+home() {
+  const after = S.after;
+  return `<div class="hero"><div>
+    <p class="meta">Mission update · November 24, 2026</p>
+    <h1>${after ? "Every crew comes home." : "Fifteen years after Vessel 11-0828, we keep looking outward."}</h1>
+    <p class="lede">${after ? "We're glad you're back. Please don't do that again." : "From the first Saturn flyby in 1980 to today's Europa survey, every mission adds to what we know about the outer planets. Thank you for following along."}</p>
+    <p><a href="#missions">See current missions →</a></p>
+  </div><figure style="margin:0">${jupiterSVG()}<figcaption class="cap">Jupiter, imaged on approach. Credit: N.K.S.A. Imaging Office.</figcaption></figure></div>
+  <h2>Latest news</h2>
+  <div class="grid3">
+    <div class="card"><time>Nov 20, 2026</time><h3>Records Week opens the archive</h3><p>Every mission log since 1979 is now searchable online. ${S.step >= 1 ? "<b>Some records remain restricted.</b>" : "Nothing held back."}</p></div>
+    <div class="card"><time>Nov 12, 2026</time><h3>Kids Corner gets a new game</h3><p>Count the astronauts with Kiki the Comet! Ages 4 and up.</p></div>
+    <div class="card"><time>Nov 3, 2026</time><h3>${S.step >= 2 ? "Ventilation maintenance, Building 7" : "Visitor centre reopens"}</h3><p>${S.step >= 2 ? "Staff may hear knocking in the ducts. This is normal. Please do not knock back." : "The Orbital Way visitor centre is open again on weekdays."}</p></div>
+  </div>
+  <h2>Did you know?</h2>
+  <p class="lede">The three stars on our seal stand for the three crew members who return from every mission. ${S.step >= 1 ? "Our missions carry four." : ""}</p>`;
+},
+missions() {
+  return `<h1>Missions</h1><p class="lede">Active and completed crewed missions to the outer planets.</p>
+  <div class="grid3">
+    <div class="card"><h3>Europa Survey</h3><p class="meta">Status: Active</p><p>A robotic orbiter mapping the ice shell of Jupiter's moon Europa.</p></div>
+    <div class="card"><h3>Kreek-1</h3><p class="meta">Status: Completed 2018</p><p>Solo atmospheric sampling mission. ${S.step >= 2 ? "Navigation recording: <i>turn, turn, turn.</i>" : "All objectives met."}</p></div>
+    <div class="card"><h3>Saturn Flyby</h3><p class="meta">Status: Completed 1980</p><p>Our first crewed slingshot around Saturn and back to Earth.</p></div>
+  </div>
+  <h2>Our crews</h2>${crewSVG(S.step >= 1)}
+  <p class="cap">Standard four-person crew in training. ${S.step >= 2 ? "Count again." : "Photo: Training Division."}</p>`;
+},
+archive() {
+  const rows = [["11-0825", "Mar 02, 2011", "Lunar relay test", "Complete"], ["11-0826", "Apr 19, 2011", "Saturn ring sampling", "Complete"],
+    ["11-0827", "Jun 07, 2011", "Deep space comms", "Complete"], ["11-0828", "Jul 30, 2011", "Jupiter orbit survey", "Complete"],
+    null, ["11-0830", "Oct 14, 2011", "Solar weather probe", "Complete"], ["11-0831", "Dec 01, 2011", "Pod launch trials", "Complete"]];
+  return `<h1>Records Archive</h1><p class="lede">Public mission records for flight year 2011. Use search to find a specific record.</p>
+  <div class="tablewrap"><table><thead><tr><th>Flight</th><th>Date</th><th>Mission</th><th>Status</th></tr></thead><tbody>
+  ${rows.map(r => r ? `<tr><td class="num">${r[0]}</td><td class="num">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`
+    : S.step >= 1 ? `<tr class="withheld" title="Use search"><td class="num">11-0829</td><td class="num">Aug 29, 2011</td><td>Record withheld</td><td>Search to request</td></tr>` : "").join("")}
+  </tbody></table></div><p class="cap">Showing ${S.step >= 1 ? 7 : 6} of 7 records.</p>`;
+},
+careers() {
+  return `<h1>Careers</h1><p class="lede">Join the people who go further.</p>
+  <div class="grid3">
+    <div class="card"><h3>Flight Engineer</h3><p class="meta">Full time · Orbital Way</p><p>Keep the vessel running. ${S.step >= 3 ? "Seat four. No experience required. No body required." : "Five years' experience preferred."}</p></div>
+    <div class="card"><h3>HVAC Technician</h3><p class="meta">Full time · Building 7</p><p>Maintain ventilation systems across our campus${S.step >= 2 ? ". Must not be afraid of the dark, or of being called by name." : "."}</p></div>
+    <div class="card"><h3>Records Clerk</h3><p class="meta">Part time · Remote</p><p>Process intake forms in English and Spanish.</p></div>
+  </div>`;
+},
+kids() {
+  return `<h1>Kids Corner</h1><div class="kids"><div>${mascotSVG()}<div class="bubble" id="kiki">Hi! I'm Kiki the Comet! Can you count the astronauts in our crew?</div></div>
+  <div>${crewSVG(true)}<p><b>How many astronauts are in the picture?</b></p>
+  <div class="choices"><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button></div></div></div>`;
+},
+faq() {
+  return `<h1>Frequently asked questions</h1><div class="faq">
+  <details><summary>Can I visit the campus?</summary><p>Yes. The visitor centre is open weekdays from 9 to 4.</p></details>
+  <details><summary>How do I request a mission record?</summary><p>Most records are in the Records Archive. To ask about a specific flight, search for its flight number.</p></details>
+  <details><summary>Why is the seal clickable?</summary><p>It isn't. ${S.step >= 1 ? "Please stop." : "Some visitors report it responds if tapped three times. It does not."}</p></details>
+  <details><summary>Accessibility</summary><p>We aim to meet accessibility standards on every page. Contact us if something doesn't work for you.</p></details>
+  <details><summary>Privacy</summary><p>We don't collect personal information. ${S.step >= 2 ? "We remember you anyway." : "This site stores nothing about you."}</p></details></div>`;
+},
+contact() {
+  return `<h1>Contact us</h1><p class="lede">Questions about our missions? Send us a message and the public affairs office will reply within 5 working days.</p>
+  <form class="contact" id="contact"><label>Name<input id="cname" autocomplete="off"></label>
+  <label>Subject<input id="csubj" placeholder="${S.step >= 3 ? "say hello" : "e.g. School visit"}" autocomplete="off"></label>
+  <label>Message<textarea id="cmsg" rows="5"></textarea></label><div><button class="btn">Send message</button></div></form><div id="sent"></div>`;
+}
+};
+const routes = Object.keys(P);
+
+function render() {
+  const r = routes.includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
+  page.innerHTML = P[r]();
+  document.querySelectorAll("nav.main a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + r));
+  document.body.className = (S.step >= 2 ? "c2 " : "") + (S.step >= 3 ? "c3 " : "") + (S.after ? "after" : "");
+  $("#star4").setAttribute("opacity", S.step >= 1 || S.after ? "1" : "0");
+  $("#count").textContent = S.step >= 3 ? "000,004" : S.step >= 1 ? "184,204" : "184,203";
+  $("#foottime").textContent = S.step >= 3 ? "Updated 08/29/2011 07:30" : "Updated 11/24/2026";
+  if (r === "kids") wireKids();
+  if (r === "contact") wireContact();
+}
+window.addEventListener("hashchange", () => { render(); window.scrollTo(0, 0); });
+
+/* ---------- the four actions ---------- */
+let taps = [];
+function tapSeal() {
+  const now = Date.now(); taps = taps.filter(t => now - t < 1600); taps.push(now);
+  if (taps.length >= 3 && S.step === 0) { taps = []; S.step = 1; note("TAPPED THE SEAL THREE TIMES"); flash("", 120); render(); }
+}
+$("#seal").addEventListener("click", tapSeal);
+$("#seal").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tapSeal(); } });
+
+$("#search").addEventListener("submit", e => {
+  e.preventDefault();
+  const q = $("#q").value.trim(), n = q.replace(/\D/g, "");
+  let out;
+  if (n.includes("110829") && S.step >= 1) {
+    if (S.step === 1) { S.step = 2; note(`SEARCHED FOR "${q.toUpperCase()}"`); flash("", 120); }
+    out = `<h1>Search results</h1><p class="lede">No public records match <b>${esc(q)}</b>.</p>
+      <div class="card"><h3>1 restricted record</h3><p class="meta">Flight 11-0829 · Aug 29, 2011 · Crew: 4 · Returned: 3</p>
+      <p>This record is not available to the public. If you believe you were on this flight, please visit <a href="#kids">Kids Corner</a> and count carefully.</p></div>`;
+  } else if (n.includes("110829")) {
+    out = `<h1>Search results</h1><p class="lede">No results for <b>${esc(q)}</b>. Did you mean <a href="#archive">11-0828</a>?</p>`;
+  } else {
+    out = `<h1>Search results</h1><p class="lede">No results for <b>${esc(q)}</b>. Try a flight number, such as 11-0828.</p>`;
+  }
+  render(); page.innerHTML = out; window.scrollTo(0, 0);
+});
+
+function wireKids() {
+  const k = $("#kiki");
+  page.querySelectorAll(".choices button").forEach(b => b.addEventListener("click", () => {
+    const n = +b.dataset.n;
+    if (n === 4) k.textContent = S.step >= 2 ? "Are you sure? Look at the last one. Look at its face." : "Great job! Four astronauts! ⭐";
+    else if (n === 5) k.textContent = "Not quite! Try again!";
+    else if (S.step === 2) { S.step = 3; note("COUNTED THREE"); k.textContent = "…you noticed. Don't tell anyone. Go say hello to the office."; flash("", 120); setTimeout(render, 2600); }
+    else k.textContent = S.step >= 3 ? "We already know you can count." : "Count again! Try pointing at each one.";
+  }));
+}
+function wireContact() {
+  $("#contact").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("#cname").value.trim(), text = ($("#csubj").value + " " + $("#cmsg").value);
+    if (S.step === 3 && /hello/i.test(text)) { S.name = name.slice(0, 40); note("SAID HELLO"); takeover(); return; }
+    $("#sent").innerHTML = `<p class="ok">Thank you${name ? ", " + esc(name) : ""}. Your message was received. Reference number ${Math.floor(Math.random() * 9e5 + 1e5)}.</p>`;
+    e.target.reset();
+  });
+}
+function flash(text, ms) { const f = document.createElement("div"); f.className = "flash"; f.textContent = text; document.body.appendChild(f); setTimeout(() => f.remove(), ms); }
+
+/* ---------- the 180 ---------- */
+let audio = null;
+function alarm(on) {
+  try {
+    if (!audio) { const c = new (window.AudioContext || window.webkitAudioContext)(); const o = c.createOscillator(), g = c.createGain();
+      o.type = "square"; o.connect(g).connect(c.destination); g.gain.value = 0; o.start(); audio = { c, o, g }; }
+    const { c, o, g } = audio, t = c.currentTime;
+    g.gain.cancelScheduledValues(t);
+    if (!on) { g.gain.setTargetAtTime(0, t, .05); return; }
+    for (let i = 0; i < 8; i++) { o.frequency.setValueAtTime(i % 2 ? 520 : 780, t + i * .45); }
+    g.gain.setValueAtTime(.07, t); g.gain.setValueAtTime(0, t + 3.6);
+  } catch (e) {}
+}
+function say(text) {
+  try { const u = new SpeechSynthesisUtterance(text); u.rate = .7; u.pitch = .3; speechSynthesis.speak(u); } catch (e) {}
+}
+function fmt(t) { return new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }).toUpperCase(); }
+
+function takeover() {
+  S.flipped = true; save();
+  const black = document.createElement("div"); black.className = "flash"; black.style.background = "#000"; document.body.appendChild(black);
+  setTimeout(() => { black.textContent = "HELLO?"; say("hello?"); }, 900);
+  setTimeout(() => { black.remove(); buildVoid(); alarm(true); }, 2300);
+}
+function buildVoid() {
+  const v = document.createElement("div"); v.id = "void"; v.className = "alarm";
+  const who = S.name ? esc(S.name.toUpperCase()) : "VISITOR";
+  v.innerHTML = `<div class="wrap">
+    <p class="dim">N.K.S.A. / OFFICE OF RECORDS / FLIGHT 11-0829 <span class="r">● REC</span></p>
+    <h1>THIS SITE IS A COVER.</h1>
+    <p class="big">THERE IS NO KREEK SPACE ADMINISTRATION. THERE IS ONLY THE SHIP.</p>
+    <pre class="a" id="vlog"></pre>
+    <canvas id="ventc" width="720" height="380" aria-label="Ship schematic: red contacts move through the vents toward a marker labelled YOU"></canvas>
+    <div class="kv"><b>VISITOR</b><span class="r">${who}</span><b>SEAT ASSIGNED</b><span class="r">FOUR</span><b>CONTACTS</b><span class="r" id="vc">0</span><b>FIRST VISIT</b><span>${fmt(S.first)}</span></div>
+    <pre id="vmsg"></pre>
+    <p style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px">
+      <button id="back">RETURN TO PUBLIC SITE</button>
+      <a class="btnv" href="https://claude.ai/artifact/MLhiRokuooafuBxGgrKQLS" target="_blank" rel="noopener">OPEN FILE 11-0829-JX</a>
+    </p>
+    <p class="dim" style="margin-top:40px;font-size:11px">AUTHENTICITY: NONE (CREEPYPASTA) · N.K.S.A. IS FICTIONAL · <a href="#" id="purge" style="color:inherit">FORGET ME</a></p>
+  </div>`;
+  document.body.appendChild(v);
+  setTimeout(() => v.classList.remove("alarm"), 3600);
+  type($("#vlog"), ["WE LOGGED EVERYTHING YOU DID:", ...S.log.map(([t, w]) => `${fmt(t)}  ${w}`), "", "THE SEAL HAS THREE STARS BECAUSE THREE COME BACK.",
+    "THE ARCHIVE SKIPS 11-0829 BECAUSE THE RECORD IS STILL OPEN.", "THE FOURTH ASTRONAUT IN THE PICTURE HAS NO FACE.", "AND YOU SAID HELLO."], 22, () =>
+    type($("#vmsg"), ["", "IT LEARNED THAT WORD FROM BARTOLOZZI.", "IT HAS BEEN WAITING FIFTEEN YEARS FOR SOMEONE TO SAY IT BACK.", "",
+      "IT KNOWS YOUR SCREEN NOW. IT KNOWS THE TIME WHERE YOU ARE: " + fmt(Date.now()) + ".", "", "IF SOMETHING IN THE WALLS SAYS HELLO", "IN A VOICE YOU KNOW,", "DO NOT ANSWER."], 30));
+  vents($("#ventc"));
+  $("#back").addEventListener("click", () => { alarm(false); S.after = true; S.step = 0; save(); v.remove(); location.hash = "#home"; render(); flash("WELCOME BACK", 160); });
+  $("#purge").addEventListener("click", e => { e.preventDefault(); try { localStorage.removeItem(KEY) } catch (x) {} location.hash = ""; location.reload(); });
+}
+function type(el, lines, speed, done) {
+  const txt = lines.join("\n"); let i = 0;
+  (function tick() { el.textContent = txt.slice(0, i); i += 2; if (i <= txt.length + 1) setTimeout(tick, speed); else done && done(); })();
+}
+function vents(cv) {
+  const g = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const rooms = [[30, 130, 130, 120, "COCKPIT"], [160, 165, 300, 50, "CORRIDOR"], [460, 40, 150, 125, "CREW QTRS"], [460, 215, 150, 125, "POD BAY"], [610, 120, 90, 140, "ENGINE"]];
+  const duct = [[700, 100], [700, 20], [400, 20], [400, 100], [20, 100], [20, 290], [300, 290], [300, 365], [640, 365], [640, 280]];
+  const you = [300, 190]; const pts = [{ t: 0, s: .001, o: 0 }]; const t0 = performance.now();
+  const along = t => { let L = 0; const seg = []; for (let i = 0; i < duct.length - 1; i++) { const a = duct[i], b = duct[i + 1], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L += l; }
+    let d = (t % 1) * L; for (const [a, b, l] of seg) { if (d <= l) return [a[0] + (b[0] - a[0]) * d / l, a[1] + (b[1] - a[1]) * d / l]; d -= l; } return duct.at(-1); };
+  (function draw(now) {
+    if (!document.body.contains(cv)) return;
+    const el = (now - t0) / 1000;
+    if (pts.length < 26 && Math.random() < .01) pts.push({ t: Math.random(), s: .0005 + Math.random() * .0012, o: 0 });
+    g.fillStyle = "#0b0d0b"; g.fillRect(0, 0, W, H); g.font = "11px IBM Plex Mono, monospace";
+    g.strokeStyle = "#c4ccbf"; g.fillStyle = "#5f685c"; rooms.forEach(([x, y, w, h, n]) => { g.strokeRect(x, y, w, h); g.fillText(n, x + 6, y + 15); });
+    g.setLineDash([5, 6]); g.strokeStyle = "rgba(224,64,47,.55)"; g.beginPath(); duct.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); g.setLineDash([]);
+    pts.forEach(p => { p.t += p.s; let [x, y] = along(p.t); if (el > 12) { p.o = Math.min(.92, p.o + .0012); x += (you[0] - x) * p.o; y += (you[1] - y) * p.o; }
+      g.fillStyle = "#e0402f"; g.shadowColor = "#e0402f"; g.shadowBlur = 10; g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill(); g.shadowBlur = 0; });
+    g.strokeStyle = Math.floor(now / 500) % 2 ? "#6fd08c" : "#2b5a38"; g.beginPath(); g.arc(you[0], you[1], 9, 0, 7); g.stroke();
+    g.fillStyle = "#6fd08c"; g.fillText("YOU", you[0] - 11, you[1] + 26);
+    const vc = document.getElementById("vc"); if (vc) vc.textContent = pts.length;
+    requestAnimationFrame(draw);
+  })(t0);
+}
+
+/* ---------- small hauntings ---------- */
+document.addEventListener("visibilitychange", () => { document.title = document.hidden && (S.step >= 2 || S.after) ? "hello?" : "N.K.S.A. Public Site"; });
+console.log("%cN.K.S.A. Public Site v4.2", "color:#12355b;font-weight:bold");
+console.log("Three stars. One search. One count. One word.");
+
+render();
+if (S.flipped && !S.after) buildVoid();
+})();
+</script>
