@@ -18,6 +18,8 @@ The user's style card (`docs/six-rules.jpg`). Every new video and every remake f
 5. **Slice it open, label one part** — every video has one cutaway moment with a 3D label.
 6. **A new pose on every sentence** — each VO line gets a fresh key pose (plus a cut).
 
+Rig: `src/lowpoly/Rig.tsx` (`Look` config: hair styles, hats, tops/jerseys with pixel numbers, glasses,
+beard, mustache, earrings, whistle, `half` for slicing). Example cast: `src/lebron2/cast.ts`.
 The character rig keeps the approved proportions (R6 blocks, 1.2×1.4×1.2 head, face layout with
 cream-rectangle eyes, square pupils, slab brows, per-character pupil colour), redrawn at 64 px.
 
@@ -32,6 +34,7 @@ YouTube Shorts in a blocky, Roblox-like R6 style, animated with Remotion + Three
 | `LeBronShort` | `src/lebron/LeBronShort.tsx` | 41 s vertical biography short (first attempt; user found it "bland") |
 | `IcedTea` | `src/IcedTea.tsx` | 22 s 16:9 homage of an anime bar scene |
 | `LastSlice` | `src/LastSlice.tsx` | 22 s 16:9 original comedy short (pizza slice) |
+| `LeBron2` | `src/lebron2/LeBron2.tsx` | 41 s LeBron remake: six rules, `lowpoly/Rig` cast, 17 dense sets, slice-open reveal (**new reference**) |
 | `PS1Test` | `src/ps1/PS1Short.tsx` | 28 s retro "six rules" style test, HD-retro look (draft timing, no VO yet) |
 | `GroupA/GroupB/Heads/Base` stills | `src/Lineup.tsx` | character line-ups for checking designs |
 
