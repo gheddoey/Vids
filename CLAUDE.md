@@ -12,6 +12,11 @@ animation → edit → QC → export + production report), with docs in `docs/<v
 Build complete, layered (FG/MG/BG) cinematic locations — never characters in front of a wall. Every
 location passes a rendered quality gate from its real camera before moving on.
 
+## CHARACTER ANIMATION DIRECTIVE (read `docs/ANIMATION-DIRECTIVE.md` + `docs/ANIMATION-SYSTEM.md`)
+
+Characters ACT: live faces (gaze, lids, brows, visemes/lip sync), personality profiles, anticipation,
+overlap/follow-through, arcs, variable cadence, impact frames. Listeners act. QC every performance.
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:

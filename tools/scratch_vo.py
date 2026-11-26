@@ -48,7 +48,8 @@ def main(script_path, name):
                 t += g
             p = os.path.join(tmp, f'{i}.wav')
             speak(l['text'], p)
-            x = load(p)
+            k = l.get('pitch', 1.0)  # per-line pitch for a second speaker (dialogue tests)
+            x = load(p, f'asetrate={int(22050 * k)},aresample={SR},atempo={1 / k:.4f},' + 'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse') if k != 1.0 else load(p)
             clip = os.path.join(tmp, f'{i}c.wav')
             with wave.open(clip, 'wb') as w:
                 w.setnchannels(1), w.setsampwidth(2), w.setframerate(SR)
@@ -62,7 +63,7 @@ def main(script_path, name):
                 lens = np.array([len(s) + 2 for s in said], float)
                 edges = np.concatenate([[0], np.cumsum(lens) / lens.sum() * dur])
                 ws = [{'w': s, 's': round(t + edges[k], 3), 'e': round(t + edges[k + 1], 3)} for k, s in enumerate(said)]
-            lines.append({'text': l['text'], 's': round(t, 3), 'e': round(t + dur, 3), 'words': ws})
+            lines.append({'text': l['text'], 's': round(t, 3), 'e': round(t + dur, 3), 'words': ws, **({'who': l['who']} if 'who' in l else {})})
             out.append(x)
             t += dur
             print(f'{i:2d} {lines[-1]["s"]:6.2f}-{lines[-1]["e"]:6.2f} {l["text"]}')

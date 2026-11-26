@@ -1,0 +1,9 @@
+{
+ "gap": 0.3,
+ "keepGapBefore": {"2": 0.7},
+ "lines": [
+  {"who": "roberto", "pitch": 1.12, "text": "Pablo, we spend two thousand dollars a month on rubber bands."},
+  {"who": "pablo", "pitch": 0.94, "text": "So? Buy more rubber bands."},
+  {"who": "roberto", "pitch": 1.12, "text": "That is not the problem!"}
+ ]
+}

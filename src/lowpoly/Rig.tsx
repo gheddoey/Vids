@@ -2,6 +2,7 @@ import React, {useMemo} from 'react';
 import * as THREE from 'three';
 import {Pose, REST} from '../Character';
 import {lambert, px, speckle, tex64} from '../ps1/ps1';
+import {FaceCtl, LiveFace, drawFaceBase} from './LiveFace';
 
 // Six-rules character rig, reusable for every video.
 // - Plain boxes only (12 triangles each), flat shading; a full character is ~15-25 boxes (<300 tris).
@@ -399,7 +400,9 @@ const hairBoxes = (st: HairStyle, c: string, acc?: string): HB[] => {
 	}
 };
 
-export type RigProps = {look: Look; pose?: Partial<Pose> & {face?: string}; half?: -1 | 1; holdL?: React.ReactNode; holdR?: React.ReactNode; bust?: boolean};
+// Extra acting controls (animation directive): squash/stretch, shrug, arm roll, stance, live face.
+export type Extra = {sq?: number; shrug?: number; shrugL?: number; shrugR?: number; armLY?: number; armRY?: number; legLZ?: number; legRZ?: number; chest?: number; fc?: FaceCtl};
+export type RigProps = {look: Look; pose?: Partial<Pose> & {face?: string} & Extra; half?: -1 | 1; holdL?: React.ReactNode; holdR?: React.ReactNode; bust?: boolean; headOnly?: boolean};
 
 const matCache = new WeakMap<Look, ReturnType<typeof buildMats>>();
 const buildMats = (L: Look) => {
@@ -408,10 +411,12 @@ const buildMats = (L: Look) => {
 	const arm = lambert({map: paintArm(L)});
 	const leg = lambert({map: paintLeg(L)});
 	const faces = Object.fromEntries(FACES.map((f) => [f, sixMats(skin, lambert({map: drawFace(L, f)}), skin, skin)])) as Record<Face, THREE.Material[]>;
+	const liveBase = sixMats(skin, lambert({map: drawFaceBase(L)}), skin, skin);
 	const hairTex = tex64((g) => (px(g, L.hair.color, 0, 0, 16, 16), speckle(g, 16, 16, [shade(L.hair.color, -0.15), shade(L.hair.color, 0.12)], 24, 2)), 16, 16);
 	return {
 		skin,
 		faces,
+		liveBase,
 		torso: sixMats(lambert({map: paintTorso(L.top, 'side', L.skin)}), lambert({map: paintTorso(L.top, 'front', L.skin)}), top, solid(shade(L.top.base, -0.3)), lambert({map: paintTorso(L.top, 'back', L.skin)})),
 		arm: sixMats(arm, arm, top, skin),
 		leg: sixMats(leg, leg, solid(L.pants), solid('#5a5650')),
@@ -448,8 +453,12 @@ const mats = (L: Look) => {
 	return m;
 };
 
-export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR, bust}) => {
-	const p = {...REST, ...pose} as Pose & {face?: string};
+export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR, bust, headOnly}) => {
+	const p = {...REST, ...pose} as Pose & {face?: string} & Extra;
+	const fc = p.fc;
+	const sq = p.sq ?? 0;
+	const shR = (p.shrug ?? 0) + (p.shrugR ?? 0);
+	const shL = (p.shrug ?? 0) + (p.shrugL ?? 0);
 	const M = useMemo(() => mats(L), [L]);
 	const face = (FACES.includes(p.face as Face) ? p.face : 'smile') as Face;
 	const acc = (c: string) => {
@@ -459,7 +468,8 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 	const show = (x: number) => !half || Math.sign(x) === half || x === 0;
 	const head = (
 		<group>
-			<B size={[1.2, HEAD_H, 1.2]} mat={M.faces[face]} half={half} inner={M.inner} />
+			<B size={[1.2, HEAD_H, 1.2]} mat={fc ? M.liveBase : M.faces[face]} half={half} inner={M.inner} />
+			{fc && !half ? <LiveFace look={L} c={fc} /> : null}
 			{M.stubbleShell ? (
 				// 3D stubble: a thin speckled shell standing just off the jaw
 				<mesh material={M.stubbleShell} position={[0, -0.42, 0.04]}>
@@ -515,16 +525,17 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 			{L.glasses ? [-1, 1].filter(show).map((s) => <B key={s} size={[0.04, 0.05, 0.7]} pos={[s * 0.62, 0.07, 0.25]} mat={M.glassArm!} />) : null}
 		</group>
 	);
+	if (headOnly) return <group rotation={[p.headX, p.headY, p.headZ]}>{head}</group>;
 	const limb = (m: THREE.Material[]) => <B size={[0.99, 2, 1]} pos={[0, -1, 0]} mat={m} />;
 	return (
-		<group position={[p.x, p.y, p.z]} rotation={[0, p.rotY, 0]}>
+		<group position={[p.x, p.y, p.z]} rotation={[0, p.rotY, 0]} scale={[1 / Math.sqrt(1 + sq), 1 + sq, 1 / Math.sqrt(1 + sq)]}>
 			{!bust && show(-0.5) ? (
-				<group position={[-0.5, 2, 0]} rotation={[p.legRX, 0, 0]}>
+				<group position={[-0.5, 2, 0]} rotation={[p.legRX, 0, p.legRZ ?? 0]}>
 					{limb(M.leg)}
 				</group>
 			) : null}
 			{!bust && show(0.5) ? (
-				<group position={[0.5, 2, 0]} rotation={[p.legLX, 0, 0]}>
+				<group position={[0.5, 2, 0]} rotation={[p.legLX, 0, p.legLZ ?? 0]}>
 					{limb(M.leg)}
 				</group>
 			) : null}
@@ -539,7 +550,7 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 					</>
 				) : null}
 				{show(-1.5) ? (
-					<group position={[-1.5, 1.75, 0]} rotation={[p.armRX, 0, p.armRZ]}>
+					<group position={[-1.5, 1.75 + shR * 0.3, 0]} rotation={[p.armRX, p.armRY ?? 0, p.armRZ]}>
 						<group position={[0, 0.25, 0]}>
 							{limb(M.arm)}
 							{holdR ? <group position={[0, -2.05, 0.1]}>{holdR}</group> : null}
@@ -547,7 +558,7 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 					</group>
 				) : null}
 				{show(1.5) ? (
-					<group position={[1.5, 1.75, 0]} rotation={[p.armLX, 0, p.armLZ]}>
+					<group position={[1.5, 1.75 + shL * 0.3, 0]} rotation={[p.armLX, p.armLY ?? 0, p.armLZ]}>
 						<group position={[0, 0.25, 0]}>
 							{limb(M.arm)}
 							{holdL ? <group position={[0, -2.05, 0.1]}>{holdL}</group> : null}
@@ -555,7 +566,7 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 						</group>
 					</group>
 				) : null}
-				<group position={[0, 2, 0]} rotation={[p.headX, p.headY, p.headZ]}>
+				<group position={[0, 2 - ((shR + shL) / 2) * 0.12, 0]} rotation={[p.headX, p.headY, p.headZ]}>
 					<group position={[0, HEAD_H / 2 + 0.02, 0]}>{head}</group>
 				</group>
 			</group>
