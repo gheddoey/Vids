@@ -35,6 +35,7 @@ YouTube Shorts in a blocky, Roblox-like R6 style, animated with Remotion + Three
 | `IcedTea` | `src/IcedTea.tsx` | 22 s 16:9 homage of an anime bar scene |
 | `LastSlice` | `src/LastSlice.tsx` | 22 s 16:9 original comedy short (pizza slice) |
 | `LeBron2` | `src/lebron2/LeBron2.tsx` | 41 s LeBron remake: six rules, `lowpoly/Rig` cast, 17 dense sets, slice-open reveal (**new reference**) |
+| `Escobar` | `src/escobar/Escobar.tsx` | 65 s Pablo Escobar short: six rules, cinematic grade, **smooth transitions**, painted+3D stubble (**newest reference**) |
 | `PS1Test` | `src/ps1/PS1Short.tsx` | 28 s retro "six rules" style test, HD-retro look (draft timing, no VO yet) |
 | `GroupA/GroupB/Heads/Base` stills | `src/Lineup.tsx` | character line-ups for checking designs |
 
@@ -88,6 +89,11 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
 - Extra face bits: nose hint, mouths, per-character marks (scar, freckles, blush, drop, mole).
 - Face texture is drawn with `g.translate(0, 34)` so hair fringes don't cover brows.
 
+### Facial hair (user: "just stubbly — some hand-drawn and some 3D")
+- `Look.stubble = {color, mode: 'paint' | '3d'}` (stippled 64-px shadow; '3d' adds a speckled shell on
+  the jaw), `mustache` (painted) / `mustache3d`, `beard` (painted) / `beard3d`. Mix both kinds in every cast.
+- Also: `belly`, `watch`, hats `straw` / `police`, tee `icon: 'floral'`.
+
 ### Accessories (`Hair.tsx`, `Hats.tsx`, `Character.tsx`)
 - Hair: swept, spiky, bob, pompadour, bun, mop, flattop, braids, short, curly, long, receding, wavy.
 - Hats: cap, fedora, beanie, goggles, headphones, badgecap, safari, schoolcap, headband, hardhat.
@@ -124,6 +130,9 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
   balls, coins, cups stay locked to hands, and objects can be placed exactly where a hand reaches.
 - Face swaps happen instantly (all expressions pre-drawn per character).
 - Camera: per shot `Cam` with p0→p1 and t0→t1 eased by sine, optional decaying `shake` on impacts.
+- **Smooth transitions (user request):** each shot layer overlaps its neighbours (`SHOTS[i].tr`:
+  fade / whip (slide + motion blur) / zoom / dip (to black) / flash (white) / cut) — see `layerStyle` +
+  `ShotLayer` in `src/escobar/Escobar.tsx`. Shot time stays anchored to its cut (`f` negative while fading in).
 - Hard cuts every ~1–3 s for retention; cut 2 frames before each line starts. Cut on exact words for
   punchlines (e.g. reveal on "Lionel"). Use callbacks (end returns to the hook location).
 
@@ -146,7 +155,7 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
 ## Audio pipeline
 
 1. User sends ElevenLabs mp3 (upload path given in the message).
-2. Word timings: `pocketsphinx` (installed) — script in scratchpad `asr.py` pattern:
+2. Word timings: **`python3 tools/words.py <mp3> words.json` (Whisper) then `python3 tools/align_vo.py tools/scripts/<name>.json words.json`** (exact per-word times; prep_vo keeps them). Older: `pocketsphinx` — script in scratchpad `asr.py` pattern:
    `Decoder(samprate=16000)`, `d.seg()` with `start_frame/end_frame` (centiseconds).
 3. Write `tools/scripts/<name>.json` with each script line's original start/end, word anchors for exact
    cuts, `gap` and `keepGapBefore` (dramatic pauses).
