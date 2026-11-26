@@ -11,8 +11,8 @@ import {B, Bedroom, Controller, Cyl, LowPolyProps, Studio, crateTex} from './set
 import {lambert} from './ps1';
 import timing from './timing.json';
 
-// Test short for the six-rule retro look. The whole composition is 270x480; the render
-// is upscaled 4x to 1080x1920 with nearest-neighbour (no smoothing) after rendering.
+// Test short for the six-rule retro look, rendered in HD (1080x1920). The retro feel comes
+// from low-poly boxes, 64-px nearest-filtered textures, vertex snapping and ordered dither.
 
 const FPS = 30;
 const PI = Math.PI;
@@ -129,17 +129,17 @@ const Paint: React.FC<ShotProps> = ({f, d, g}) => {
 	);
 };
 
-// ---------------- 3. Render tiny (first half at a third of 270x480) ----------------
+// ---------------- 3. HD, but never smooth a pixel: macro on the 64-px face ----------------
 const Tiny: React.FC<ShotProps & {numAt: number}> = ({f, d, g, numAt}) => {
-	const p = P([{f: 0, face: 'talk', armRX: -0.2, armLX: 0}, {f: 6, armRX: -2.3, armRZ: -0.25, lean: -0.05, headZ: -0.12, ease: 'back'}, {f: 24, armRX: -2.0, armLX: -0.4, armLZ: 0.3}, {f: 44, armRX: -2.5, armLZ: 0.2}], f, g);
+	const p = P([{f: 0, face: 'talk', armRX: -0.2, armLX: 0}, {f: 6, armRX: -2.6, armRZ: -0.55, lean: -0.05, headZ: -0.08, ease: 'back'}, {f: 30, armRX: -2.4, armLX: -0.3, armLZ: 0.2}], f, g);
 	const s = pop(f, numAt);
 	return (
 		<>
-			<Cam frame={f} dur={d} p0={[0, 5, 10.5]} p1={[0, 4.8, 12.5]} t0={[0, 4.2, 0]} t1={[0, 4.2, 0]} fov={42} />
+			<Cam frame={f} dur={d} p0={[0.3, 5.6, 9.5]} p1={[0.1, 5.3, 6.8]} t0={[0, 5.0, 0]} t1={[0, 4.85, 0]} fov={42} />
 			<Studio top="#1e0e3a" bottom="#6a3aa8" base="#2e2250" line="#c08aff" rim="#c08aff" />
 			<Pix pose={p} />
-			<group position={[0, 8.0, -1]} scale={Math.max(0.001, s)}>
-				<BlockText text="270x480" size={0.85} depth={0.35} color="#f3ead2" side="#6a3aa8" />
+			<group position={[0, 6.95, -1.5]} scale={Math.max(0.001, s)}>
+				<BlockText text="HD" size={1.1} depth={0.35} color="#f3ead2" side="#6a3aa8" />
 			</group>
 			<Controller pos={[3, 0.09, 1.5]} rot={[0, -0.6, 0]} />
 		</>
@@ -284,14 +284,14 @@ const End: React.FC<ShotProps> = ({f, d, g}) => {
 
 // ---------------- Shot list ----------------
 
-type ShotDef = {from: number; C: React.FC<ShotProps & Record<string, number>>; props?: (from: number) => Record<string, number>; pix?: number};
+type ShotDef = {from: number; C: React.FC<ShotProps & Record<string, number>>; props?: (from: number) => Record<string, number>};
 const rel = (from: number, t: number) => sec(t) - from;
 const SHOTS: ShotDef[] = [
 	{from: 0, C: Hook},
 	{from: cut(L(1).s), C: LowPoly as ShotDef['C'], props: (fr) => ({wireOn: rel(fr, word(1, 1).s), wireOff: rel(fr, word(1, 6).s), numAt: rel(fr, word(1, 3).s)})},
 	{from: cut(L(2).s), C: Paint},
-	{from: cut(L(3).s), C: Tiny as ShotDef['C'], props: (fr) => ({numAt: rel(fr, word(3, 4).s)}), pix: 3},
-	{from: cut(word(3, 9).s), C: NoSmooth},
+	{from: cut(L(3).s), C: Tiny as ShotDef['C'], props: (fr) => ({numAt: rel(fr, word(3, 4).s)})},
+	{from: cut(word(3, 6).s), C: NoSmooth},
 	{from: cut(L(4).s), C: Snap},
 	{from: cut(L(5).s), C: Slice as ShotDef['C'], props: (fr) => ({cutAt: rel(fr, word(5, 1).s), openAt: rel(fr, word(5, 3).s), labelAt: rel(fr, word(5, 5).s)})},
 	{from: cut(L(6).s), C: (p) => <PoseShot {...p} i={0} />},
@@ -303,7 +303,7 @@ const SHOTS: ShotDef[] = [
 
 // Exaggerated vertex snap (in pixels) and colour levels per shot, so rule 4 reads on a phone.
 const fxFor = (def: ShotDef, f: number) => {
-	if (def.C !== Snap) return {snap: 1, levels: 15};
+	if (def.C !== Snap) return {snap: 1, levels: 16};
 	const g = def.from + f;
 	const ditherAt = sec(word(4, 8).s);
 	return {snap: g < ditherAt ? 4 : 2, levels: g < ditherAt ? 12 : 5};
@@ -312,14 +312,12 @@ const fxFor = (def: ShotDef, f: number) => {
 const ShotCanvas: React.FC<{def: ShotDef; dur: number}> = ({def, dur}) => {
 	const f = useCurrentFrame();
 	const C = def.C;
-	const k = def.pix ?? 1;
 	const fx = fxFor(def, f);
 	return (
-		<AbsoluteFill style={{imageRendering: 'pixelated'}}>
-			{/* dpr < 1 draws fewer pixels and the browser blows them up unsmoothed */}
-			<ThreeCanvas width={RES.w} height={RES.h} shadows="basic" dpr={1 / k} gl={{antialias: false}} style={{imageRendering: 'pixelated'}}>
+		<AbsoluteFill>
+			<ThreeCanvas width={RES.w} height={RES.h} shadows="basic" dpr={1} gl={{antialias: true}}>
 				<C f={f} d={dur} g={def.from + f} {...(def.props ? def.props(def.from) : {})} />
-				<PS1Pass snap={fx.snap * k} levels={fx.levels} pixel={k} />
+				<PS1Pass snap={fx.snap} levels={fx.levels} />
 			</ThreeCanvas>
 		</AbsoluteFill>
 	);
@@ -339,9 +337,9 @@ const CUES: Cue[] = [
 	{t: at(2, 0.2), file: 'scribble', vol: 0.45},
 	{t: at(2, 1.0), file: 'scribble', vol: 0.4},
 	{t: at(2, 1.8), file: 'scribble', vol: 0.35},
-	{t: word(3, 3).s - 0.1, file: 'shrink', vol: 0.5},
+	{t: word(3, 1).s, file: 'whoosh', vol: 0.3},
 	{t: word(3, 4).s, file: 'blip', vol: 0.4},
-	{t: word(3, 9).s, file: 'click', vol: 0.5},
+	{t: word(3, 6).s, file: 'click', vol: 0.5},
 	{t: word(4, 1).s, file: 'glitch', vol: 0.45},
 	{t: word(4, 8).s, file: 'glitch', vol: 0.35},
 	{t: word(5, 1).s - 0.2, file: 'laser', vol: 0.5},
@@ -356,7 +354,7 @@ export const PS1Short: React.FC = () => {
 	const font = useBlockFont();
 	if (!font) return null;
 	return (
-		<AbsoluteFill style={{backgroundColor: '#000', imageRendering: 'pixelated'}}>
+		<AbsoluteFill style={{backgroundColor: '#000', filter: 'saturate(1.05) contrast(1.05)'}}>
 			{SHOTS.map((s, i) => {
 				const to = SHOTS[i + 1]?.from ?? PS1_FRAMES;
 				return (
@@ -365,10 +363,9 @@ export const PS1Short: React.FC = () => {
 					</Sequence>
 				);
 			})}
-			{/* The approved caption style, laid out at 1080x1920 and scaled into the 270x480 frame */}
-			<div style={{position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transform: 'scale(0.25)', transformOrigin: '0 0'}}>
-				<CaptionsFor timing={T} />
-			</div>
+			{/* Soft vignette, like an old TV's falloff */}
+			<AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.38) 100%)'}} />
+			<CaptionsFor timing={T} />
 			{CUES.map((c, i) => (
 				<Sequence key={`a${i}`} from={Math.max(0, Math.round(c.t * FPS))} layout="none">
 					<Audio src={staticFile(`sfx/${c.file}.wav`)} volume={c.vol ?? 1} />

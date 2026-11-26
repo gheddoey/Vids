@@ -5,20 +5,24 @@ import {useThree} from '@react-three/fiber';
 // The six-rule retro look, as code:
 // 1 low poly + flat shading     -> plain boxes (12 tris each), flatShading forced on every material
 // 2 64-px textures by code      -> tex64() canvases, nearest filtering, no mipmaps
-// 3 render at 270x480           -> the composition IS 270x480, no antialias, upscaled 4x with
-//                                  nearest-neighbour by ffmpeg (no smoothing anywhere)
-// 4 snap vertices + dither      -> vertex shader snaps clip-space xy to a pixel grid;
-//                                  fragment shader quantises colour with a 4x4 Bayer matrix
-export const RES = {w: 270, h: 480};
+// 3 HD, but never smooth a pixel -> renders a clean 1080x1920 frame; the retro grain comes from
+//                                  the chunky textures, the snap grid and the dither, not low res
+// 4 snap vertices + dither      -> vertex shader snaps clip-space xy to a virtual 360x640 grid
+//                                  (PS1 wobble); fragment shader quantises colour with a 4x4 Bayer
+//                                  matrix in 3x3-px cells, so the pattern reads at HD
+export const RES = {w: 1080, h: 1920};
+export const GRID = {w: 360, h: 640};
 
 // Shared uniforms so a shot can exaggerate the effect (e.g. coarse snapping to show it off).
 export const U = {
-	snap: {value: new THREE.Vector2(RES.w / 2, RES.h / 2)},
-	levels: {value: 15},
+	snap: {value: new THREE.Vector2(GRID.w / 2, GRID.h / 2)},
+	levels: {value: 16},
+	cell: {value: RES.w / GRID.w},
 };
 
 const FRAG_HEAD = /* glsl */ `
 uniform float uLevels;
+uniform float uCell;
 float ps1Bayer(vec2 p) {
 	int x = int(mod(p.x, 4.0));
 	int y = int(mod(p.y, 4.0));
@@ -53,6 +57,7 @@ export const ps1Patch = (m: THREE.Material) => {
 	m.onBeforeCompile = (sh) => {
 		sh.uniforms.uSnap = U.snap;
 		sh.uniforms.uLevels = U.levels;
+		sh.uniforms.uCell = U.cell;
 		sh.vertexShader = sh.vertexShader.replace('void main() {', 'uniform vec2 uSnap;\nvoid main() {').replace(
 			'#include <project_vertex>',
 			`#include <project_vertex>
@@ -61,7 +66,7 @@ export const ps1Patch = (m: THREE.Material) => {
 		if (sh.fragmentShader.includes('#include <dithering_fragment>')) {
 			sh.fragmentShader = sh.fragmentShader
 				.replace('void main() {', FRAG_HEAD + 'void main() {')
-				.replace('#include <dithering_fragment>', 'gl_FragColor.rgb = floor(gl_FragColor.rgb * uLevels + ps1Bayer(gl_FragCoord.xy)) / uLevels;');
+				.replace('#include <dithering_fragment>', 'gl_FragColor.rgb = floor(gl_FragColor.rgb * uLevels + ps1Bayer(floor(gl_FragCoord.xy / uCell))) / uLevels;');
 		}
 	};
 	m.customProgramCacheKey = () => 'ps1';
@@ -69,12 +74,9 @@ export const ps1Patch = (m: THREE.Material) => {
 };
 
 // Put inside each ThreeCanvas: patches every material in the scene before the frame renders.
-export const PS1Pass: React.FC<{snap?: number; levels?: number; pixel?: number}> = ({snap = 1, levels = 15, pixel = 1}) => {
+export const PS1Pass: React.FC<{snap?: number; levels?: number}> = ({snap = 1, levels = 16}) => {
 	const scene = useThree((s) => s.scene);
-	const gl = useThree((s) => s.gl);
-	// Draw fewer pixels than the frame (the canvas CSS has image-rendering: pixelated).
-	if (gl.getPixelRatio() !== 1 / pixel) gl.setPixelRatio(1 / pixel);
-	U.snap.value.set(RES.w / 2 / snap, RES.h / 2 / snap);
+	U.snap.value.set(GRID.w / 2 / snap, GRID.h / 2 / snap);
 	U.levels.value = levels;
 	useLayoutEffect(() => {
 		scene.traverse((o) => {

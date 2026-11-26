@@ -5,7 +5,7 @@
   {"text": "Six rules make anything look like a nineties video game."},
   {"text": "One. Low poly. Three hundred triangles, flat shading."},
   {"text": "Two. Sixty-four pixel textures, painted by code."},
-  {"text": "Three. Render it tiny. Two seventy by four eighty. No smoothing."},
+  {"text": "Three. Render it in HD, but never smooth a pixel."},
   {"text": "Four. Snap every vertex to a grid, and dither the colors."},
   {"text": "Five. Slice it open, and label one part."},
   {"text": "Six. A new pose on every sentence."},
