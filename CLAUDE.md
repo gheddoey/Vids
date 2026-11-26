@@ -2,6 +2,25 @@
 
 Everything learned so far making videos in this repo. Read it all before starting a new video.
 
+## THE SIX RULES (engraved — apply to EVERY video, characters included)
+
+The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
+
+1. **Low poly: ~300 triangles per character, flat shading.** Plain boxes (12 tris each), no rounded
+   geometry, `flatShading` on everything.
+2. **64-pixel textures, painted by code.** Faces, shirts, pants, shoes, props, floors, walls: `tex64()`
+   canvases (64 px or smaller), nearest filtering, never smoothed. No 512-px faces or 585×559 shirt
+   templates for new characters.
+3. **Render at 270×480, no smoothing** — combined with 1080p via the **RetroHD** filter
+   (`src/retro/RetroHD.tsx`): near subjects crisp HD with outlines, the world dissolves into true
+   270×480 dithered pixels with distance. Captions stay HD.
+4. **Snap vertices to a grid, dither the colours** (`PS1Pass` vertex snap + Bayer dither).
+5. **Slice it open, label one part** — every video has one cutaway moment with a 3D label.
+6. **A new pose on every sentence** — each VO line gets a fresh key pose (plus a cut).
+
+The character rig keeps the approved proportions (R6 blocks, 1.2×1.4×1.2 head, face layout with
+cream-rectangle eyes, square pupils, slab brows, per-character pupil colour), redrawn at 64 px.
+
 ## What we make
 
 YouTube Shorts in a blocky, Roblox-like R6 style, animated with Remotion + Three.js
