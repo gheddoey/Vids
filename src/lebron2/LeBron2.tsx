@@ -8,6 +8,7 @@ import {BlockText, useBlockFont} from '../BlockText';
 import {Key, add, breathe, onTwos, sample, walk} from '../anim';
 import {CaptionsFor, Confetti, handOf} from '../lebron/common';
 import {PS1Pass} from '../ps1/ps1';
+import {CineGrade, CinePreset} from '../cine/Cine';
 import {B, Cyl} from '../ps1/sets';
 import {Who} from '../lowpoly/Rig';
 import {P, Person} from './cast';
@@ -581,6 +582,9 @@ const NotDone: React.FC<ShotProps> = ({f, d, a}) => {
 // ---------------- Shot list ----------------
 
 type ShotDef = {from: number; C: React.FC<ShotProps>; a?: (from: number) => Record<string, number>; fx?: {snap?: number; levels?: number}};
+
+// Cinematic grade per shot (by component).
+const LOOK = new Map<React.FC<ShotProps>, CinePreset>();
 const rel = (from: number, t: number) => sec(t) - from;
 const SHOTS: ShotDef[] = [
 	{from: 0, C: Attendance, a: (fr) => ({eighty: rel(fr, W(0, 5).s)})},
@@ -609,13 +613,32 @@ const SHOTS: ShotDef[] = [
 	{from: cut(L(17).s), C: NotDone, a: (fr) => ({look: rel(fr, W(17, 3).s)})},
 ];
 
+[
+	[KidSnow, 'golden'],
+	[Moving, 'golden'],
+	[Nobody, 'golden'],
+	[Coach, 'golden'],
+	[ShowUp, 'noon'],
+	[Chosen, 'night'],
+	[Name, 'night'],
+	[Eighteen, 'arena'],
+	[Pick, 'arena'],
+	[ThreeOne, 'arena'],
+	[Won, 'arena'],
+	[Count, 'arena'],
+	[Fadeaway, 'arena'],
+	[Son, 'arena'],
+	[NotDone, 'arena'],
+].forEach(([c, p]) => LOOK.set(c as React.FC<ShotProps>, p as CinePreset));
+
 const ShotCanvas: React.FC<{def: ShotDef; dur: number}> = ({def, dur}) => {
 	const f = useCurrentFrame();
 	const C = def.C;
 	return (
-		<ThreeCanvas width={1080} height={1920} shadows="basic" dpr={1} gl={{antialias: true}}>
+		<ThreeCanvas width={1080} height={1920} shadows="soft" dpr={1}>
 			<C f={f} d={dur} a={def.a ? def.a(def.from) : {}} />
 			<PS1Pass snap={def.fx?.snap ?? 1} levels={def.fx?.levels ?? 16} />
+			<CineGrade preset={LOOK.get(C) ?? 'interior'} frame={def.from + f} />
 		</ThreeCanvas>
 	);
 };
@@ -671,7 +694,7 @@ export const LeBron2: React.FC = () => {
 	const font = useBlockFont();
 	if (!font) return null;
 	return (
-		<AbsoluteFill style={{backgroundColor: '#000', filter: 'saturate(1.06) contrast(1.05)'}}>
+		<AbsoluteFill style={{backgroundColor: '#000'}}>
 			{SHOTS.map((s, i) => {
 				const to = SHOTS[i + 1]?.from ?? LEBRON2_FRAMES;
 				return (
@@ -680,7 +703,6 @@ export const LeBron2: React.FC = () => {
 					</Sequence>
 				);
 			})}
-			<AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.38) 100%)'}} />
 			<CaptionsFor timing={T} />
 			<Audio src={staticFile('vo/lebron.wav')} />
 			{CUES.map((c, i) => (

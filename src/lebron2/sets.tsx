@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {BlockText} from '../BlockText';
 import {lambert, px, speckle, tex64} from '../ps1/ps1';
 import {B, Cyl, SkyDome} from '../ps1/sets';
+import {SunDisc} from '../cine/Cine';
 
 // LeBron remake sets. Six rules: boxes + low-segment cylinders, 64-px code-painted textures,
 // and every room lived-in (layers of story props). Each set brings its own light rig:
@@ -24,14 +25,16 @@ export const Rig4: React.FC<{sky: string; ground: string; hemi?: number; key: st
 	fill = 0.5,
 	span = 14,
 }) => (
+	// Cinematic balance (GTA-like): low ambient, a strong warm key that rakes from the side with long
+	// shadows, a hot rim to separate people from the background, very little flat front fill.
 	<>
-		<hemisphereLight args={[sky, ground, hemi]} />
+		<hemisphereLight args={[sky, ground, hemi * 0.7]} />
 		<directionalLight
-			position={keyPos}
-			intensity={keyI}
+			position={[keyPos[0] * 1.3, keyPos[1] * 0.7, keyPos[2]]}
+			intensity={keyI * 1.7}
 			color={key}
 			castShadow
-			shadow-mapSize={[1024, 1024]}
+			shadow-mapSize={[2048, 2048]}
 			shadow-bias={-0.002}
 			shadow-camera-left={-span}
 			shadow-camera-right={span}
@@ -39,8 +42,8 @@ export const Rig4: React.FC<{sky: string; ground: string; hemi?: number; key: st
 			shadow-camera-bottom={-span}
 			shadow-camera-far={80}
 		/>
-		<directionalLight position={[-4, 7, -12]} intensity={rimI} color={rim} />
-		<directionalLight position={[0, 5, 16]} intensity={fill} color="#ffffff" />
+		<directionalLight position={[-4, 7, -12]} intensity={rimI * 1.6} color={rim} />
+		<directionalLight position={[0, 5, 16]} intensity={fill * 0.9 + 0.25} color="#dfe8ff" />
 	</>
 );
 
@@ -545,6 +548,7 @@ export const AkronStreet: React.FC<{lamps: number; night?: boolean}> = ({lamps, 
 	return (
 		<>
 			<SkyDome top={night ? '#05070f' : '#3a3a6a'} bottom={night ? '#1a1a30' : '#f08a5a'} fog={night ? '#1a1a30' : '#c87a6a'} near={40} far={120} />
+			{night ? <SunDisc pos={[-50, 45, -85]} color="#dfe8ff" r={3} i={3} /> : <SunDisc pos={[-75, 14, -80]} color="#ffb070" r={7} i={5} />}
 			<Rig4 sky={night ? '#5a6aa8' : '#ffb080'} ground="#3a2a2a" hemi={night ? 0.5 : 0.8} key={night ? '#9ab0ff' : '#ff9a5a'} keyI={night ? 0.8 : 1.8} keyPos={[-14, 8, 4]} rim={night ? '#6a8aff' : '#ffd0a0'} span={24} />
 			<mesh rotation={[-PI / 2, 0, 0]} material={road} receiveShadow>
 				<planeGeometry args={[120, 120]} />

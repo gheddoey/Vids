@@ -100,7 +100,12 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
 - Interiors need extra fill (rooms came out black at first). Practical lights (lamps, furnace, lightbox)
   as point lights + emissive meshes.
 - Light that "tells the story": sun through blinds (striped), furnace glow, moonlight, floodlights, rain dim.
-- Slight CSS grade on the composition: `saturate(1.05) contrast(1.05)`.
+- **Cinematic GTA-like look (user request, now standard):** `<CineGrade preset />` from `src/cine/Cine.tsx`
+  as the LAST child of every ThreeCanvas (bloom → ACES → teal/orange grade, S-curve, +saturation,
+  exposure 1.25, vignette, grain; includes `Redraw`). Presets: golden, noon, night, interior, arena.
+  Lights: low ambient, strong raking warm key (long shadows), hot rim, modest front fill so faces read
+  (`Rig4` in `src/lebron2/sets.tsx`), `shadows="soft"`, a blooming `SunDisc` in exterior skies.
+  No CSS filter/vignette overlay any more (the grade does it).
 
 ## Animation style
 
