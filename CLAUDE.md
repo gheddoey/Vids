@@ -7,6 +7,11 @@ Everything learned so far making videos in this repo. Read it all before startin
 Every video runs the 9-stage pipeline (brief → research → script treatment → storyboard → assets →
 animation → edit → QC → export + production report), with docs in `docs/<video>/`.
 
+## SET DESIGN DIRECTIVE + QUALITY GATE (read `docs/SET-DESIGN-DIRECTIVE.md`)
+
+Build complete, layered (FG/MG/BG) cinematic locations — never characters in front of a wall. Every
+location passes a rendered quality gate from its real camera before moving on.
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
