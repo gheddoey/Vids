@@ -13,6 +13,7 @@ import {Cam2, K, pop, pose} from '../lebron2/LeBron2';
 import {P, Person} from './cast';
 import {Alley, Cabin, CashBrick, Catedral, Congress, CountingRoom, Hillside, MapAmericas, Market, Napoles, NightCity, Records, RichList, River, Rooftops2, Void, Warehouse, Airstrip} from './sets';
 import {Birds, HippoV2, Motes, Ripples, Smoke, SuperCub, life} from './kit';
+import {RiverV3} from './river';
 import timing from './timing.json';
 
 // Pablo Escobar v2 — production-system rework: living environments (ambient layer in every shot),
@@ -61,8 +62,8 @@ const Hook: React.FC<ShotProps> = ({f, d, a}) => {
 	const s = pop(f, a.two);
 	return (
 		<>
-			<Cam2 f={f} k={[{f: 0, p: [0.8, 1.3, 14], t: [0, 1.4, -2]}, {f: d, p: [0.4, 1.5, 11.5], t: [0, 1.7, -2]}]} />
-			<River f={f} />
+			<Cam2 f={f} k={[{f: 0, p: [0.8, 0.85, 14], t: [0, 2.2, -2]}, {f: d, p: [0.4, 1.0, 11.5], t: [0, 2.4, -2]}]} />
+			<RiverV3 f={f} cam={[0.6, 0.9, 13]} fg="hook" />
 			<HippoV2 f={f} pos={[-1.4, 0, -0.5]} rot={0.35} sub={up(0)} />
 			<HippoV2 f={f} pos={[3, 0, -4]} rot={-0.5} sub={up(1)} s={0.85} phase={2} />
 			<HippoV2 f={f} pos={[-4.5, 0, -7]} rot={0.9} sub={up(2)} s={0.75} phase={4} />
@@ -523,12 +524,12 @@ const Yawn: React.FC<ShotProps> = ({f, d}) => {
 	const jaw = interpolate(onTwos(f), [2, 12, d - 2], [0, 1.0, 1.0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.3))});
 	return (
 		<>
-			<Cam2 f={f} k={[{f: 0, p: [3.4, 2.4, 9], t: [0, 1.7, 0]}, {f: d, p: [3.0, 2.3, 8], t: [0, 1.8, 0]}]} />
-			<River f={f} />
-			<HippoV2 f={f} pos={[0, 0, -1]} rot={0.55} sub={0.75} jaw={jaw} />
+			<Cam2 f={f} k={[{f: 0, p: [-4.4, 2.3, 10.5], t: [-0.6, 1.4, 1.4]}, {f: d, p: [-4.0, 2.2, 9.6], t: [-0.6, 1.5, 1.4]}]} />
+			<RiverV3 f={f} cam={[-4.2, 2.2, 10]} fg="yawn" />
+			<HippoV2 f={f} pos={[0, 0, -1]} rot={-0.22} sub={0.75} jaw={jaw} />
 			<Ripples f={f} pos={[0, 0, 1]} r={2.6} />
-			<HippoV2 f={f} pos={[-4.5, 0, -7]} rot={0.6} sub={0.9} s={0.8} phase={2} />
-			<HippoV2 f={f} pos={[4.5, 0, -9]} rot={-0.4} sub={0.9} s={0.7} phase={4} />
+			<HippoV2 f={f} pos={[4.5, 0, -7]} rot={-0.6} sub={0.9} s={0.8} phase={2} />
+			<HippoV2 f={f} pos={[9, 0, -10]} rot={-1.2} sub={0.9} s={0.7} phase={4} />
 		</>
 	);
 };

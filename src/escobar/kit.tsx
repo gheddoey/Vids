@@ -173,12 +173,16 @@ export const Ripples: React.FC<{f: number; pos: V3; r?: number; n?: number}> = (
 };
 
 // ---------- hippo v2 ----------
-const hippoTex = (base: string) => tex64((g) => (px(g, base, 0, 0, 32, 32), speckle(g, 32, 32, ['#6a5a62', '#8a7a82', '#a08080'], 90, 6), px(g, '#b88a8a', 0, 26, 32, 6)), 32, 32);
+// real hippo skin: grey-brown with pinkish undertones, wet sheen speckles, pink belly/creases
+const hippoTex = (base: string) => tex64((g) => (px(g, base, 0, 0, 32, 32), speckle(g, 32, 32, ['#5c4a44', '#7e6a60', '#94786a', '#a8948a'], 110, 6)), 32, 32);
 export const HippoV2: React.FC<{f: number; pos?: V3; rot?: number; s?: number; sub?: number; jaw?: number; walk?: boolean; phase?: number}> = ({f, pos = [0, 0, 0], rot = 0, s = 1, sub = 0, jaw = 0, walk, phase = 0}) => {
-	const m = useMemo(() => lambert({map: hippoTex('#7a6a74')}), []);
-	const pink = useMemo(() => lambert({color: '#d88a8a'}), []);
+	const m = useMemo(() => lambert({map: hippoTex('#7e6a60')}), []);
+	const pink = useMemo(() => lambert({color: '#d89a94'}), []);
 	const dark = useMemo(() => lambert({color: '#1e1418'}), []);
 	const cream = useMemo(() => lambert({color: '#f2ead8'}), []);
+	const gum = useMemo(() => lambert({color: '#c0606a'}), []);
+	const tongue = useMemo(() => lambert({color: '#b04a58'}), []);
+	const throat = useMemo(() => lambert({color: '#3a1418'}), []);
 	const ff = onTwos(f);
 	const breathe = Math.sin(ff / 18 + phase) * 0.04;
 	const ear = Math.sin(ff * 0.7 + phase) > 0.85 ? 0.5 : 0;
@@ -211,9 +215,20 @@ export const HippoV2: React.FC<{f: number; pos?: V3; rot?: number; s?: number; s
 				<group position={[0, -0.4, 0.5]} rotation={[jaw * 1.1, 0, 0]}>
 					<B size={[1.6, 0.4, 1.4]} pos={[0, -0.15, 0.7]} mat={m} />
 					<B size={[1.4, 0.06, 1.25]} pos={[0, 0.07, 0.7]} mat={pink} />
-					{[-0.6, 0.6].map((x) => <B key={x} size={[0.16, 0.5, 0.16]} pos={[x, 0.3, 1.25]} mat={cream} />)}
+					{/* raised gum rims, tongue, big lower canines (tusks) and forward incisors */}
+					{[-0.66, 0.66].map((x) => <B key={x} size={[0.14, 0.12, 1.2]} pos={[x, 0.1, 0.7]} mat={gum} />)}
+					<B size={[0.8, 0.2, 0.85]} pos={[0, 0.16, 0.5]} mat={tongue} />
+					{/* teeth only show once the mouth opens (closed hippos hide them) */}
+					{jaw > 0.1 ? [-0.6, 0.6].map((x) => <B key={x} size={[0.2, 0.6, 0.2]} pos={[x, 0.34, 1.22]} rot={[0.15, 0, x * 0.25]} mat={cream} />) : null}
+					{jaw > 0.1 ? [-0.3, -0.1, 0.1, 0.3].map((x) => <B key={x} size={[0.1, 0.1, 0.3]} pos={[x, 0.08, 1.42]} rot={[-0.3, 0, 0]} mat={cream} />) : null}
 				</group>
-				{jaw > 0.2 ? <B size={[1.4, 0.06, 1.2]} pos={[0, -0.25, 1.1]} mat={pink} /> : null}
+				{jaw > 0.15 ? (
+					<>
+						<B size={[1.5, 0.05, 1.25]} pos={[0, -0.44, 1.05]} mat={pink} />
+						<B size={[1.3, 0.7, 0.1]} pos={[0, -0.6, 0.42]} mat={throat} />
+						{[-0.6, 0.6].map((x) => <B key={x} size={[0.13, 0.28, 0.13]} pos={[x, -0.55, 1.45]} mat={cream} />)}
+					</>
+				) : null}
 			</group>
 			<B size={[0.12, 0.5, 0.12]} pos={[0, 1.6, -2.2]} rot={[0.6 + Math.sin(ff * 0.5) * 0.3, 0, 0]} mat={m} />
 		</group>
