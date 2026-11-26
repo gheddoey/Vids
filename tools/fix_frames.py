@@ -32,14 +32,19 @@ def tiled_score(a):
 
 def find_bad(frames):
     imgs = [small(p) for p in frames]
+    tiles = [tiled_score(a) for a in imgs]
     bad = []
     for i, a in enumerate(imgs):
+        # far more self-similar than the frames around it = tiled
+        if tiles[i] < 0.3 * np.median(tiles[max(0, i - 8) : i + 9]):
+            bad.append(i)
+            continue
         prev = imgs[i - 1] if i else None
         nxt = imgs[i + 1] if i + 1 < len(imgs) else None
         d_prev = np.abs(a - prev).mean() if prev is not None else 0
         d_next = np.abs(a - nxt).mean() if nxt is not None else 0
         jump = prev is not None and nxt is not None and d_prev > 12 and d_next > 12
-        if tiled_score(a) < 4 or (jump and np.abs(prev - nxt).mean() < 0.5 * min(d_prev, d_next)):
+        if tiles[i] < 2 or (jump and np.abs(prev - nxt).mean() < 0.5 * min(d_prev, d_next)):
             bad.append(i)
     return bad
 
@@ -62,7 +67,7 @@ def main(bundle, comp, src, dst):
 
         with ThreadPoolExecutor(4) as ex:
             list(ex.map(still, bad))
-    fps = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout.strip()
+    fps = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'stream=r_frame_rate', '-of', 'csv=p=0', src], capture_output=True, text=True).stdout.strip().strip(',').splitlines()[0]
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-framerate', fps, '-i', os.path.join(work, 'f%04d.png'), '-i', src, '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-crf', '18', '-pix_fmt', 'yuv420p', '-af', 'alimiter=limit=0.85:level=false', '-c:a', 'aac', '-b:a', '192k', '-shortest', dst], check=True)
     print('wrote', dst)
 
