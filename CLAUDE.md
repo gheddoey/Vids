@@ -13,6 +13,7 @@ YouTube Shorts in a blocky, Roblox-like R6 style, animated with Remotion + Three
 | `LeBronShort` | `src/lebron/LeBronShort.tsx` | 41 s vertical biography short (first attempt; user found it "bland") |
 | `IcedTea` | `src/IcedTea.tsx` | 22 s 16:9 homage of an anime bar scene |
 | `LastSlice` | `src/LastSlice.tsx` | 22 s 16:9 original comedy short (pizza slice) |
+| `PS1Test` | `src/ps1/PS1Short.tsx` | 28 s retro "six rules" style test (270×480, upscaled; draft timing, no VO yet) |
 | `GroupA/GroupB/Heads/Base` stills | `src/Lineup.tsx` | character line-ups for checking designs |
 
 Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 24 fps.
@@ -196,3 +197,15 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 - Biography shorts about real people are fine; keep them respectful and factual, flag facts to verify.
 - No team/league logos or trademarks on shirts (colours + numbers only); generic magazine/sign names.
 - Homages of existing scenes: build our own characters/designs and audio; no copied dialogue/audio.
+
+## Retro "six rules" look (src/ps1/)
+
+- Rules: low poly + flat shading; 64-px textures painted by code (`tex64`); render 270×480 with no
+  smoothing; snap vertices to the pixel grid + Bayer dither (`PS1Pass` patches every material via
+  `onBeforeCompile`); slice something open and label one part; a new pose on every sentence.
+- Composition is 270×480. After rendering, upscale with nearest-neighbour and limit audio:
+  `ffmpeg -i raw.mp4 -vf scale=1080:1920:flags=neighbor -c:v libx264 -crf 18 -af "alimiter=limit=0.85:level=false" -c:a aac -b:a 192k out.mp4`
+- Lower-res moments: `PS1Pass pixel={k}` (sets `gl.setPixelRatio(1/k)`; R3F `dpr` prop did nothing here).
+- Captions reuse `CaptionsFor` inside a 1080×1920 div scaled 0.25.
+- `tools/draft_timing.py` makes a placeholder timing.json from a script (same format as prep_vo.py).
+- `python3 tools/make_sfx.py name1 name2` regenerates only those sounds.

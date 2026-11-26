@@ -472,8 +472,84 @@ def bed_messi():
     return out * g
 
 
+# ---------- Retro test short (PS1 look) ----------
+
+def square(f, dur, duty=0.5):
+    ph = (np.cumsum(np.full(int(SR * dur), f)) / SR) % 1
+    return np.where(ph < duty, 1.0, -1.0)
+
+
+def blip():
+    d = 0.14
+    t = t_axis(d)
+    f = np.where(t < 0.05, 988, 1319)
+    return np.where((np.cumsum(f) / SR) % 1 < 0.5, 1.0, -1.0) * env(d, 0.001, 0.08) * 0.5
+
+
+def glitch():
+    d = 0.35
+    x = noise(d)
+    x = np.repeat(x[::40], 40)[: int(SR * d)]  # sample-and-hold "bit crush"
+    x = x * square(60, d, 0.3) * 0.6 + square(180, d, 0.25) * 0.25 * (t_axis(d) % 0.07 < 0.035)
+    return x * env(d, 0.001, 0.15)
+
+
+def laser():
+    d = 0.5
+    return (square(1, d) * 0 + np.sign(sweep(2400, 300, d, 0.6))) * env(d, 0.002, 0.25) * 0.4 + band(noise(d), 3000, 9000) * env(d, 0.001, 0.05) * 0.3
+
+
+def shrink():
+    d = 0.45
+    return np.sign(sweep(900, 120, d, 0.7)) * env(d, 0.002, 0.25) * 0.35
+
+
+def bed_ps1():
+    """Chiptune bed timed to src/ps1/timing.json: arpeggio intro, drums from rule one,
+    thinner for the slice, a lift through the pose run, a little resolve at the end."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'ps1', 'timing.json')))
+    L = [l['s'] for l in tm['lines']]
+    dur = tm['duration'] + 1.0
+    bpm = 132
+    step = 60 / bpm / 4
+    out = np.zeros(int(SR * dur))
+    prog = [(220.0, 261.6, 329.6), (174.6, 220.0, 261.6), (196.0, 246.9, 293.7), (164.8, 207.7, 246.9)]
+    n = int(dur / step)
+    for i in range(n):
+        at = i * step
+        if at > L[10] + 0.9:
+            break
+        bar = int(i // 16)
+        c = prog[bar % 4]
+        note = c[[0, 1, 2, 1][i % 4]] * (2 if (i // 4) % 2 else 1)
+        thin = L[5] <= at < L[6]
+        place(out, square(note, step * 0.9, 0.25) * env(step * 0.9, 0.001, 0.06) * (0.05 if thin else 0.08), at)
+        if i % 8 == 0:
+            place(out, square(c[0] / 2, step * 6, 0.5) * env(step * 6, 0.002, 0.3) * 0.09, at)
+        drums = L[1] - 0.05 <= at < L[10] - 0.1 and not thin
+        if drums:
+            if i % 8 == 0:
+                place(out, sweep(150, 45, 0.18, 0.4) * env(0.18, 0.001, 0.05) * 0.5, at)
+            if i % 8 == 4:
+                place(out, band(noise(0.1), 1200, 6000) * env(0.1, 0.001, 0.03) * 0.3, at)
+            if i % 2 == 0:
+                place(out, band(noise(0.03), 7000, 12000) * env(0.03, 0.0005, 0.008) * 0.12, at)
+    # Resolve jingle on the last line.
+    for k, f in enumerate([523.3, 659.3, 784.0, 1046.5]):
+        place(out, square(f, 0.25, 0.25) * env(0.25, 0.001, 0.12) * 0.12, L[10] + 0.95 + k * 0.09)
+    tail = int(SR * (dur - 0.6))
+    out[tail:] *= np.linspace(1, 0, len(out) - tail)
+    return out
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
+    import sys
+    if len(sys.argv) > 1:  # only the named sounds, e.g. python3 tools/make_sfx.py blip bed_ps1
+        for n in sys.argv[1:]:
+            save(n, globals()[n](), 0.8)
+        raise SystemExit
     save('ambience', ambience(), 0.5)
     save('hit', hit())
     save('notice', notice())

@@ -1,0 +1,17 @@
+{
+ "gap": 0.22,
+ "keepGapBefore": {"7": 0.3},
+ "lines": [
+  {"text": "Six rules make anything look like a nineties video game."},
+  {"text": "One. Low poly. Three hundred triangles, flat shading."},
+  {"text": "Two. Sixty-four pixel textures, painted by code."},
+  {"text": "Three. Render it tiny. Two seventy by four eighty. No smoothing."},
+  {"text": "Four. Snap every vertex to a grid, and dither the colors."},
+  {"text": "Five. Slice it open, and label one part."},
+  {"text": "Six. A new pose on every sentence."},
+  {"text": "Like this."},
+  {"text": "And this."},
+  {"text": "And this."},
+  {"text": "Now go make one."}
+ ]
+}
