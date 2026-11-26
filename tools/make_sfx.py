@@ -794,6 +794,85 @@ def bed_escobar():
     return out
 
 
+
+def fire():
+    """Burning car: crackle pops over a low roar."""
+    dur = 6.0
+    rng = np.random.default_rng(5)
+    roar = band(noise(dur), 60, 400) * 0.35
+    out = roar.copy()
+    for _ in range(140):
+        at = rng.uniform(0, dur - 0.05)
+        pop = band(noise(0.03), 1500, 7000) * env(0.03, 0.001, 0.01) * rng.uniform(0.2, 0.8)
+        place(out, pop, at)
+    return out
+
+
+def heartbeat():
+    """Slow 'lub-dub' heartbeat, 6 beats."""
+    out = np.zeros(int(SR * 6.0))
+    for k in range(6):
+        for dt, a in ((0.0, 0.9), (0.22, 0.6)):
+            place(out, sweep(60, 35, 0.18, 0.5) * env(0.18, 0.002, 0.06) * a, k * 1.0 + dt)
+    return out
+
+
+def bed_rf():
+    """60 s bed for EscobarRF timed to the guide's beats: nylon arpeggios + pad (hook/rise), drums
+    + bass for the empire, thin dark pulse for terror, tension ostinato for escape/downfall, silence
+    before 'killed', low strings for the aftermath."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'escobarrf', 'timing.json')))
+    killed = next(w['s'] for w in tm['lines'][7]['words'] if w['w'].lower().startswith('killed'))
+    name_t = next(w['s'] for w in tm['lines'][1]['words'] if w['w'].lower().startswith('escobar'))
+    dur = 60.5
+    out = np.zeros(int(SR * dur))
+    beat = 60 / 92
+    step = beat / 2
+    prog = [(110.0, 220.0, 261.6, 329.6), (87.3, 174.6, 261.6, 349.2), (130.8, 196.0, 261.6, 329.6), (82.4, 207.7, 246.9, 329.6)]
+    pat = [0, 2, 1, 3, 2, 1]
+    i = 0
+    while i * step < dur - 0.5:
+        at = i * step
+        bar = int(at / (beat * 4)) % 4
+        silent = killed - 1.4 <= at < killed + 0.35 or name_t - 0.5 <= at < name_t
+        if not silent:
+            if at < 25.4 or at >= 55.0:
+                if at >= 55.0 and i % 2:
+                    pass
+                else:
+                    place(out, pluck(prog[bar][pat[i % 6]], 1.4, seed=i) * (0.16 if at < 55 else 0.1), at)
+            elif at < 33.2:  # terror: low pulse every beat
+                if i % 2 == 0:
+                    place(out, sweep(65, 38, 0.3, 0.5) * env(0.3, 0.002, 0.1) * 0.5, at)
+            else:  # escape/downfall/death: tense staccato ostinato on E
+                if not (48.2 <= at < killed - 1.4) or i % 2 == 0:
+                    place(out, pluck([82.4, 82.4, 98.0, 82.4][i % 4], 0.35, bright=0.8, seed=i) * 0.18, at)
+            drums = 11.2 <= at < 25.4 or 33.2 <= at < killed - 1.4
+            if drums:
+                if i % 4 == 0:
+                    place(out, sweep(110, 45, 0.25, 0.3) * env(0.25, 0.001, 0.07) * 0.5, at)
+                if i % 4 == 2 and at < 25.4:
+                    place(out, band(noise(0.1), 200, 900) * env(0.1, 0.001, 0.04) * 0.3, at)
+                place(out, band(noise(0.06), 5000, 11000) * env(0.06, 0.003, 0.02) * (0.1 if i % 2 else 0.06), at)
+        i += 1
+    # sustained pads: hook/rise (A minor), low strings at the end (A + E)
+    t = t_axis(11.0)
+    pad1 = (np.sin(2 * np.pi * 110 * t) + 0.6 * np.sin(2 * np.pi * 164.8 * t) + 0.4 * np.sin(2 * np.pi * 220 * t)) * np.minimum(1, t / 3) * np.minimum(1, (11 - t) / 1.5) * 0.08
+    place(out, pad1, 0.0)
+    t2 = t_axis(5.5)
+    pad2 = (np.sin(2 * np.pi * 55 * t2) + 0.7 * np.sin(2 * np.pi * 82.4 * t2) + 0.5 * np.sin(2 * np.pi * 110 * t2 * 1.003)) * np.minimum(1, t2 / 1.0) * np.minimum(1, (5.5 - t2) / 1.5) * 0.12
+    place(out, pad2, 55.0)
+    place(out, sweep(90, 30, 1.2, 0.6) * env(1.2, 0.001, 0.4) * 0.6, killed)  # low hit on "killed"
+    tail = int(SR * (dur - 0.8))
+    out[tail:] *= np.linspace(1, 0, len(out) - tail)
+    try:
+        from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+        out = Pedalboard([HighpassFilter(35), Reverb(room_size=0.6, wet_level=0.24, dry_level=0.85), Compressor(threshold_db=-16, ratio=2.5)])(out.astype(np.float32)[None, :], SR)[0]
+    except ImportError:
+        pass
+    return out
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys

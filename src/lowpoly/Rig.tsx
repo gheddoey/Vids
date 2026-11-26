@@ -16,7 +16,7 @@ export const FACES: Face[] = ['talkA', 'talkB', 'smile', 'grin', 'shock', 'smug'
 
 export type HairStyle = 'flattop' | 'bun' | 'curls' | 'twists' | 'puffs' | 'greybun' | 'bald' | 'short' | 'none';
 export type Top = {
-	kind: 'tee' | 'jersey' | 'suit' | 'jacket' | 'cardigan' | 'windbreaker' | 'overalls' | 'vest' | 'gown';
+	kind: 'tee' | 'jersey' | 'suit' | 'jacket' | 'cardigan' | 'windbreaker' | 'overalls' | 'vest' | 'gown' | 'shirt';
 	base: string;
 	trim?: string;
 	accent?: string; // shirt under a jacket, tie, stripe…
@@ -197,6 +197,21 @@ const paintTorso = (T: Top, side: 'front' | 'back' | 'side', skin: string) =>
 				px(g, b, side === 'side' ? 0 : 12, 0, side === 'side' ? w : 8, 24); // straps
 				if (side !== 'side') px(g, b, 44, 0, 8, 24);
 				if (side === 'front') px(g, d, 20, 30, 24, 14); // bib pocket
+			} else if (T.kind === 'shirt') {
+				// open-collar button shirt: skin V at the neck, collar points, placket + buttons, chest pocket, folds
+				if (side === 'front') {
+					for (let y = 0; y < 14; y++) px(g, skin, 32 - (14 - y) / 2 - 2, y, 14 - y + 4, 1);
+					px(g, l, 14, 0, 12, 5);
+					px(g, l, 38, 0, 12, 5);
+					px(g, d, 22, 5, 6, 2);
+					px(g, d, 36, 5, 6, 2);
+					px(g, d, 31, 14, 2, 50);
+					for (let y = 20; y < 60; y += 10) px(g, shade(b, -0.4), 34, y, 2, 2);
+					px(g, d, 40, 22, 12, 1);
+					px(g, shade(b, -0.12), 40, 23, 12, 9);
+				} else if (side === 'back') px(g, l, 10, 0, 44, 4);
+				for (let y = 30; y < 60; y += 13) px(g, shade(b, -0.1), side === 'side' ? 4 : 6, y, side === 'side' ? 20 : 18, 1);
+				px(g, d, 0, h - 4, w, 4);
 			} else if (T.kind === 'gown') {
 				for (let y = 0; y < h; y += 8) for (let x = (y / 8) % 2 ? 4 : 0; x < w; x += 8) px(g, shade(b, -0.12), x, y, 3, 3);
 			} else {

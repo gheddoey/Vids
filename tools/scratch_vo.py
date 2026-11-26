@@ -42,7 +42,10 @@ def main(script_path, name):
     out.append(np.zeros(int(SR * t), np.float32))
     with tempfile.TemporaryDirectory() as tmp:
         for i, l in enumerate(script['lines']):
-            if i:
+            if 'at' in l and l['at'] > t:  # beat-anchored line: start exactly at 'at' seconds
+                out.append(np.zeros(int(SR * (l['at'] - t)), np.float32))
+                t = l['at']
+            elif i:
                 g = keep.get(i, gap)
                 out.append(np.zeros(int(SR * g), np.float32))
                 t += g
@@ -67,7 +70,9 @@ def main(script_path, name):
             out.append(x)
             t += dur
             print(f'{i:2d} {lines[-1]["s"]:6.2f}-{lines[-1]["e"]:6.2f} {l["text"]}')
-    audio = np.concatenate(out + [np.zeros(int(SR * 0.35), np.float32)])
+    total = script.get('duration')
+    tail = max(0.35, (total - t) if total else 0.35)
+    audio = np.concatenate(out + [np.zeros(int(SR * tail), np.float32)])
     raw = os.path.join(ROOT, 'out', f'{name}_scratch_raw.wav')
     os.makedirs(os.path.dirname(raw), exist_ok=True)
     with wave.open(raw, 'wb') as w:
@@ -75,7 +80,7 @@ def main(script_path, name):
         w.writeframes((np.clip(audio, -1, 1) * 32767).astype(np.int16).tobytes())
     os.makedirs(os.path.join(ROOT, 'public', 'vo'), exist_ok=True)
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', raw, '-af', 'highpass=f=80,loudnorm=I=-16:TP=-1.5:LRA=9', '-ar', str(SR), os.path.join(ROOT, 'public', 'vo', f'{name}.wav')], check=True)
-    json.dump({'duration': round(t + 0.35, 3), 'lines': lines, 'scratch': True}, open(os.path.join(ROOT, 'src', name, 'timing.json'), 'w'), indent=1)
+    json.dump({'duration': round(t + tail, 3), 'lines': lines, 'scratch': True}, open(os.path.join(ROOT, 'src', name, 'timing.json'), 'w'), indent=1)
     print(f'wrote public/vo/{name}.wav, src/{name}/timing.json ({t:.1f} s)')
 
 
