@@ -213,8 +213,8 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 
 - Cloud container, no GPU. Chromium + Playwright preinstalled. Python 3.13 with numpy, PIL,
   pocketsphinx, fonttools. ffmpeg 6.1. Fonts: Inter / Inter Display (all weights), DejaVu.
-- Network is restricted: roblox.com, pollinations, ambientcg, polyhaven are blocked; pypi, npm and huggingface.co work.
-  Make assets procedurally instead of downloading.
+- Network is **unrestricted** now (user granted full access). Free asset sites work (Poly Haven, ambientCG —
+  CC0 textures/HDRIs/models). Still prefer procedural assets for the house style; check licences on anything downloaded.
 - GitHub pushes work now (Claude GitHub App connected for `gheddoey/Vids`).
 
 ## Content rules
