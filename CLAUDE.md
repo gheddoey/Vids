@@ -2,6 +2,11 @@
 
 Everything learned so far making videos in this repo. Read it all before starting a new video.
 
+## PRODUCTION SYSTEM (user's master instructions — read `docs/PRODUCTION-SYSTEM.md` first)
+
+Every video runs the 9-stage pipeline (brief → research → script treatment → storyboard → assets →
+animation → edit → QC → export + production report), with docs in `docs/<video>/`.
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
