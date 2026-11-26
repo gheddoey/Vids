@@ -179,6 +179,9 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
   `--browser-executable=/opt/pw-browsers/chromium --gl=swangle`.
 - Python edits via `str.replace` with `assert a in s` — if an assert fails, nothing is written; re-check
   the exact current text.
+- **Glitched frames** (one corner of the frame tiled over the image) now appear in every HD render in this
+  container, at any `--gl`/concurrency; stills are clean. Fix after rendering:
+  `python3 tools/fix_frames.py out/bundle <Comp> raw.mp4 final.mp4` (re-renders bad frames as stills, keeps audio, limits peaks).
 - `spotLight target-position` doesn't work in R3F; spotlights aim at the origin.
 - Big crowds: use `instancedMesh` (`Crowd` in `src/messi/sets.tsx`).
 - `RoundedBoxGeometry` keeps BoxGeometry face groups, so 6-material shirt mapping works on it.
