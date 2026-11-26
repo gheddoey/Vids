@@ -11,6 +11,7 @@ import {FxTest} from './lab/FxTest';
 import {FilterTest} from './lebron2/FilterTest';
 import {Lineup2} from './lebron2/Lineup2';
 import {LEBRON2_FRAMES, LeBron2} from './lebron2/LeBron2';
+import {CoverPreview} from './covers/Covers';
 
 export const Root: React.FC = () => (
 	<>
@@ -23,6 +24,8 @@ export const Root: React.FC = () => (
 		<Composition id="IcedTea" component={IcedTea} durationInFrames={ICED_TEA_FRAMES} fps={24} width={1920} height={1080} />
 		<Composition id="LastSlice" component={LastSlice} durationInFrames={LAST_SLICE_FRAMES} fps={24} width={1920} height={1080} />
 		<Still id="Cast2" component={Lineup2} width={1920} height={1080} defaultProps={{row: 0 as const}} />
+		<Still id="CoverRecreation" component={CoverPreview} width={1080} height={1920} defaultProps={{view: 'recreation' as const}} />
+		<Still id="CoverPixel" component={CoverPreview} width={1080} height={1920} defaultProps={{view: 'pixel' as const}} />
 		<Still id="GroupA" component={Lineup} width={1920} height={1080} defaultProps={{view: 'groupA' as const}} />
 		<Still id="GroupB" component={Lineup} width={1920} height={1080} defaultProps={{view: 'groupB' as const}} />
 		<Still id="Base" component={Lineup} width={1920} height={1080} defaultProps={{view: 'base' as const}} />

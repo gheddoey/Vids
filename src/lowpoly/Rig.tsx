@@ -22,6 +22,7 @@ export type Top = {
 	num?: string;
 	numColor?: string;
 	icon?: 'ball' | 'plaid' | 'none';
+	chest?: string; // lettering above the number (pixel font), e.g. a school nickname
 	sleeves?: 'short' | 'long' | 'none';
 };
 export type Look = {
@@ -156,7 +157,8 @@ const paintTorso = (T: Top, side: 'front' | 'back' | 'side', skin: string) =>
 				px(g, T.trim ?? '#ffffff', 0, 0, side === 'side' ? 0 : 8, h);
 				if (side !== 'side') px(g, T.trim ?? '#ffffff', 56, 0, 8, h);
 				if (side === 'side') px(g, T.trim ?? '#ffffff', 12, 0, 8, h);
-				if (T.num && side !== 'side') drawNum(g, T.num, T.numColor ?? '#ffffff', side === 'front' ? 18 : 14, T.trim);
+				if (T.chest && side === 'front') drawWord(g, T.chest, T.numColor ?? '#ffffff', 14, T.trim);
+				if (T.num && side !== 'side') drawNum(g, T.num, T.numColor ?? '#ffffff', side === 'front' ? (T.chest ? 30 : 18) : 14, T.trim, T.chest && side === 'front' ? 3 : 4);
 				px(g, d, 0, h - 4, w, 4);
 			} else if (T.kind === 'suit' || T.kind === 'jacket' || T.kind === 'windbreaker' || T.kind === 'cardigan' || T.kind === 'vest') {
 				if (side === 'front') {
@@ -211,8 +213,31 @@ const DIG: Record<string, string[]> = {
 	'8': ['111', '101', '111', '101', '111'],
 	'9': ['111', '101', '111', '001', '111'],
 };
-const drawNum = (g: CanvasRenderingContext2D, n: string, col: string, y: number, outline?: string) => {
-	const s = 4;
+const LET: Record<string, string[]> = {
+	A: ['010', '101', '111', '101', '101'],
+	C: ['011', '100', '100', '100', '011'],
+	E: ['111', '100', '110', '100', '111'],
+	H: ['101', '101', '111', '101', '101'],
+	I: ['111', '010', '010', '010', '111'],
+	L: ['100', '100', '100', '100', '111'],
+	N: ['101', '111', '111', '111', '101'],
+	O: ['111', '101', '101', '101', '111'],
+	R: ['110', '101', '110', '101', '101'],
+	S: ['011', '100', '010', '001', '110'],
+	T: ['111', '010', '010', '010', '010'],
+	V: ['101', '101', '101', '101', '010'],
+};
+const drawWord = (g: CanvasRenderingContext2D, w: string, col: string, y: number, outline?: string) => {
+	const s = 2;
+	let x0 = Math.round(32 - (w.length * 4 * s - s) / 2);
+	for (const ch of w) {
+		const rows = LET[ch] ?? LET.O;
+		if (outline) rows.forEach((r, yy) => [...r].forEach((b, xx) => b === '1' && px(g, outline, x0 + xx * s - 1, y + yy * s - 1, s + 2, s + 2)));
+		rows.forEach((r, yy) => [...r].forEach((b, xx) => b === '1' && px(g, col, x0 + xx * s, y + yy * s, s, s)));
+		x0 += 4 * s;
+	}
+};
+const drawNum = (g: CanvasRenderingContext2D, n: string, col: string, y: number, outline?: string, s = 4) => {
 	const W = n.length * 3 * s + (n.length - 1) * s;
 	let x0 = Math.round(32 - W / 2);
 	for (const ch of n) {
@@ -344,7 +369,7 @@ const hairBoxes = (st: HairStyle, c: string, acc?: string): HB[] => {
 	}
 };
 
-export type RigProps = {look: Look; pose?: Partial<Pose> & {face?: string}; half?: -1 | 1; holdL?: React.ReactNode; holdR?: React.ReactNode};
+export type RigProps = {look: Look; pose?: Partial<Pose> & {face?: string}; half?: -1 | 1; holdL?: React.ReactNode; holdR?: React.ReactNode; bust?: boolean};
 
 const matCache = new WeakMap<Look, ReturnType<typeof buildMats>>();
 const buildMats = (L: Look) => {
@@ -377,7 +402,7 @@ const mats = (L: Look) => {
 	return m;
 };
 
-export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR}) => {
+export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR, bust}) => {
 	const p = {...REST, ...pose} as Pose & {face?: string};
 	const M = useMemo(() => mats(L), [L]);
 	const face = (FACES.includes(p.face as Face) ? p.face : 'smile') as Face;
@@ -412,12 +437,12 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR}
 	const limb = (m: THREE.Material[]) => <B size={[0.99, 2, 1]} pos={[0, -1, 0]} mat={m} />;
 	return (
 		<group position={[p.x, p.y, p.z]} rotation={[0, p.rotY, 0]}>
-			{show(-0.5) ? (
+			{!bust && show(-0.5) ? (
 				<group position={[-0.5, 2, 0]} rotation={[p.legRX, 0, 0]}>
 					{limb(M.leg)}
 				</group>
 			) : null}
-			{show(0.5) ? (
+			{!bust && show(0.5) ? (
 				<group position={[0.5, 2, 0]} rotation={[p.legLX, 0, 0]}>
 					{limb(M.leg)}
 				</group>
