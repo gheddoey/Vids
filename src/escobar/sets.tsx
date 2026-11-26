@@ -5,6 +5,7 @@ import {lambert, px, speckle, tex64} from '../ps1/ps1';
 import {B, Cyl, SkyDome} from '../ps1/sets';
 import {Rig4} from '../lebron2/sets';
 import {SunDisc} from '../cine/Cine';
+import {Birds, BrickHillside, Clouds, Motes, Smoke, SuperCub, Water} from './kit';
 
 // Escobar sets: six rules (boxes, 64-px textures painted by code) + cinematic light.
 // Every set is lived-in: layered props in the foreground, middle and background.
@@ -23,6 +24,12 @@ const rnd = (seed: number) => {
 	let s = seed;
 	return () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
 };
+
+// ---------- geography (rough outlines for the 3D map) ----------
+export const geoPx = (lon: number, lat: number): [number, number] => [((lon + 170) / 140) * 64, ((78 - lat) / 134) * 64];
+const NA = [[-168, 66], [-156, 71], [-140, 70], [-120, 72], [-95, 73], [-80, 73], [-62, 66], [-55, 52], [-66, 45], [-70, 42], [-76, 35], [-81, 30], [-80, 25], [-82, 29], [-90, 30], [-97, 26], [-97, 21], [-92, 18], [-87, 21], [-88, 16], [-83, 15], [-83, 10], [-79, 9], [-77, 8], [-80, 7], [-85, 11], [-92, 14], [-105, 20], [-110, 24], [-115, 30], [-117, 33], [-124, 40], [-124, 48], [-135, 58], [-150, 60], [-165, 60]];
+const SA = [[-77, 8], [-72, 12], [-62, 10], [-52, 5], [-50, 0], [-35, -5], [-39, -15], [-48, -28], [-58, -38], [-65, -41], [-66, -55], [-72, -50], [-74, -40], [-71, -30], [-70, -18], [-76, -14], [-81, -5], [-80, 0], [-78, 3]];
+const GL = [[-55, 60], [-42, 60], [-20, 70], [-25, 80], [-60, 80], [-70, 76]];
 
 // ---------- textures ----------
 export const TX = {
@@ -87,14 +94,23 @@ export const TX = {
 	}),
 	hippo: () => tex64((g) => (px(g, '#7a6a72', 0, 0, 32, 32), speckle(g, 32, 32, ['#6a5a62', '#8a7a82', '#9a7a7a'], 90, 6)), 32, 32),
 	map: () =>
-		// crude 64-px painted mask of the Americas (land = green, sea = blue): north at top
+		// 64-px map of the Americas painted from rough lon/lat outlines (north at the top)
 		tex64((g) => {
 			px(g, '#1a3a6a', 0, 0, 64, 64);
-			const land = '#4a8a3a';
-			const N: [number, number, number][] = [[2, 6, 26], [3, 4, 30], [4, 4, 34], [5, 6, 34], [6, 8, 33], [7, 10, 33], [8, 12, 32], [9, 14, 31], [10, 15, 30], [11, 16, 29], [12, 17, 28], [13, 18, 27], [14, 19, 26], [15, 20, 25], [16, 21, 24], [17, 22, 24], [18, 23, 24], [19, 24, 25], [20, 25, 26], [21, 26, 27], [22, 27, 28], [23, 28, 29], [24, 29, 30], [25, 30, 31], [26, 31, 32], [27, 31, 33], [28, 30, 38], [29, 29, 41], [30, 29, 44], [31, 29, 46], [32, 29, 47], [33, 30, 48], [34, 31, 48], [35, 32, 47], [36, 33, 46], [37, 34, 45], [38, 34, 44], [39, 34, 43], [40, 35, 42], [41, 35, 41], [42, 35, 41], [43, 35, 40], [44, 35, 40], [45, 35, 39], [46, 35, 38], [47, 35, 38], [48, 35, 37], [49, 35, 37], [50, 35, 36]];
-			for (const [y, x0, x1] of N) px(g, land, x0, y + 4, x1 - x0, 1);
-			for (const [y, x0, x1] of [[2, 22, 30], [3, 20, 32], [4, 22, 31], [5, 24, 30]] as [number, number, number][]) px(g, '#e8eef2', x0, y + 4, x1 - x0, 1); // ice up north
-			px(g, '#c8a23a', 30, 32, 2, 2); // Colombia marker
+			const poly = (pts: number[][], c: string) => {
+				g.fillStyle = c;
+				g.beginPath();
+				pts.forEach(([lo, la], k) => {
+					const [x, y] = geoPx(lo, la);
+					if (k) g.lineTo(x, y);
+					else g.moveTo(x, y);
+				});
+				g.closePath();
+				g.fill();
+			};
+			poly(NA, '#4a8a3a');
+			poly(SA, '#4a8a3a');
+			poly(GL, '#e8eef2');
 		}),
 	night: () => tex64((g) => {
 		px(g, '#0a0f24', 0, 0, 64, 64);
@@ -274,7 +290,6 @@ const Mountains: React.FC<{c?: string; z?: number}> = ({c = '#4a6a5a', z = -90})
 // ===================================================================================
 // River (hook + callback). `ruin` = the ranch gate in ruins for the final shot.
 export const River: React.FC<{f: number; gate?: boolean; ruin?: boolean}> = ({f, gate, ruin}) => {
-	const water = useTex(TX.water(), 16, 16);
 	const mud = useTex(TX.mud, 10, 10);
 	const ripple = Math.sin(f * 0.15) * 0.05;
 	const r = useMemo(() => rnd(21), []);
@@ -284,9 +299,9 @@ export const River: React.FC<{f: number; gate?: boolean; ruin?: boolean}> = ({f,
 			<SkyDome top="#3a6aa8" bottom="#f8c890" fog="#e8c0a0" near={40} far={140} />
 			<SunDisc pos={[-60, 18, -120]} color="#ffc880" r={8} i={5} />
 			<Rig4 sky="#a8c8ff" ground="#5a4a30" key="#ffc87a" keyI={2.0} keyPos={[-16, 7, -8]} rim="#ffd8a0" rimI={2.2} span={30} />
-			<mesh rotation={[-PI / 2, 0, 0]} position={[0, ripple, 0]} material={water} receiveShadow>
-				<planeGeometry args={[220, 220]} />
-			</mesh>
+			<Water f={f} y={ripple} />
+			<Clouds f={f} y={30} z={-90} color="#ffe0c0" />
+			<Birds f={f} from={[-40, 16, -50]} dir={[0.3, 0.02, 0.06]} />
 			{/* far bank: mud, reeds, trees, palms */}
 			<mesh position={[0, 0.3, -16]} material={mud} receiveShadow>
 				<boxGeometry args={[220, 1, 14]} />
@@ -336,7 +351,8 @@ export const Hillside: React.FC = () => {
 			<SunDisc pos={[60, 30, -110]} color="#fff0c8" r={7} i={5} />
 			<Rig4 sky="#c8dcff" ground="#4a6a2a" key="#ffe0a8" keyI={2.0} keyPos={[12, 9, 4]} rim="#ffe8c0" span={24} />
 			<Ground mat={grass} />
-			<Mountains c="#3a6a4a" z={-80} />
+			<Mountains c="#3a6a4a" z={-120} />
+			<BrickHillside center={[0, -18, -40]} w={160} rows={10} slope={3.4} seed={9} />
 			{/* house: plaster walls, tin roof, blue door, window with plants */}
 			<group position={[0, 0, -8]}>
 				<mesh material={wall} position={[0, 2.5, 0]} castShadow receiveShadow>
@@ -577,9 +593,13 @@ export const MapAmericas: React.FC<{progress: number}> = ({progress}) => {
 		ref.current!.instanceMatrix.needsUpdate = true;
 		if (ref.current!.instanceColor) ref.current!.instanceColor.needsUpdate = true;
 	}, [cells]);
-	// Colombia (≈ x 30, y 36) → US (≈ x 22, y 18)
-	const from = new THREE.Vector3((30 - 32) * 0.5, 0.8, (36 - 32) * 0.5);
-	const tos = [new THREE.Vector3((20 - 32) * 0.5, 0.8, (17 - 32) * 0.5), new THREE.Vector3((26 - 32) * 0.5, 0.8, (15 - 32) * 0.5), new THREE.Vector3((30 - 32) * 0.5, 0.8, (19 - 32) * 0.5)];
+	// Medellín → Miami, Los Angeles, New York
+	const at = (lo: number, la: number) => {
+		const [x, y] = geoPx(lo, la);
+		return new THREE.Vector3((x - 32) * 0.5, 0.8, (y - 32) * 0.5);
+	};
+	const from = at(-75.6, 6.2);
+	const tos = [at(-80.2, 25.8), at(-118.2, 34.0), at(-74.0, 40.7)];
 	return (
 		<>
 			<SkyDome top="#04060e" bottom="#0e1a30" />
@@ -599,6 +619,8 @@ export const MapAmericas: React.FC<{progress: number}> = ({progress}) => {
 				}),
 			)}
 			<B size={[0.6, 1.4, 0.6]} pos={[from.x, 1.2, from.z]} color="#ffd84a" glow={2} />
+			<BlockText text="COLOMBIA" size={0.55} depth={0.12} color="#ffd84a" emissive={0.8} position={[from.x + 1.6, 2.4, from.z + 0.8]} rotation={[-0.9, 0, 0]} />
+			<BlockText text="USA" size={0.9} depth={0.15} color="#ffffff" emissive={0.6} position={[at(-98, 39).x, 2.6, at(-98, 39).z]} rotation={[-0.9, 0, 0]} />
 		</>
 	);
 };
@@ -679,7 +701,7 @@ export const CountingRoom: React.FC<{f: number}> = ({f}) => {
 };
 
 // Hacienda Nápoles: the gate with the small plane on top, pond, animals
-export const Napoles: React.FC<{show: number}> = ({show}) => {
+export const Napoles: React.FC<{show: number; f?: number; ruin?: boolean}> = ({show, f = 0, ruin}) => {
 	const grass = useTex(TX.grass('#5a8a36', '#6a9a3e'), 14, 14);
 	const water = useTex(TX.water('#4a6a6a', '#5a7a7a'), 6, 6);
 	return (
@@ -691,12 +713,28 @@ export const Napoles: React.FC<{show: number}> = ({show}) => {
 			<Mountains c="#4a7a5a" z={-110} />
 			{/* the gate: white pillars, cross beam, small plane on top */}
 			<group position={[0, 0, -14]}>
-				{[-4, 4].map((x) => <B key={x} size={[1.2, 7, 1.2]} pos={[x, 3.5, 0]} color="#f2f0e8" />)}
-				<B size={[9.4, 1.0, 1.3]} pos={[0, 7.4, 0]} color="#f2f0e8" />
-				<BlockText text="NAPOLES" size={0.7} depth={0.15} color="#1a1a1a" position={[0, 7.4, 0.7]} />
-				<group position={[0, 7.9, 0]} rotation={[0, 0.3, 0]} scale={0.7}>
-					<Plane c="#f2f2f2" stripe="#2a4a8a" />
-				</group>
+				{[-4, 4].map((x) => <B key={x} size={[1.2, ruin && x > 0 ? 4.5 : 7, 1.2]} pos={[x, ruin && x > 0 ? 2.25 : 3.5, 0]} color={ruin ? '#a8a294' : '#f2f0e8'} />)}
+				{!ruin ? (
+					<>
+						<B size={[9.4, 1.0, 1.3]} pos={[0, 7.4, 0]} color="#f2f0e8" />
+						<BlockText text="HACIENDA NAPOLES" size={0.42} depth={0.12} color="#1a1a1a" position={[0, 7.4, 0.7]} />
+						<group position={[0, 7.9, 0]} rotation={[0, 0.35, 0]}>
+							<SuperCub prop={f * 0.05} />
+						</group>
+					</>
+				) : (
+					<>
+						<B size={[5.4, 1.0, 1.3]} pos={[-1.6, 7.0, 0]} rot={[0, 0, -0.12]} color="#a8a294" />
+						<group position={[3.5, 0.2, 3]} rotation={[0.2, 1.1, 0.5]}>
+							<SuperCub c="#8a6a3a" trim="#3a2a1a" />
+						</group>
+						{[-4.6, -3.4, 4, 4.6].map((x, i) => <B key={i} size={[0.25, 3 + (i % 2) * 2, 0.25]} pos={[x, 2 + (i % 2), 0.7]} rot={[0, 0, Math.sin(f * 0.04 + i) * 0.08]} color="#3a7a2e" />)}
+						<mesh position={[-4, 7.6, 0]}>
+							<icosahedronGeometry args={[1.6, 0]} />
+							<meshLambertMaterial color="#3a7a2e" flatShading />
+						</mesh>
+					</>
+				)}
 				{[-12, -8, 8, 12].map((x) => <B key={x} size={[4, 1.2, 0.2]} pos={[x, 1.2, 0]} color="#e8e0d0" />)}
 			</group>
 			<mesh rotation={[-PI / 2, 0, 0]} position={[4, 0.03, -4]} material={water}>
@@ -718,6 +756,8 @@ export const Napoles: React.FC<{show: number}> = ({show}) => {
 					].map(([x, z, r, sub, s], i) => <Hippo key={i} pos={[x, 0, z]} rot={r} sub={sub} s={s * 0.8} />)
 				: null}
 			{[-14, -10, 12, 16].map((x, i) => <Palm key={x} pos={[x, 0, -10 - (i % 2) * 4]} s={1.4} />)}
+			<Clouds f={f} y={28} z={-100} color="#fff0d8" />
+			<Birds f={f} from={[-36, 15, -40]} dir={[0.28, 0.01, 0.04]} />
 		</>
 	);
 };
@@ -787,7 +827,9 @@ export const NightCity: React.FC<{f: number; mode: 'smoke' | 'seats' | 'candles'
 			<mesh material={city} position={[0, 14, -60]}>
 				<planeGeometry args={[160, 40]} />
 			</mesh>
-			{mode === 'smoke'
+			<BrickHillside center={[0, -2, -40]} w={160} rows={6} slope={3} night={1} seed={21} />
+			{mode === 'smoke' ? <Smoke f={f} pos={[-4, 0, -30]} n={18} h={26} ember scale={1.3} /> : null}
+			{false
 				? Array.from({length: 16}, (_, i) => {
 						const y = ((i * 1.4 + f * 0.05) % 22) + 1;
 						return (
@@ -832,7 +874,7 @@ export const NightCity: React.FC<{f: number; mode: 'smoke' | 'seats' | 'candles'
 };
 
 // La Catedral: hilltop "prison" with comforts, city lights below
-export const Catedral: React.FC<{night?: boolean}> = ({night}) => {
+export const Catedral: React.FC<{night?: boolean; f?: number}> = ({night, f = 0}) => {
 	const grass = useTex(TX.grass('#4a7a2e', '#5a8a36'), 12, 12);
 	const brick = useTex(TX.brick('#a85a3a'), 4, 2);
 	const city = useMemo(() => new THREE.MeshBasicMaterial({map: rep(TX.bulbs(), 6, 2)}), []);
@@ -845,6 +887,7 @@ export const Catedral: React.FC<{night?: boolean}> = ({night}) => {
 			<mesh material={city} rotation={[-PI / 2, 0, 0]} position={[0, -12, -70]}>
 				<planeGeometry args={[200, 60]} />
 			</mesh>
+			<BrickHillside center={[0, -26, -60]} w={180} rows={8} slope={3} night={night ? 1 : 0} seed={13} />
 			{/* main building, guard tower, fence, football pitch, bar sign */}
 			<mesh material={brick} position={[0, 3, -10]} castShadow receiveShadow>
 				<boxGeometry args={[14, 6, 6]} />
@@ -865,6 +908,13 @@ export const Catedral: React.FC<{night?: boolean}> = ({night}) => {
 			</mesh>
 			{[6.2, 13.8].map((x) => <B key={x} size={[0.1, 1.2, 2]} pos={[x, 0.6, -2]} color="#f2f2f2" />)}
 			<BlockText text="BAR" size={0.6} depth={0.1} color="#ff4a8a" emissive={2.5} position={[4.5, 5.2, -6.8]} />
+			{night ? <Motes f={f} n={60} center={[0, 2, 2]} size={[24, 4, 10]} color="#d8ff7a" glow={3} s={0.08} rise={0.001} /> : <Clouds f={f} y={22} z={-90} color="#ffe0c8" />}
+			{[-3, 3].map((x) => (
+				<group key={x} position={[x, 0, 3.6]}>
+					<B size={[0.12, 5, 0.12]} pos={[0, 2.5, 0]} color="#c8c8c8" />
+					<B size={[1.4, 0.9, 0.04]} pos={[0.72, 4.5 + Math.sin(f * 0.15 + x) * 0.05, 0]} rot={[0, Math.sin(f * 0.12 + x) * 0.25, 0]} color="#f2d040" />
+				</group>
+			))}
 			{/* gate (open at night = the escape) */}
 			<B size={[4, 3, 0.2]} pos={[night ? -3.5 : 0, 1.5, 4]} rot={[0, night ? 1.2 : 0, 0]} color="#4a4a4a" />
 		</>
@@ -943,3 +993,149 @@ export const Void: React.FC<{f: number}> = ({f}) => (
 		</mesh>
 	</>
 );
+
+// Warehouse at night: a box truck being loaded with crates of taped packages (factual, not glamorous)
+export const Warehouse: React.FC<{f: number; door: number}> = ({f, door}) => {
+	const floor = useTex(TX.mud, 6, 6);
+	const corr = useTex(TX.corrugated('#6a7078'), 6, 2);
+	const tape = useMemo(() => lambert({map: tex64((g) => (px(g, '#c8a878', 0, 0, 16, 16), px(g, '#a88858', 0, 7, 16, 2), px(g, '#a88858', 7, 0, 2, 16)), 16, 16)}), []);
+	const sway = Math.sin(f * 0.08) * 0.12;
+	return (
+		<>
+			<SkyDome top="#04060e" bottom="#0e1420" />
+			<Rig4 sky="#5a6aa8" ground="#1a1410" hemi={0.6} key="#ffb070" keyI={1.6} keyPos={[4, 9, 6]} rim="#5a8aff" rimI={2.2} fill={0.4} />
+			<mesh rotation={[-PI / 2, 0, 0]} material={floor} receiveShadow>
+				<planeGeometry args={[40, 40]} />
+			</mesh>
+			<mesh material={corr} position={[0, 5, -8]} receiveShadow>
+				<boxGeometry args={[30, 10, 1]} />
+			</mesh>
+			{/* box truck, rear open */}
+			<group position={[2.4, 0, -3]} rotation={[0, -0.25, 0]}>
+				<B size={[3.6, 3.6, 7]} pos={[0, 2.6, 0]} color="#e8e4da" />
+				<B size={[3.2, 3.2, 6.6]} pos={[0, 2.6, 0.25]} color="#2a2826" />
+				<B size={[3.4, 2.4, 2.4]} pos={[0, 1.9, -4.6]} color="#c84a3a" />
+				<B size={[3.0, 1.0, 0.1]} pos={[0, 2.7, -5.82]} color="#8ab0d0" />
+				{[-1.4, 1.4].map((x) => [-2.2, 2.2, -4.6].map((z) => <Cyl key={`${x}${z}`} r={0.55} h={0.4} seg={8} pos={[x * 1.15, 0.55, z]} rot={[0, 0, PI / 2]} color="#141414" />))}
+				{/* roll-up door */}
+				<B size={[3.3, 3.2 * door + 0.1, 0.1]} pos={[0, 4.2 - (3.2 * door) / 2, 3.52]} color="#c8c4b8" />
+				{/* crates inside, with taped packages on top */}
+				{[0, 1, 2, 3, 4, 5].map((i) => (
+					<group key={i} position={[(i % 2 ? 0.7 : -0.7), 1.3 + Math.floor(i / 4) * 1.0, 2.2 - Math.floor((i % 4) / 2) * 1.4]}>
+						<B size={[1.2, 0.9, 1.2]} color="#7a5a3a" />
+						{[0, 1, 2].map((k) => <B key={k} size={[0.5, 0.18, 0.35]} pos={[-0.3 + k * 0.3, 0.55, 0]} mat={tape} />)}
+					</group>
+				))}
+			</group>
+			{/* pallets, forklift-less hand truck, dangling bulb */}
+			{[-5, -3.4].map((x, i) => <B key={x} size={[1.4, 0.3, 1.4]} pos={[x, 0.15, 0 + i]} color="#8a6a44" />)}
+			<group position={[-2, 9.5, -1]} rotation={[0, 0, sway]}>
+				<B size={[0.03, 3, 0.03]} pos={[0, -1.5, 0]} color="#1a1a1a" shadow={false} />
+				<B size={[0.3, 0.35, 0.3]} pos={[0, -3.1, 0]} color="#ffd27a" glow={4} shadow={false} />
+				<pointLight position={[0, -3.3, 0]} color="#ffb060" intensity={10} distance={16} decay={1.4} />
+			</group>
+		</>
+	);
+};
+
+// Boeing 727 cabin (Avianca 203 beat): empty 3+3 rows, overhead bins, windows to the night
+export const Cabin: React.FC<{f: number}> = ({f}) => {
+	const carpet = useTex(TX.carpet('#2a3a5a', '#24324e'), 2, 10);
+	const flick = Math.floor(f / 3) % 7 === 0 ? 0.3 : 1;
+	return (
+		<>
+			<SkyDome top="#000000" bottom="#05070e" />
+			<Rig4 sky="#c8d4f0" ground="#202838" hemi={1.1} key="#fff4e0" keyI={1.6 * flick} keyPos={[0, 10, 4]} rim="#5a7aff" rimI={1.4} fill={0.8} />
+			<pointLight position={[0, 5.5, -2]} color="#fff0d8" intensity={10 * flick} distance={20} />
+			<pointLight position={[0, 5.5, -12]} color="#fff0d8" intensity={8 * flick} distance={20} />
+			<mesh rotation={[-PI / 2, 0, 0]} material={carpet} receiveShadow>
+				<planeGeometry args={[3.6, 40]} />
+			</mesh>
+			{[-1, 1].map((side) => (
+				<group key={side}>
+					{/* hull wall, windows, overhead bins */}
+					<B size={[0.3, 6, 40]} pos={[side * 4.6, 3, -10]} color="#d8d8d0" />
+					{Array.from({length: 10}, (_, i) => <B key={i} size={[0.05, 0.6, 0.45]} pos={[side * 4.42, 3.4, 3 - i * 2.2]} color="#0a1430" glow={0.2} shadow={false} />)}
+					<B size={[1.8, 1.0, 40]} pos={[side * 3.6, 6.0, -10]} color="#e8e8e2" />
+					<B size={[0.05, 0.1, 40]} pos={[side * 2.7, 5.5, -10]} color="#fff4dc" glow={2 * flick} shadow={false} />
+					{Array.from({length: 9}, (_, row) =>
+						[0, 1, 2].map((k) => (
+							<group key={`${row}-${k}`} position={[side * (2.0 + k * 0.85), 0, 2 - row * 2.2]}>
+								<B size={[0.8, 0.3, 0.8]} pos={[0, 1.1, 0]} color="#2a4a8a" />
+								<B size={[0.8, 1.6, 0.18]} pos={[0, 2.0, -0.42]} color="#2a4a8a" />
+								<B size={[0.7, 0.35, 0.2]} pos={[0, 2.7, -0.42]} color="#f2f2f2" />
+							</group>
+						)),
+					)}
+				</group>
+			))}
+			<B size={[9.6, 0.3, 40]} pos={[0, 6.8, -10]} color="#e8e8e2" />
+		</>
+	);
+};
+
+// Los Olivos rooftops v2: pitched tile roofs, water tanks, laundry; tracking van in the street
+export const Rooftops2: React.FC<{f: number}> = ({f}) => {
+	const tile = useTex(TX.tile, 3, 3);
+	const wall = useTex(TX.plaster('#d8b890'), 2, 1);
+	const heliX = 26 - f * 0.08;
+	const roof = (key: number, pos: V3, w: number, d: number, h: number) => (
+		<group key={key} position={pos}>
+			<mesh material={wall} position={[0, h / 2, 0]} castShadow receiveShadow>
+				<boxGeometry args={[w, h, d]} />
+			</mesh>
+			{[-1, 1].map((sd) => (
+				<mesh key={sd} material={tile} position={[0, h + 0.7, (sd * d) / 4]} rotation={[sd * 0.28, 0, 0]} castShadow receiveShadow>
+					<boxGeometry args={[w + 0.6, 0.25, d / 2 + 0.5]} />
+				</mesh>
+			))}
+		</group>
+	);
+	return (
+		<>
+			<SkyDome top="#2a3a6a" bottom="#f8905a" fog="#d88a6a" near={40} far={150} />
+			<SunDisc pos={[-60, 8, -120]} color="#ff9050" r={10} i={5} />
+			<Rig4 sky="#8aa0e0" ground="#4a2a1a" key="#ff9a5a" keyI={2.3} keyPos={[-16, 5, -6]} rim="#ffb880" rimI={2.6} span={30} />
+			<BrickHillside center={[0, -14, -50]} w={180} rows={9} slope={3.2} seed={31} />
+			<Clouds f={f} y={26} z={-90} color="#ffc8a0" />
+			<mesh rotation={[-PI / 2, 0, 0]} position={[0, -6, 0]}>
+				<planeGeometry args={[200, 200]} />
+				<meshLambertMaterial color="#5a4a40" />
+			</mesh>
+			{[
+				[-9, -6, -8, 7, 8, 5],
+				[0, -6, -12, 8, 8, 6],
+				[9, -6, -9, 7, 9, 4.5],
+				[-8, -6, 6, 7, 8, 4],
+			].map(([x, y, z, w, d, h], i) => roof(i, [x, y, z], w, d, h))}
+			{/* the roof he is on: flat terrace with low wall, water tank, laundry line */}
+			<group position={[0, -6, 2]}>
+				<mesh material={wall} position={[0, 3, 0]} castShadow receiveShadow>
+					<boxGeometry args={[10, 6, 9]} />
+				</mesh>
+				<mesh material={tile} position={[0, 6.1, 0]} receiveShadow>
+					<boxGeometry args={[10.4, 0.2, 9.4]} />
+				</mesh>
+				<B size={[10.4, 0.9, 0.3]} pos={[0, 6.6, -4.6]} color="#c8a880" />
+				<Cyl r={0.8} h={1.6} seg={8} pos={[3.6, 7, -2.6]} color="#2a3a5a" />
+				<B size={[6, 0.03, 0.03]} pos={[-1, 8.2, -3.2]} color="#e8e8e8" shadow={false} />
+				{['#f2f2f2', '#c84a3a', '#4a6aa8'].map((c, i) => <B key={c} size={[0.7, 1.0, 0.04]} pos={[-3 + i * 1.4, 7.6, -3.2]} rot={[Math.sin(f * 0.1 + i) * 0.15, 0, 0]} color={c} />)}
+			</group>
+			{/* street: the tracking van with its antenna */}
+			<group position={[10, -6, 10]} rotation={[0, -0.6, 0]}>
+				<B size={[2.4, 2.4, 5]} pos={[0, 1.6, 0]} color="#e8e4da" />
+				<B size={[0.08, 2, 0.08]} pos={[0, 3.8, -1]} color="#2a2a2a" />
+				<B size={[1.2, 0.08, 0.08]} pos={[0, 4.6, -1]} rot={[0, f * 0.05, 0]} color="#2a2a2a" />
+			</group>
+			{/* police helicopter */}
+			<group position={[heliX, 18, -24]}>
+				<B size={[3, 1.6, 1.6]} color="#2a3a4a" />
+				<B size={[3.4, 0.4, 0.4]} pos={[-3, 0.2, 0]} color="#2a3a4a" />
+				<group rotation={[0, f * 0.9, 0]} position={[0, 1.0, 0]}>
+					<B size={[8, 0.06, 0.4]} color="#1a1a1a" shadow={false} />
+				</group>
+				<B size={[0.6, 0.4, 0.4]} pos={[1.6, -0.6, 0]} color="#ffffff" glow={4} shadow={false} />
+			</group>
+		</>
+	);
+};
