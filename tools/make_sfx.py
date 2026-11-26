@@ -543,6 +543,107 @@ def bed_ps1():
     return out
 
 
+# ---------- LeBron remake ----------
+
+def beep():
+    d = 0.12
+    return np.sin(2 * np.pi * 1760 * t_axis(d)) * env(d, 0.002, 0.08, 0.02) * 0.5
+
+
+def hum():
+    d = 2.0
+    t = t_axis(d)
+    x = sum(np.sin(2 * np.pi * f * t) * a for f, a in [(60, 1), (120, 0.5), (180, 0.25)]) + band(noise(d), 100, 400) * 0.3
+    return x * np.clip(t / 0.3, 0, 1) * np.clip((d - t) / 0.4, 0, 1) * 0.4
+
+
+def buzz():
+    d = 1.4
+    t = t_axis(d)
+    x = np.sign(np.sin(2 * np.pi * 120 * t)) * 0.2 + band(noise(d), 2000, 6000) * 0.15
+    gate = np.where((t % 0.23) < 0.16, 1.0, 0.15)
+    return x * gate * np.clip((d - t) / 0.3, 0, 1)
+
+
+def brakes():
+    d = 1.0
+    x = band(noise(d), 2500, 7000) * env(d, 0.05, 0.4) * 0.6 + sweep(1900, 1500, d, 1) * env(d, 0.05, 0.3) * 0.15
+    return x + band(noise(d), 80, 400) * env(d, 0.3, 0.3) * 0.5
+
+
+def bell():
+    d = 1.6
+    t = t_axis(d)
+    ring = np.sign(np.sin(2 * np.pi * 22 * t)) * 0.5 + 0.5
+    tone = sum(np.sin(2 * np.pi * f * t) * a for f, a in [(1320, 1), (2650, 0.5), (3960, 0.25)])
+    return tone * ring * env(d, 0.002, 1.0, 0.3) * 0.5
+
+
+def wind():
+    d = 2.0
+    t = t_axis(d)
+    return band(noise(d), 300, 1400) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.7 * t)) * np.clip(t / 0.4, 0, 1) * np.clip((d - t) / 0.6, 0, 1) * 0.5
+
+
+def bed_lebron2():
+    """Lo-fi bed timed to src/lebron/timing.json: soft minor pad + square-wave arp (retro), drums from
+    the coach, a lift at the cover, thin for 3-1, full lift on "He won", silence before "LeBron",
+    boom on the name, resolve. Room reverb via pedalboard."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'lebron', 'timing.json')))
+    L = [l['s'] for l in tm['lines']]
+    name_t = tm['lines'][16]['words'][3]['s']
+    dur = tm['duration'] + 1.0
+    bpm = 90
+    beat = 60 / bpm
+    step = beat / 4
+    out = np.zeros(int(SR * dur))
+    chords = [(220.0, 261.6, 329.6), (174.6, 220.0, 261.6), (196.0, 246.9, 293.7), (164.8, 207.7, 246.9)]
+    bar = beat * 4
+    for i in range(int(dur / bar) + 1):
+        c = chords[i % 4]
+        tt = t_axis(bar)
+        tone = sum(np.sin(2 * np.pi * f * tt) + 0.2 * np.sin(2 * np.pi * f * 2 * tt) for f in c)
+        tone *= np.clip(tt / 0.3, 0, 1) * np.clip((bar - tt) / 0.3, 0, 1) * 0.06
+        place(out, tone, i * bar)
+    n = int(dur / step)
+    for i in range(n):
+        at = i * step
+        c = chords[int(at / bar) % 4]
+        arp = L[5] - 0.1 <= at
+        if arp:
+            note = c[[0, 1, 2, 1][i % 4]] * 2
+            ph = (np.cumsum(np.full(int(SR * step * 0.85), note)) / SR) % 1
+            sq = np.where(ph < 0.25, 1.0, -1.0) * env(step * 0.85, 0.001, 0.05)
+            place(out, sq * 0.035, at)
+        drums = (L[5] - 0.05 <= at < L[11]) or (L[12] - 0.05 <= at < name_t - 0.9)
+        full = L[12] - 0.05 <= at < name_t - 0.9 or L[7] - 0.05 <= at < L[11]
+        if drums and i % 4 == 0:
+            if (i // 4) % 4 in (0, 2):
+                place(out, sweep(120, 45, 0.3, 0.3) * env(0.3, 0.001, 0.07) * 0.55, at)
+            else:
+                place(out, band(noise(0.14), 900, 5000) * env(0.14, 0.001, 0.05) * 0.3, at)
+        if drums and full and i % 2 == 1:
+            place(out, band(noise(0.04), 7000, 12000) * env(0.04, 0.0005, 0.01) * 0.15, at)
+        if L[11] <= at < L[12] - 0.05 and i % 8 == 0:  # heartbeat for 3-1
+            place(out, sweep(70, 40, 0.2, 0.5) * env(0.2, 0.001, 0.06) * 0.5, at)
+            place(out, sweep(70, 40, 0.2, 0.5) * env(0.2, 0.001, 0.06) * 0.35, at + 0.22)
+    g = np.ones_like(out)
+    a, b = int(SR * (name_t - 0.75)), int(SR * (name_t - 0.35))
+    g[a:b] = np.linspace(1, 0, b - a)
+    g[b : int(SR * name_t)] = 0
+    g[int(SR * name_t) :] = 1.0
+    out = out * g
+    tail = int(SR * (dur - 0.8))
+    out[tail:] *= np.linspace(1, 0, len(out) - tail)
+    try:
+        from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+        out = Pedalboard([HighpassFilter(40), Reverb(room_size=0.45, wet_level=0.18, dry_level=0.9), Compressor(threshold_db=-16, ratio=2.5)])(out.astype(np.float32)[None, :], SR)[0]
+    except ImportError:
+        pass
+    return out
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys
