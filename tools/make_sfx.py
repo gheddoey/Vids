@@ -644,6 +644,156 @@ def bed_lebron2():
     return out
 
 
+# ---------- Escobar ----------
+
+def pluck(f, dur, bright=0.5, seed=1):
+    """Karplus-Strong plucked string (nylon guitar)."""
+    n = int(SR * dur)
+    p = max(2, int(SR / f))
+    r = np.random.default_rng(seed)
+    buf = r.uniform(-1, 1, p)
+    out = np.zeros(n)
+    for i in range(n):
+        out[i] = buf[i % p]
+        buf[i % p] = (buf[i % p] + buf[(i + 1) % p]) * 0.5 * (0.994 + 0.005 * bright)
+    return out * env(dur, 0.002, dur * 0.5)
+
+
+def river():
+    d = 4.0
+    t = t_axis(d)
+    w = band(noise(d), 200, 1800) * (0.5 + 0.2 * np.sin(2 * np.pi * 0.3 * t))
+    for k, at in enumerate([0.6, 1.9, 2.7, 3.4]):
+        place(w, sweep(2600 + k * 300, 3400 + k * 200, 0.12, 1) * env(0.12, 0.005, 0.05) * 0.35, at)
+    return w * np.clip(t / 0.4, 0, 1) * np.clip((d - t) / 0.8, 0, 1)
+
+
+def grunt():
+    d = 0.7
+    t = t_axis(d)
+    x = np.sin(2 * np.pi * np.cumsum(70 + 25 * np.sin(2 * np.pi * 9 * t)) / SR) + band(noise(d), 80, 500) * 0.8
+    return x * env(d, 0.04, 0.25) * 0.8
+
+
+def creak():
+    d = 0.9
+    t = t_axis(d)
+    x = np.sign(np.sin(2 * np.pi * np.cumsum(300 + 120 * np.sin(2 * np.pi * 2 * t)) / SR)) * (np.sin(2 * np.pi * 40 * t) > 0.2)
+    return band(x, 400, 3000) * env(d, 0.05, 0.4) * 0.4
+
+
+def rooster():
+    d = 1.3
+    out = np.zeros(int(SR * d))
+    for k, (f0, f1, at, ln) in enumerate([(600, 900, 0, 0.18), (900, 1100, 0.2, 0.18), (1100, 700, 0.42, 0.6)]):
+        place(out, np.sign(sweep(f0, f1, ln)) * env(ln, 0.01, ln * 0.6) * 0.3, at)
+    return band(out, 400, 4000)
+
+
+def slam():
+    d = 0.8
+    return (sweep(120, 40, d, 0.3) * env(d, 0.001, 0.15) + band(noise(d), 300, 3000) * env(d, 0.001, 0.05) * 0.8 + np.sign(np.sin(2 * np.pi * 180 * t_axis(d))) * env(d, 0.001, 0.2) * 0.2)
+
+
+def prop():
+    d = 2.4
+    t = t_axis(d)
+    rate = 18 + 30 * np.clip(t / 1.8, 0, 1)
+    x = (np.sin(2 * np.pi * np.cumsum(rate) / SR) > 0.6) * band(noise(d), 80, 900) * 1.2 + np.sin(2 * np.pi * np.cumsum(rate * 4) / SR) * 0.3
+    return x * np.clip(t / 0.3, 0, 1) * np.clip((d - t) / 0.6, 0, 1)
+
+
+def flip():
+    d = 0.18
+    return band(noise(d), 1500, 7000) * env(d, 0.01, 0.05) * 0.6
+
+
+def whirr():
+    d = 2.0
+    t = t_axis(d)
+    x = band(noise(d), 1200, 5000) * (0.6 + 0.4 * (np.sin(2 * np.pi * 28 * t) > 0)) + np.sin(2 * np.pi * 220 * t) * 0.1
+    return x * np.clip(t / 0.2, 0, 1) * np.clip((d - t) / 0.4, 0, 1) * 0.5
+
+
+def pop():
+    d = 0.2
+    return sweep(300, 900, d, 0.5) * env(d, 0.002, 0.06) * 0.6
+
+
+def gavel():
+    d = 0.5
+    x = np.zeros(int(SR * d))
+    for at in (0, 0.18):
+        place(x, (band(noise(0.15), 400, 3000) + sweep(500, 200, 0.15)) * env(0.15, 0.0005, 0.03), at)
+    return x
+
+
+def siren():
+    d = 3.0
+    t = t_axis(d)
+    f = 700 + 250 * (np.sin(2 * np.pi * 0.8 * t) > 0)
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.3 * np.clip(t / 0.5, 0, 1) * np.clip((d - t) / 0.8, 0, 1)
+
+
+def heli():
+    d = 3.0
+    t = t_axis(d)
+    return band(noise(d), 60, 600) * (0.3 + 0.7 * (np.sin(2 * np.pi * 11 * t) > 0.3)) * np.clip(t / 0.6, 0, 1) * np.clip((d - t) / 0.8, 0, 1)
+
+
+def blow():
+    d = 0.9
+    return band(noise(d), 300, 2500) * env(d, 0.05, 0.25) * 0.6
+
+
+def bed_escobar():
+    """Latin guitar bed timed to src/escobar/timing.json: sparse nylon arpeggios (Am-Dm-E), a
+    shaker + low drum from 'Cocaine', fuller through the money, thinned to a heartbeat for
+    'built on blood', silence before the name, boom, one last low note under the hippos."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'escobar', 'timing.json')))
+    L = [l['s'] for l in tm['lines']]
+    name_t = tm['lines'][20]['words'][3]['s']
+    dur = tm['duration'] + 1.2
+    bpm = 96
+    beat = 60 / bpm
+    out = np.zeros(int(SR * dur))
+    prog = [(110.0, 220.0, 261.6, 329.6), (146.8, 220.0, 293.7, 349.2), (82.4, 207.7, 246.9, 329.6), (110.0, 220.0, 261.6, 329.6)]
+    pat = [0, 2, 1, 3, 2, 1]
+    step = beat / 2
+    i = 0
+    while i * step < dur - 1:
+        at = i * step
+        if name_t - 0.8 <= at < name_t + 0.1:
+            i += 1
+            continue
+        thin = L[13] - 0.05 <= at < L[17]
+        bar = int(at / (beat * 4)) % 4
+        if not thin or i % 4 == 0:
+            note = prog[bar][pat[i % len(pat)]]
+            place(out, pluck(note, 1.4, seed=i) * (0.18 if not thin else 0.1), at)
+        drums = L[5] - 0.05 <= at < L[13] or L[17] <= at < name_t - 0.8
+        if drums:
+            if i % 4 == 0:
+                place(out, sweep(110, 45, 0.25, 0.3) * env(0.25, 0.001, 0.07) * 0.5, at)
+            place(out, band(noise(0.06), 5000, 11000) * env(0.06, 0.003, 0.02) * (0.12 if i % 2 else 0.07), at)
+            if L[8] <= at < L[12] and i % 4 == 2:
+                place(out, band(noise(0.1), 200, 900) * env(0.1, 0.001, 0.04) * 0.35, at)
+        if thin and i % 4 == 0:
+            place(out, sweep(70, 40, 0.2, 0.5) * env(0.2, 0.001, 0.06) * 0.45, at)
+        i += 1
+    # last low note under "The hippos didn't."
+    place(out, pluck(55.0, 2.5, seed=99) * 0.4, L[22])
+    tail = int(SR * (dur - 1.0))
+    out[tail:] *= np.linspace(1, 0, len(out) - tail)
+    try:
+        from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+        out = Pedalboard([HighpassFilter(40), Reverb(room_size=0.55, wet_level=0.22, dry_level=0.85), Compressor(threshold_db=-16, ratio=2.5)])(out.astype(np.float32)[None, :], SR)[0]
+    except ImportError:
+        pass
+    return out
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys

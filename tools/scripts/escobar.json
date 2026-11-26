@@ -1,75 +1,1082 @@
 {
  "gap": 0.22,
- "keepGapBefore": {},
+ "keepGapBefore": {
+  "5": 0.45,
+  "20": 0.6,
+  "22": 0.45,
+  "16": 0.3
+ },
  "lines": [
   {
-   "text": "There are over two hundred wild hippos in Colombia."
+   "text": "There are over two hundred wild hippos in Colombia.",
+   "words": [
+    {
+     "w": "There",
+     "s": 0.0,
+     "e": 0.3
+    },
+    {
+     "w": "are",
+     "s": 0.3,
+     "e": 0.48
+    },
+    {
+     "w": "over",
+     "s": 0.48,
+     "e": 0.74
+    },
+    {
+     "w": "two",
+     "s": 0.74,
+     "e": 1.011
+    },
+    {
+     "w": "hundred",
+     "s": 1.011,
+     "e": 1.5
+    },
+    {
+     "w": "wild",
+     "s": 1.5,
+     "e": 2.1
+    },
+    {
+     "w": "hippos",
+     "s": 2.1,
+     "e": 2.54
+    },
+    {
+     "w": "in",
+     "s": 2.54,
+     "e": 2.76
+    },
+    {
+     "w": "Colombia.",
+     "s": 2.76,
+     "e": 3.16
+    }
+   ],
+   "s": 0.0,
+   "e": 3.16
   },
   {
-   "text": "And one man put them there."
+   "text": "And one man put them there.",
+   "words": [
+    {
+     "w": "And",
+     "s": 3.8,
+     "e": 4.08
+    },
+    {
+     "w": "one",
+     "s": 4.08,
+     "e": 4.38
+    },
+    {
+     "w": "man",
+     "s": 4.38,
+     "e": 4.76
+    },
+    {
+     "w": "put",
+     "s": 4.76,
+     "e": 5.02
+    },
+    {
+     "w": "them",
+     "s": 5.02,
+     "e": 5.24
+    },
+    {
+     "w": "there.",
+     "s": 5.24,
+     "e": 5.5
+    }
+   ],
+   "s": 3.8,
+   "e": 5.5
   },
   {
-   "text": "He grew up in Medell\u00edn, the son of a farmer and a schoolteacher."
+   "text": "He grew up in Medell\u00edn, the son of a farmer and a schoolteacher.",
+   "words": [
+    {
+     "w": "He",
+     "s": 6.1,
+     "e": 6.28
+    },
+    {
+     "w": "grew",
+     "s": 6.28,
+     "e": 6.44
+    },
+    {
+     "w": "up",
+     "s": 6.44,
+     "e": 6.64
+    },
+    {
+     "w": "in",
+     "s": 6.64,
+     "e": 6.82
+    },
+    {
+     "w": "Medell\u00edn,",
+     "s": 6.82,
+     "e": 7.82
+    },
+    {
+     "w": "the",
+     "s": 7.82,
+     "e": 7.96
+    },
+    {
+     "w": "son",
+     "s": 7.96,
+     "e": 8.12
+    },
+    {
+     "w": "of",
+     "s": 8.12,
+     "e": 8.26
+    },
+    {
+     "w": "a",
+     "s": 8.26,
+     "e": 8.42
+    },
+    {
+     "w": "farmer",
+     "s": 8.42,
+     "e": 8.72
+    },
+    {
+     "w": "and",
+     "s": 8.72,
+     "e": 9.12
+    },
+    {
+     "w": "a",
+     "s": 9.12,
+     "e": 9.22
+    },
+    {
+     "w": "schoolteacher.",
+     "s": 9.22,
+     "e": 9.88
+    }
+   ],
+   "s": 6.1,
+   "e": 9.88
   },
   {
-   "text": "As a teenager, he sold fake lottery tickets and smuggled cigarettes."
+   "text": "As a teenager, he sold fake lottery tickets and smuggled cigarettes.",
+   "words": [
+    {
+     "w": "As",
+     "s": 10.42,
+     "e": 10.58
+    },
+    {
+     "w": "a",
+     "s": 10.58,
+     "e": 10.76
+    },
+    {
+     "w": "teenager,",
+     "s": 10.76,
+     "e": 11.12
+    },
+    {
+     "w": "he",
+     "s": 11.44,
+     "e": 11.64
+    },
+    {
+     "w": "sold",
+     "s": 11.64,
+     "e": 11.84
+    },
+    {
+     "w": "fake",
+     "s": 11.84,
+     "e": 12.18
+    },
+    {
+     "w": "lottery",
+     "s": 12.18,
+     "e": 12.54
+    },
+    {
+     "w": "tickets",
+     "s": 12.54,
+     "e": 13.0
+    },
+    {
+     "w": "and",
+     "s": 13.0,
+     "e": 13.28
+    },
+    {
+     "w": "smuggled",
+     "s": 13.28,
+     "e": 13.6
+    },
+    {
+     "w": "cigarettes.",
+     "s": 13.6,
+     "e": 14.2
+    }
+   ],
+   "s": 10.42,
+   "e": 14.2
   },
   {
-   "text": "By his twenties, he was smuggling something far worse."
+   "text": "By his twenties, he was smuggling something far worse.",
+   "words": [
+    {
+     "w": "By",
+     "s": 14.7,
+     "e": 14.96
+    },
+    {
+     "w": "his",
+     "s": 14.96,
+     "e": 15.12
+    },
+    {
+     "w": "twenties,",
+     "s": 15.12,
+     "e": 15.92
+    },
+    {
+     "w": "he",
+     "s": 15.92,
+     "e": 16.08
+    },
+    {
+     "w": "was",
+     "s": 16.08,
+     "e": 16.2
+    },
+    {
+     "w": "smuggling",
+     "s": 16.2,
+     "e": 16.56
+    },
+    {
+     "w": "something",
+     "s": 16.56,
+     "e": 17.0
+    },
+    {
+     "w": "far",
+     "s": 17.0,
+     "e": 17.48
+    },
+    {
+     "w": "worse.",
+     "s": 17.48,
+     "e": 17.96
+    }
+   ],
+   "s": 14.7,
+   "e": 17.96
   },
   {
-   "text": "Cocaine."
+   "text": "Cocaine.",
+   "words": [
+    {
+     "w": "Cocaine.",
+     "s": 18.4,
+     "e": 19.05
+    }
+   ],
+   "s": 18.4,
+   "e": 19.05
   },
   {
-   "text": "By the planeload."
+   "text": "By the planeload.",
+   "words": [
+    {
+     "w": "By",
+     "s": 19.74,
+     "e": 19.98
+    },
+    {
+     "w": "the",
+     "s": 19.98,
+     "e": 20.14
+    },
+    {
+     "w": "planeload.",
+     "s": 20.14,
+     "e": 21.4
+    }
+   ],
+   "s": 19.74,
+   "e": 21.4
   },
   {
-   "text": "His cartel supplied an estimated eighty percent of what reached the United States."
+   "text": "His cartel supplied an estimated eighty percent of what reached the United States.",
+   "words": [
+    {
+     "w": "His",
+     "s": 21.4,
+     "e": 21.6
+    },
+    {
+     "w": "cartel",
+     "s": 21.6,
+     "e": 22.0
+    },
+    {
+     "w": "supplied",
+     "s": 22.0,
+     "e": 22.54
+    },
+    {
+     "w": "an",
+     "s": 22.54,
+     "e": 22.7
+    },
+    {
+     "w": "estimated",
+     "s": 22.7,
+     "e": 23.2
+    },
+    {
+     "w": "eighty",
+     "s": 23.2,
+     "e": 23.671
+    },
+    {
+     "w": "percent",
+     "s": 23.671,
+     "e": 24.2
+    },
+    {
+     "w": "of",
+     "s": 24.2,
+     "e": 24.44
+    },
+    {
+     "w": "what",
+     "s": 24.44,
+     "e": 24.6
+    },
+    {
+     "w": "reached",
+     "s": 24.6,
+     "e": 24.84
+    },
+    {
+     "w": "the",
+     "s": 24.84,
+     "e": 25.04
+    },
+    {
+     "w": "United",
+     "s": 25.04,
+     "e": 25.28
+    },
+    {
+     "w": "States.",
+     "s": 25.28,
+     "e": 25.8
+    }
+   ],
+   "s": 21.4,
+   "e": 25.8
   },
   {
-   "text": "Forbes put him on its billionaires list seven years in a row."
+   "text": "Forbes put him on its billionaires list seven years in a row.",
+   "words": [
+    {
+     "w": "Forbes",
+     "s": 26.36,
+     "e": 26.74
+    },
+    {
+     "w": "put",
+     "s": 26.74,
+     "e": 27.02
+    },
+    {
+     "w": "him",
+     "s": 27.02,
+     "e": 27.12
+    },
+    {
+     "w": "on",
+     "s": 27.12,
+     "e": 27.26
+    },
+    {
+     "w": "its",
+     "s": 27.26,
+     "e": 27.42
+    },
+    {
+     "w": "billionaires",
+     "s": 27.42,
+     "e": 27.92
+    },
+    {
+     "w": "list",
+     "s": 27.92,
+     "e": 28.38
+    },
+    {
+     "w": "seven",
+     "s": 28.38,
+     "e": 28.9
+    },
+    {
+     "w": "years",
+     "s": 28.9,
+     "e": 29.24
+    },
+    {
+     "w": "in",
+     "s": 29.24,
+     "e": 29.46
+    },
+    {
+     "w": "a",
+     "s": 29.46,
+     "e": 29.56
+    },
+    {
+     "w": "row.",
+     "s": 29.56,
+     "e": 29.98
+    }
+   ],
+   "s": 26.36,
+   "e": 29.98
   },
   {
-   "text": "His brother said they spent two and a half thousand dollars a month on rubber bands, just to wrap the cash."
+   "text": "His brother said they spent two and a half thousand dollars a month on rubber bands, just to wrap the cash.",
+   "words": [
+    {
+     "w": "His",
+     "s": 30.42,
+     "e": 30.5
+    },
+    {
+     "w": "brother",
+     "s": 30.5,
+     "e": 30.82
+    },
+    {
+     "w": "said",
+     "s": 30.82,
+     "e": 31.18
+    },
+    {
+     "w": "they",
+     "s": 31.18,
+     "e": 31.4
+    },
+    {
+     "w": "spent",
+     "s": 31.4,
+     "e": 31.66
+    },
+    {
+     "w": "two",
+     "s": 31.66,
+     "e": 31.776
+    },
+    {
+     "w": "and",
+     "s": 31.776,
+     "e": 31.892
+    },
+    {
+     "w": "a",
+     "s": 31.892,
+     "e": 31.961
+    },
+    {
+     "w": "half",
+     "s": 31.961,
+     "e": 32.1
+    },
+    {
+     "w": "thousand",
+     "s": 32.1,
+     "e": 32.332
+    },
+    {
+     "w": "dollars",
+     "s": 32.332,
+     "e": 32.54
+    },
+    {
+     "w": "a",
+     "s": 32.54,
+     "e": 33.42
+    },
+    {
+     "w": "month",
+     "s": 33.42,
+     "e": 33.74
+    },
+    {
+     "w": "on",
+     "s": 33.74,
+     "e": 34.1
+    },
+    {
+     "w": "rubber",
+     "s": 34.1,
+     "e": 34.4
+    },
+    {
+     "w": "bands,",
+     "s": 34.4,
+     "e": 35.02
+    },
+    {
+     "w": "just",
+     "s": 35.3,
+     "e": 35.56
+    },
+    {
+     "w": "to",
+     "s": 35.56,
+     "e": 35.74
+    },
+    {
+     "w": "wrap",
+     "s": 35.74,
+     "e": 35.92
+    },
+    {
+     "w": "the",
+     "s": 35.92,
+     "e": 36.12
+    },
+    {
+     "w": "cash.",
+     "s": 36.12,
+     "e": 36.52
+    }
+   ],
+   "s": 30.42,
+   "e": 36.52
   },
   {
-   "text": "He built a ranch with a private zoo."
+   "text": "He built a ranch with a private zoo.",
+   "words": [
+    {
+     "w": "He",
+     "s": 37.08,
+     "e": 37.16
+    },
+    {
+     "w": "built",
+     "s": 37.16,
+     "e": 37.32
+    },
+    {
+     "w": "a",
+     "s": 37.32,
+     "e": 37.52
+    },
+    {
+     "w": "ranch",
+     "s": 37.52,
+     "e": 37.88
+    },
+    {
+     "w": "with",
+     "s": 37.88,
+     "e": 38.12
+    },
+    {
+     "w": "a",
+     "s": 38.12,
+     "e": 38.26
+    },
+    {
+     "w": "private",
+     "s": 38.26,
+     "e": 38.64
+    },
+    {
+     "w": "zoo.",
+     "s": 38.64,
+     "e": 39.06
+    }
+   ],
+   "s": 37.08,
+   "e": 39.06
   },
   {
-   "text": "Giraffes, zebras, and four hippos."
+   "text": "Giraffes, zebras, and four hippos.",
+   "words": [
+    {
+     "w": "Giraffes,",
+     "s": 39.62,
+     "e": 40.28
+    },
+    {
+     "w": "zebras,",
+     "s": 40.56,
+     "e": 41.04
+    },
+    {
+     "w": "and",
+     "s": 41.52,
+     "e": 41.62
+    },
+    {
+     "w": "four",
+     "s": 41.62,
+     "e": 41.98
+    },
+    {
+     "w": "hippos.",
+     "s": 41.98,
+     "e": 42.52
+    }
+   ],
+   "s": 39.62,
+   "e": 42.52
   },
   {
-   "text": "He was even elected to Colombia's Congress."
+   "text": "He was even elected to Colombia's Congress.",
+   "words": [
+    {
+     "w": "He",
+     "s": 43.02,
+     "e": 43.12
+    },
+    {
+     "w": "was",
+     "s": 43.12,
+     "e": 43.22
+    },
+    {
+     "w": "even",
+     "s": 43.22,
+     "e": 43.44
+    },
+    {
+     "w": "elected",
+     "s": 43.44,
+     "e": 43.82
+    },
+    {
+     "w": "to",
+     "s": 43.82,
+     "e": 44.08
+    },
+    {
+     "w": "Colombia's",
+     "s": 44.08,
+     "e": 44.66
+    },
+    {
+     "w": "Congress.",
+     "s": 44.66,
+     "e": 45.1
+    }
+   ],
+   "s": 43.02,
+   "e": 45.1
   },
   {
-   "text": "But it was all built on blood."
+   "text": "But it was all built on blood.",
+   "words": [
+    {
+     "w": "But",
+     "s": 45.62,
+     "e": 45.8
+    },
+    {
+     "w": "it",
+     "s": 45.8,
+     "e": 45.88
+    },
+    {
+     "w": "was",
+     "s": 45.88,
+     "e": 46.0
+    },
+    {
+     "w": "all",
+     "s": 46.0,
+     "e": 46.4
+    },
+    {
+     "w": "built",
+     "s": 46.4,
+     "e": 46.74
+    },
+    {
+     "w": "on",
+     "s": 46.74,
+     "e": 47.12
+    },
+    {
+     "w": "blood.",
+     "s": 47.12,
+     "e": 47.56
+    }
+   ],
+   "s": 45.62,
+   "e": 47.56
   },
   {
-   "text": "Bombings."
+   "text": "Bombings.",
+   "words": [
+    {
+     "w": "Bombings.",
+     "s": 48.02,
+     "e": 48.5
+    }
+   ],
+   "s": 48.02,
+   "e": 48.5
   },
   {
-   "text": "A passenger plane blown out of the sky."
+   "text": "A passenger plane blown out of the sky.",
+   "words": [
+    {
+     "w": "A",
+     "s": 49.16,
+     "e": 49.3
+    },
+    {
+     "w": "passenger",
+     "s": 49.3,
+     "e": 49.74
+    },
+    {
+     "w": "plane",
+     "s": 49.74,
+     "e": 50.14
+    },
+    {
+     "w": "blown",
+     "s": 50.14,
+     "e": 50.52
+    },
+    {
+     "w": "out",
+     "s": 50.52,
+     "e": 50.74
+    },
+    {
+     "w": "of",
+     "s": 50.74,
+     "e": 50.84
+    },
+    {
+     "w": "the",
+     "s": 50.84,
+     "e": 50.96
+    },
+    {
+     "w": "sky.",
+     "s": 50.96,
+     "e": 51.36
+    }
+   ],
+   "s": 49.16,
+   "e": 51.36
   },
   {
-   "text": "Thousands dead."
+   "text": "Thousands dead.",
+   "words": [
+    {
+     "w": "Thousands",
+     "s": 51.96,
+     "e": 52.24
+    },
+    {
+     "w": "dead.",
+     "s": 52.24,
+     "e": 52.8
+    }
+   ],
+   "s": 51.96,
+   "e": 52.8
   },
   {
-   "text": "He surrendered to a prison he built for himself, then walked right out of it."
+   "text": "He surrendered to a prison he built for himself, then walked right out of it.",
+   "words": [
+    {
+     "w": "He",
+     "s": 52.8,
+     "e": 53.42
+    },
+    {
+     "w": "surrendered",
+     "s": 53.42,
+     "e": 53.8
+    },
+    {
+     "w": "to",
+     "s": 53.8,
+     "e": 54.1
+    },
+    {
+     "w": "a",
+     "s": 54.1,
+     "e": 54.26
+    },
+    {
+     "w": "prison",
+     "s": 54.26,
+     "e": 54.56
+    },
+    {
+     "w": "he",
+     "s": 54.56,
+     "e": 54.78
+    },
+    {
+     "w": "built",
+     "s": 54.78,
+     "e": 55.06
+    },
+    {
+     "w": "for",
+     "s": 55.06,
+     "e": 55.3
+    },
+    {
+     "w": "himself,",
+     "s": 55.3,
+     "e": 55.68
+    },
+    {
+     "w": "then",
+     "s": 56.24,
+     "e": 56.38
+    },
+    {
+     "w": "walked",
+     "s": 56.38,
+     "e": 56.68
+    },
+    {
+     "w": "right",
+     "s": 56.68,
+     "e": 57.0
+    },
+    {
+     "w": "out",
+     "s": 57.0,
+     "e": 57.22
+    },
+    {
+     "w": "of",
+     "s": 57.22,
+     "e": 57.32
+    },
+    {
+     "w": "it.",
+     "s": 57.32,
+     "e": 57.54
+    }
+   ],
+   "s": 52.8,
+   "e": 57.54
   },
   {
-   "text": "In 1993, police cornered him on a Medell\u00edn rooftop."
+   "text": "In 1993, police cornered him on a Medell\u00edn rooftop.",
+   "words": [
+    {
+     "w": "In",
+     "s": 57.92,
+     "e": 58.02
+    },
+    {
+     "w": "1993,",
+     "s": 58.02,
+     "e": 58.8
+    },
+    {
+     "w": "police",
+     "s": 59.42,
+     "e": 59.68
+    },
+    {
+     "w": "cornered",
+     "s": 59.68,
+     "e": 60.2
+    },
+    {
+     "w": "him",
+     "s": 60.2,
+     "e": 60.34
+    },
+    {
+     "w": "on",
+     "s": 60.34,
+     "e": 60.48
+    },
+    {
+     "w": "a",
+     "s": 60.48,
+     "e": 60.66
+    },
+    {
+     "w": "Medell\u00edn",
+     "s": 60.66,
+     "e": 61.0
+    },
+    {
+     "w": "rooftop.",
+     "s": 61.0,
+     "e": 61.46
+    }
+   ],
+   "s": 57.92,
+   "e": 61.46
   },
   {
-   "text": "He was killed one day after his forty-fourth birthday."
+   "text": "He was killed one day after his forty-fourth birthday.",
+   "words": [
+    {
+     "w": "He",
+     "s": 62.04,
+     "e": 62.14
+    },
+    {
+     "w": "was",
+     "s": 62.14,
+     "e": 62.3
+    },
+    {
+     "w": "killed",
+     "s": 62.3,
+     "e": 62.64
+    },
+    {
+     "w": "one",
+     "s": 62.64,
+     "e": 63.02
+    },
+    {
+     "w": "day",
+     "s": 63.02,
+     "e": 63.34
+    },
+    {
+     "w": "after",
+     "s": 63.34,
+     "e": 63.68
+    },
+    {
+     "w": "his",
+     "s": 63.68,
+     "e": 63.86
+    },
+    {
+     "w": "forty-fourth",
+     "s": 63.86,
+     "e": 64.68
+    },
+    {
+     "w": "birthday.",
+     "s": 64.68,
+     "e": 65.04
+    }
+   ],
+   "s": 62.04,
+   "e": 65.04
   },
   {
-   "text": "His name was Pablo Escobar."
+   "text": "His name was Pablo Escobar.",
+   "words": [
+    {
+     "w": "His",
+     "s": 65.68,
+     "e": 65.82
+    },
+    {
+     "w": "name",
+     "s": 65.82,
+     "e": 66.14
+    },
+    {
+     "w": "was",
+     "s": 66.14,
+     "e": 66.7
+    },
+    {
+     "w": "Pablo",
+     "s": 66.7,
+     "e": 67.18
+    },
+    {
+     "w": "Escobar.",
+     "s": 67.18,
+     "e": 67.74
+    }
+   ],
+   "s": 65.68,
+   "e": 67.74
   },
   {
-   "text": "His empire died with him."
+   "text": "His empire died with him.",
+   "words": [
+    {
+     "w": "His",
+     "s": 68.36,
+     "e": 68.48
+    },
+    {
+     "w": "empire",
+     "s": 68.48,
+     "e": 68.88
+    },
+    {
+     "w": "died",
+     "s": 68.88,
+     "e": 69.28
+    },
+    {
+     "w": "with",
+     "s": 69.28,
+     "e": 69.58
+    },
+    {
+     "w": "him.",
+     "s": 69.58,
+     "e": 69.8
+    }
+   ],
+   "s": 68.36,
+   "e": 69.8
   },
   {
-   "text": "The hippos didn't."
+   "text": "The hippos didn't.",
+   "words": [
+    {
+     "w": "The",
+     "s": 70.38,
+     "e": 70.5
+    },
+    {
+     "w": "hippos",
+     "s": 70.5,
+     "e": 70.92
+    },
+    {
+     "w": "didn't.",
+     "s": 70.92,
+     "e": 71.38
+    }
+   ],
+   "s": 70.38,
+   "e": 71.38
   }
  ]
 }

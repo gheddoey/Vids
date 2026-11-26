@@ -105,6 +105,10 @@ def main(src, script_path, name):
         weights = [len(w.strip('.,?!')) + 2 for w in words]
         tot = sum(weights)
         t, ws = ns, []
+        if l.get('words'):  # exact times from tools/align_vo.py
+            ws = [{'w': w['w'], 's': round(remap(w['s']), 3), 'e': round(remap(w['e']), 3)} for w in l['words']]
+            res.append({'text': l['text'], 's': round(ns, 3), 'e': round(ne, 3), 'words': ws})
+            continue
         for w, k in zip(words, weights):
             d = (ne - ns) * k / tot
             ws.append({'w': w, 's': round(t, 3), 'e': round(t + d, 3)})

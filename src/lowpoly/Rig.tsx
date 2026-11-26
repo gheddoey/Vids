@@ -21,7 +21,7 @@ export type Top = {
 	accent?: string; // shirt under a jacket, tie, stripe…
 	num?: string;
 	numColor?: string;
-	icon?: 'ball' | 'plaid' | 'none';
+	icon?: 'ball' | 'plaid' | 'floral' | 'none';
 	chest?: string; // lettering above the number (pixel font), e.g. a school nickname
 	sleeves?: 'short' | 'long' | 'none';
 };
@@ -30,7 +30,7 @@ export type Look = {
 	eye: string;
 	brow?: string;
 	hair: {style: HairStyle; color: string; accent?: string};
-	hat?: {type: 'cap' | 'beanie' | 'headband'; color: string; accent?: string};
+	hat?: {type: 'cap' | 'beanie' | 'headband' | 'straw' | 'police'; color: string; accent?: string};
 	top: Top;
 	pants: string;
 	shoes?: string;
@@ -45,6 +45,12 @@ export type Look = {
 	wrist?: string; // wristbands
 	cuffs?: boolean; // rolled jeans cuffs
 	tapeToe?: boolean;
+	// Facial hair, the user's way: "some hand-drawn and some 3D".
+	stubble?: {color: string; mode: 'paint' | '3d'}; // short stubble on jaw + upper lip
+	mustache3d?: string; // block mustache (3D)
+	beard3d?: string; // block beard around the jaw (3D)
+	belly?: boolean; // heavier build: a belly box on the torso front
+	watch?: string; // wristwatch colour (left wrist)
 };
 
 const INK = '#1d140f';
@@ -121,6 +127,18 @@ const drawFace = (L: Look, face: Face) =>
 			closed: () => (eye(12, 'closed'), eye(38, 'closed'), brow(12, 0, 1), brow(38, 0, 1), mouth('line')),
 		};
 		F[face]();
+		if (L.stubble?.mode === 'paint' || L.stubble?.mode === '3d') {
+			// hand-drawn stubble: a stippled shadow over jaw, chin and upper lip (also under the 3D shell)
+			const c = L.stubble.color;
+			let sd = 17;
+			const r = () => ((sd = (sd * 16807) % 2147483647) - 1) / 2147483646;
+			const inZone = (x: number, y: number) => (y >= 43 && y <= 47 && x >= 20 && x <= 44) || (y >= 52 && x >= 6 && x <= 58) || (y >= 40 && (x <= 9 || x >= 55));
+			for (let i = 0; i < 900; i++) {
+				const x = Math.floor(r() * 64);
+				const y = 38 + Math.floor(r() * 26);
+				if (inZone(x, y)) px(g, c + (r() < 0.5 ? 'aa' : '66'), x, y, 1, 1);
+			}
+		}
 		if (L.mustache) (px(g, L.mustache, 20, 44, 24, 4), px(g, L.mustache, 18, 46, 4, 4), px(g, L.mustache, 42, 46, 4, 4));
 		if (L.beard) {
 			px(g, L.beard, 0, 54, 64, 10);
@@ -188,6 +206,18 @@ const paintTorso = (T: Top, side: 'front' | 'back' | 'side', skin: string) =>
 					px(g, '#e07a2a', 22, 28, 20, 8);
 					px(g, INK, 31, 22, 2, 20);
 					px(g, INK, 22, 31, 20, 2);
+				}
+				if (T.icon === 'floral') {
+					let sd = 9;
+					const r = () => ((sd = (sd * 16807) % 2147483647) - 1) / 2147483646;
+					for (let i = 0; i < 22; i++) {
+						const x = Math.floor(r() * w);
+						const y = Math.floor(r() * h);
+						const c = ['#c84a3a', '#3a6a4a', '#e8a83a', '#4a5a9a'][i % 4];
+						px(g, c, x, y - 1, 1, 3);
+						px(g, c, x - 1, y, 3, 1);
+						px(g, '#f8f0d0', x, y, 1, 1);
+					}
 				}
 				if (T.icon === 'plaid') {
 					for (let x = 0; x < w; x += 12) px(g, d + 'aa', x, 0, 4, h);
@@ -394,6 +424,22 @@ const buildMats = (L: Look) => {
 		whistle: solid('#c8c8c8'),
 		cord: solid('#e04848'),
 		glassArm: L.glasses ? solid(L.glasses) : null,
+		stubbleShell:
+			L.stubble?.mode === '3d'
+				? lambert({
+						map: tex64((g) => {
+							let sd = 5;
+							const r = () => ((sd = (sd * 16807) % 2147483647) - 1) / 2147483646;
+							for (let i = 0; i < 260; i++) px(g, L.stubble!.color, Math.floor(r() * 64), Math.floor(r() * 32), 1, 1);
+						}, 64, 32),
+						transparent: true,
+						alphaTest: 0.5,
+					})
+				: null,
+		mus3d: L.mustache3d ? solid(L.mustache3d) : null,
+		beard3d: L.beard3d ? lambert({map: tex64((g) => (px(g, L.beard3d!, 0, 0, 16, 16), speckle(g, 16, 16, [shade(L.beard3d!, 0.18), shade(L.beard3d!, -0.2)], 40, 3)), 16, 16)}) : null,
+		belly: solid(L.top.kind === 'overalls' ? (L.top.accent ?? '#e8c84a') : L.top.base),
+		watch: L.watch ? lambert({color: L.watch, emissive: L.watch, emissiveIntensity: 0.3}) : null,
 	};
 };
 const mats = (L: Look) => {
@@ -414,6 +460,27 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 	const head = (
 		<group>
 			<B size={[1.2, HEAD_H, 1.2]} mat={M.faces[face]} half={half} inner={M.inner} />
+			{M.stubbleShell ? (
+				// 3D stubble: a thin speckled shell standing just off the jaw
+				<mesh material={M.stubbleShell} position={[0, -0.42, 0.04]}>
+					<boxGeometry args={[1.24, 0.56, 1.16]} />
+				</mesh>
+			) : null}
+			{M.mus3d ? (
+				<>
+					<B size={[0.62, 0.12, 0.1]} pos={[0, -0.25, 0.63]} mat={M.mus3d} half={half} />
+					<B size={[0.12, 0.22, 0.1]} pos={[-0.28, -0.33, 0.63]} mat={M.mus3d} half={half} />
+					<B size={[0.12, 0.22, 0.1]} pos={[0.28, -0.33, 0.63]} mat={M.mus3d} half={half} />
+				</>
+			) : null}
+			{M.beard3d ? (
+				<>
+					<B size={[1.28, 0.36, 0.3]} pos={[0, -0.56, 0.5]} mat={M.beard3d} half={half} />
+					<B size={[0.14, 0.75, 1.0]} pos={[-0.64, -0.34, 0.08]} mat={M.beard3d} half={half} />
+					<B size={[0.14, 0.75, 1.0]} pos={[0.64, -0.34, 0.08]} mat={M.beard3d} half={half} />
+					<B size={[0.5, 0.14, 0.08]} pos={[0, -0.24, 0.63]} mat={M.beard3d} half={half} />
+				</>
+			) : null}
 			{hairBoxes(L.hair.style, L.hair.color, L.hair.accent).map((b, i) => (
 				<B key={i} size={[b[0], b[1], b[2]]} pos={[b[3], b[4] - 0.1, b[5]]} mat={b[6] ? acc(b[6]) : M.hair} half={half} inner={M.inner} />
 			))}
@@ -427,6 +494,20 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 				<>
 					<B size={[1.3, 0.5, 1.3]} pos={[0, 0.72, 0]} mat={M.hat!} half={half} />
 					<B size={[1.34, 0.16, 1.34]} pos={[0, 0.5, 0]} mat={M.hatAcc!} half={half} />
+				</>
+			) : null}
+			{L.hat?.type === 'straw' ? (
+				<>
+					<B size={[1.3, 0.42, 1.3]} pos={[0, 0.86, 0]} mat={M.hat!} half={half} />
+					<B size={[2.1, 0.06, 2.1]} pos={[0, 0.66, 0]} mat={M.hat!} half={half} />
+					<B size={[1.32, 0.1, 1.32]} pos={[0, 0.72, 0]} mat={M.hatAcc!} half={half} />
+				</>
+			) : null}
+			{L.hat?.type === 'police' ? (
+				<>
+					<B size={[1.34, 0.36, 1.34]} pos={[0, 0.8, 0]} mat={M.hat!} half={half} />
+					<B size={[1.0, 0.07, 0.4]} pos={[0, 0.62, 0.78]} mat={M.hatAcc!} half={half} />
+					<B size={[0.22, 0.2, 0.06]} pos={[0, 0.84, 0.68]} mat={M.ear ?? M.hatAcc!} half={half} />
 				</>
 			) : null}
 			{L.hat?.type === 'headband' ? <B size={[1.28, 0.2, 1.28]} pos={[0, 0.45, 0]} mat={M.hat!} half={half} /> : null}
@@ -449,6 +530,7 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 			) : null}
 			<group position={[0, 2, 0]} rotation={[p.lean, p.twist, p.side]}>
 				<B size={[2, 2, 1]} pos={[0, 1, 0]} mat={M.torso} half={half} inner={M.inner} />
+				{L.belly ? <B size={[1.8, 1.1, 0.35]} pos={[0, 0.7, 0.62]} mat={M.belly} half={half} inner={M.inner} /> : null}
 				{L.whistle && show(0) ? (
 					<>
 						<B size={[0.06, 0.9, 0.04]} pos={[-0.3, 1.5, 0.52]} rot={[0, 0, 0.35]} mat={M.cord} />
@@ -469,6 +551,7 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 						<group position={[0, 0.25, 0]}>
 							{limb(M.arm)}
 							{holdL ? <group position={[0, -2.05, 0.1]}>{holdL}</group> : null}
+							{M.watch ? <B size={[1.04, 0.22, 1.04]} pos={[0, -1.55, 0]} mat={M.watch} /> : null}
 						</group>
 					</group>
 				) : null}

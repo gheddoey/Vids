@@ -11,7 +11,7 @@ import {Redraw} from '../fx';
 export type CinePreset = 'golden' | 'night' | 'interior' | 'noon' | 'arena';
 
 const P: Record<CinePreset, {split: number; contrast: number; sat: number; warm: number; vig: number; bloom: number; thresh: number; lift: number}> = {
-	golden: {split: 1.2, contrast: 0.6, sat: 1.32, warm: 0.045, vig: 0.3, bloom: 0.9, thresh: 0.75, lift: 0.012},
+	golden: {split: 1.0, contrast: 0.6, sat: 1.22, warm: 0.012, vig: 0.3, bloom: 0.9, thresh: 0.75, lift: 0.012},
 	noon: {split: 0.8, contrast: 0.55, sat: 1.28, warm: 0.02, vig: 0.26, bloom: 0.6, thresh: 0.85, lift: 0.01},
 	night: {split: 1.3, contrast: 0.5, sat: 1.25, warm: -0.01, vig: 0.36, bloom: 1.4, thresh: 0.6, lift: 0.03},
 	interior: {split: 1.0, contrast: 0.55, sat: 1.25, warm: 0.035, vig: 0.32, bloom: 1.0, thresh: 0.7, lift: 0.02},

@@ -53,17 +53,17 @@ const cut = (s: number) => Math.max(0, sec(s) - 2);
 
 type V3 = [number, number, number];
 type ShotProps = {f: number; d: number; a: Record<string, number>};
-type K = Omit<Key, 'face'> & {face?: string};
+export type K = Omit<Key, 'face'> & {face?: string};
 
-const pose = (keys: K[], f: number, phase = 0) => add(sample(keys as Key[], onTwos(f)), breathe(onTwos(f), phase)) as Partial<Pose> & {face?: string};
-const pop = (f: number, at: number, stiff = 180) => Math.max(0.001, spring({frame: onTwos(f) - at, fps: FPS, config: {damping: 11, stiffness: stiff, mass: 0.6}}));
-const flashAt = (f: number, hits: number[]) => Math.max(0, ...hits.map((h) => (f >= h && f < h + 6 ? 1 - (f - h) / 6 : 0)));
+export const pose = (keys: K[], f: number, phase = 0) => add(sample(keys as Key[], onTwos(f)), breathe(onTwos(f), phase)) as Partial<Pose> & {face?: string};
+export const pop = (f: number, at: number, stiff = 180) => Math.max(0.001, spring({frame: onTwos(f) - at, fps: FPS, config: {damping: 11, stiffness: stiff, mass: 0.6}}));
+export const flashAt = (f: number, hits: number[]) => Math.max(0, ...hits.map((h) => (f >= h && f < h + 6 ? 1 - (f - h) / 6 : 0)));
 const hand = (p: Person, ps: Partial<Pose>, side: 'L' | 'R', at: V3) => handOf(ps, side, at, p.h);
 const Man: React.FC<{p: Person; pose: Partial<Pose> & {face?: string}; at: V3; half?: -1 | 1}> = ({p, pose: ps, at, half}) => <Who look={p.look} h={p.h} pose={ps} at={at} half={half} />;
 
 // Keyframed camera (moves on ones): [{f, p, t, fov}], eased in-out; optional decaying shake.
-type CK = {f: number; p: V3; t: V3; fov?: number};
-const Cam2: React.FC<{f: number; k: CK[]; shake?: {at: number; amp: number; len?: number}}> = ({f, k, shake}) => {
+export type CK = {f: number; p: V3; t: V3; fov?: number};
+export const Cam2: React.FC<{f: number; k: CK[]; shake?: {at: number; amp: number; len?: number}}> = ({f, k, shake}) => {
 	const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
 	let i = 0;
 	while (i < k.length - 1 && f >= k[i + 1].f) i++;

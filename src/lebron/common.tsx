@@ -200,7 +200,7 @@ export const Confetti: React.FC<{frame: number; n?: number; area?: [number, numb
 
 type Timing = {duration: number; lines: {text: string; s: number; e: number; words: {w: string; s: number; e: number}[]}[]};
 
-const GOLD = new Set(['lebron', 'james', 'chosen', 'lionel', 'messi']);
+const GOLD = new Set(['lebron', 'james', 'chosen', 'lionel', 'messi', 'pablo', 'escobar']);
 
 // One word on screen at a time, held until the next word starts (no flicker in pauses).
 export const CaptionsFor: React.FC<{timing: Timing; top?: number}> = ({timing, top = 1180}) => {
