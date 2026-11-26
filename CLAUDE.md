@@ -246,7 +246,9 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 - **Magazine covers / social posts (user's choice, Nov 2026):** look up the REAL one online and either
   (1) rebuild it faithfully in 3D (`src/covers/Covers.tsx` `ChosenOneCover`: same layout, pose, colours,
   headline, cover lines, date; only the masthead name changes), or (2) use the real image crushed to a
-  64-px texture (`tools/pixel_cover.py` → `public/covers/*.png`, shown with `PixelMag`). Option 3 (real image,
+  64-px texture (`tools/pixel_cover.py` → `public/covers/*.png`, shown with `PixelMag`). **Use a mix in every video:** some
+  covers/posts as real 64-px decals, the key ones (story beats) hand-crafted in 3D, improving the
+  recreation each time (keep arms inside the cover, closer pose/likeness). Option 3 (real image,
   full detail) is saved for later. Never commit the full-res originals; check the real thing for accuracy
   (the 2002 cover jersey is WHITE with green "IRISH 23", not green).
 - Homages of existing scenes: build our own characters/designs and audio; no copied dialogue/audio.
