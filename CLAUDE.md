@@ -27,6 +27,10 @@ Shorts format: **1080×1920 (9:16), 30 fps**. Older 16:9 pieces are 1920×1080, 
 - Wants **everything planned first**: a storyboard with places, props, characters, camera, light, sound.
 - Wants **detail**: props and objects in every scene, characters of **different heights** (kids short,
   parents tall), **unique features** per person (glasses, mustache, hair, earrings…).
+- **Dense, lived-in sets (user loved the PS1Test bedroom — do this in every future video):** each room gets
+  its own layered story props: textured floor + wallpaper, a window showing outside (moon/stars/city),
+  a practical light (desk lamp, CRT glow), furniture with stuff on it (cartridges, console, shelf of boxes),
+  floor clutter (rug, beanbag, pizza box, soda can, controller). See `Bedroom` in `src/ps1/sets.tsx`.
 - **No flat graphics.** Magazine covers, price tags, social posts, scoreboards, signs, counts must be
   **3D objects in the blocky style** (use `BlockText` / RBox), never flat posters or canvas images.
 - Don't reuse a previous video's assets where they'd be recognised (the user noticed Messi's kid shirt
