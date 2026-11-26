@@ -191,11 +191,29 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 - `RoundedBoxGeometry` keeps BoxGeometry face groups, so 6-material shirt mapping works on it.
 - Character `img` must be passed; shirt PNGs are cropped per face into CanvasTextures (skin underneath).
 
+## New tools (installed, tested)
+
+- **Post-processing** (`@react-three/postprocessing`): `EffectComposer` with `Bloom` (glowing screens,
+  lamps, lasers; give emissive materials `toneMapped={false}`), `Vignette`, DOF, SSAO, noise.
+  **Always add `<Redraw />` from `src/fx.tsx` as the last child of the ThreeCanvas**, or frames render blank.
+  The `Outline` effect and drei `<Outlines>` don't show in our renders; use `HullBox` (inverted hull).
+- **drei** (`@react-three/drei`): ContactShadows, Sparkles, Clouds, Sky, MeshReflectorMaterial, etc.
+- **Physics** (`@dimforge/rapier3d-compat`): init with delayRender, then re-simulate from 0 to the
+  current frame each render (deterministic). Example: `src/lab/FxTest.tsx` (`FxTest` composition).
+- **pedalboard** (Python): reverb/delay/EQ/compression for SFX and music beds.
+- **Whisper word timings**: `python3 tools/words.py <audio> [out.json]` (faster-whisper small.en, CPU).
+  Use instead of pocketsphinx for exact word cuts.
+- **Scratch voice**: `python3 tools/scratch_vo.py tools/scripts/<name>.json <name>` → Piper voice
+  (`tools/get-voices.sh` downloads it) + Whisper timings → `public/vo/<name>.wav` + timing.json
+  (marked `scratch`). For test cuts only; the final voice is still the user's ElevenLabs take.
+- Hugging Face is allowed in the environment now. Set `HF_HUB_DISABLE_XET=1` (words.py does) since the
+  xet download host is blocked.
+
 ## Environment notes
 
 - Cloud container, no GPU. Chromium + Playwright preinstalled. Python 3.13 with numpy, PIL,
   pocketsphinx, fonttools. ffmpeg 6.1. Fonts: Inter / Inter Display (all weights), DejaVu.
-- Network is restricted: roblox.com, pollinations, ambientcg, polyhaven are blocked; pypi works.
+- Network is restricted: roblox.com, pollinations, ambientcg, polyhaven are blocked; pypi, npm and huggingface.co work.
   Make assets procedurally instead of downloading.
 - GitHub pushes work now (Claude GitHub App connected for `gheddoey/Vids`).
 
