@@ -6,31 +6,937 @@
  },
  "lines": [
   {
-   "text": "Louisville, 1954. Someone steals a twelve-year-old's bike, and he tells a cop he's going to whup the thief."
+   "text": "Louisville, 1954. Someone steals a twelve-year-old's bike, and he tells a cop he's going to whup the thief.",
+   "words": [
+    {
+     "w": "Louisville,",
+     "s": 0.0,
+     "e": 0.58
+    },
+    {
+     "w": "1954.",
+     "s": 0.96,
+     "e": 1.96
+    },
+    {
+     "w": "Someone",
+     "s": 2.88,
+     "e": 3.02
+    },
+    {
+     "w": "steals",
+     "s": 3.02,
+     "e": 3.36
+    },
+    {
+     "w": "a",
+     "s": 3.36,
+     "e": 3.56
+    },
+    {
+     "w": "twelve-year-old's",
+     "s": 3.56,
+     "e": 4.3
+    },
+    {
+     "w": "bike,",
+     "s": 4.3,
+     "e": 4.54
+    },
+    {
+     "w": "and",
+     "s": 4.54,
+     "e": 4.94
+    },
+    {
+     "w": "he",
+     "s": 4.94,
+     "e": 5.06
+    },
+    {
+     "w": "tells",
+     "s": 5.06,
+     "e": 5.24
+    },
+    {
+     "w": "a",
+     "s": 5.24,
+     "e": 5.44
+    },
+    {
+     "w": "cop",
+     "s": 5.44,
+     "e": 5.64
+    },
+    {
+     "w": "he's",
+     "s": 5.64,
+     "e": 5.9
+    },
+    {
+     "w": "going",
+     "s": 5.9,
+     "e": 6.02
+    },
+    {
+     "w": "to",
+     "s": 6.02,
+     "e": 6.28
+    },
+    {
+     "w": "whup",
+     "s": 6.28,
+     "e": 6.52
+    },
+    {
+     "w": "the",
+     "s": 6.52,
+     "e": 6.68
+    },
+    {
+     "w": "thief.",
+     "s": 6.68,
+     "e": 6.96
+    }
+   ],
+   "s": 0.0,
+   "e": 6.96
   },
   {
-   "text": "The cop runs a boxing gym. Learn to fight first, he says."
+   "text": "The cop runs a boxing gym. Learn to fight first, he says.",
+   "words": [
+    {
+     "w": "The",
+     "s": 7.56,
+     "e": 7.64
+    },
+    {
+     "w": "cop",
+     "s": 7.64,
+     "e": 7.84
+    },
+    {
+     "w": "runs",
+     "s": 7.84,
+     "e": 8.08
+    },
+    {
+     "w": "a",
+     "s": 8.08,
+     "e": 8.26
+    },
+    {
+     "w": "boxing",
+     "s": 8.26,
+     "e": 8.56
+    },
+    {
+     "w": "gym.",
+     "s": 8.56,
+     "e": 8.9
+    },
+    {
+     "w": "Learn",
+     "s": 9.38,
+     "e": 9.46
+    },
+    {
+     "w": "to",
+     "s": 9.46,
+     "e": 9.64
+    },
+    {
+     "w": "fight",
+     "s": 9.64,
+     "e": 9.82
+    },
+    {
+     "w": "first,",
+     "s": 9.82,
+     "e": 10.28
+    },
+    {
+     "w": "he",
+     "s": 10.52,
+     "e": 10.56
+    },
+    {
+     "w": "says.",
+     "s": 10.56,
+     "e": 10.82
+    }
+   ],
+   "s": 7.56,
+   "e": 10.82
   },
   {
-   "text": "Six years later, Cassius Clay is an Olympic champion. At twenty-two, he takes the heavyweight title from the most feared man in boxing."
+   "text": "Six years later, Cassius Clay is an Olympic champion. At twenty-two, he takes the heavyweight title from the most feared man in boxing.",
+   "words": [
+    {
+     "w": "Six",
+     "s": 11.48,
+     "e": 11.62
+    },
+    {
+     "w": "years",
+     "s": 11.62,
+     "e": 11.84
+    },
+    {
+     "w": "later,",
+     "s": 11.84,
+     "e": 12.26
+    },
+    {
+     "w": "Cassius",
+     "s": 12.58,
+     "e": 12.88
+    },
+    {
+     "w": "Clay",
+     "s": 12.88,
+     "e": 13.18
+    },
+    {
+     "w": "is",
+     "s": 13.18,
+     "e": 13.4
+    },
+    {
+     "w": "an",
+     "s": 13.4,
+     "e": 13.54
+    },
+    {
+     "w": "Olympic",
+     "s": 13.54,
+     "e": 13.9
+    },
+    {
+     "w": "champion.",
+     "s": 13.9,
+     "e": 14.42
+    },
+    {
+     "w": "At",
+     "s": 14.88,
+     "e": 15.0
+    },
+    {
+     "w": "twenty-two,",
+     "s": 15.0,
+     "e": 15.82
+    },
+    {
+     "w": "he",
+     "s": 15.82,
+     "e": 15.92
+    },
+    {
+     "w": "takes",
+     "s": 15.92,
+     "e": 16.1
+    },
+    {
+     "w": "the",
+     "s": 16.1,
+     "e": 16.32
+    },
+    {
+     "w": "heavyweight",
+     "s": 16.32,
+     "e": 16.7
+    },
+    {
+     "w": "title",
+     "s": 16.7,
+     "e": 17.08
+    },
+    {
+     "w": "from",
+     "s": 17.08,
+     "e": 17.32
+    },
+    {
+     "w": "the",
+     "s": 17.32,
+     "e": 17.46
+    },
+    {
+     "w": "most",
+     "s": 17.46,
+     "e": 17.66
+    },
+    {
+     "w": "feared",
+     "s": 17.66,
+     "e": 18.08
+    },
+    {
+     "w": "man",
+     "s": 18.08,
+     "e": 18.38
+    },
+    {
+     "w": "in",
+     "s": 18.38,
+     "e": 18.6
+    },
+    {
+     "w": "boxing.",
+     "s": 18.6,
+     "e": 18.9
+    }
+   ],
+   "s": 11.48,
+   "e": 18.9
   },
   {
-   "text": "Then he changes his name to Muhammad Ali. And when the Army drafts him in 1967, he refuses to step forward."
+   "text": "Then he changes his name to Muhammad Ali. And when the Army drafts him in 1967, he refuses to step forward.",
+   "words": [
+    {
+     "w": "Then",
+     "s": 19.6,
+     "e": 19.84
+    },
+    {
+     "w": "he",
+     "s": 19.84,
+     "e": 20.18
+    },
+    {
+     "w": "changes",
+     "s": 20.18,
+     "e": 20.5
+    },
+    {
+     "w": "his",
+     "s": 20.5,
+     "e": 20.74
+    },
+    {
+     "w": "name",
+     "s": 20.74,
+     "e": 20.94
+    },
+    {
+     "w": "to",
+     "s": 20.94,
+     "e": 21.14
+    },
+    {
+     "w": "Muhammad",
+     "s": 21.14,
+     "e": 21.54
+    },
+    {
+     "w": "Ali.",
+     "s": 21.54,
+     "e": 21.94
+    },
+    {
+     "w": "And",
+     "s": 22.4,
+     "e": 22.48
+    },
+    {
+     "w": "when",
+     "s": 22.48,
+     "e": 22.58
+    },
+    {
+     "w": "the",
+     "s": 22.58,
+     "e": 22.72
+    },
+    {
+     "w": "Army",
+     "s": 22.72,
+     "e": 22.9
+    },
+    {
+     "w": "drafts",
+     "s": 22.9,
+     "e": 23.22
+    },
+    {
+     "w": "him",
+     "s": 23.22,
+     "e": 23.42
+    },
+    {
+     "w": "in",
+     "s": 23.42,
+     "e": 23.56
+    },
+    {
+     "w": "1967,",
+     "s": 23.56,
+     "e": 24.24
+    },
+    {
+     "w": "he",
+     "s": 24.8,
+     "e": 24.94
+    },
+    {
+     "w": "refuses",
+     "s": 24.94,
+     "e": 25.38
+    },
+    {
+     "w": "to",
+     "s": 25.38,
+     "e": 25.72
+    },
+    {
+     "w": "step",
+     "s": 25.72,
+     "e": 25.9
+    },
+    {
+     "w": "forward.",
+     "s": 25.9,
+     "e": 26.3
+    }
+   ],
+   "s": 19.6,
+   "e": 26.3
   },
   {
-   "text": "They strip his title, take his license, and sentence him to five years. The man who'd fight anyone loses three and a half years of his prime over the one fight he refused."
+   "text": "They strip his title, take his license, and sentence him to five years. The man who'd fight anyone loses three and a half years of his prime over the one fight he refused.",
+   "words": [
+    {
+     "w": "They",
+     "s": 26.3,
+     "e": 26.88
+    },
+    {
+     "w": "strip",
+     "s": 26.88,
+     "e": 27.16
+    },
+    {
+     "w": "his",
+     "s": 27.16,
+     "e": 27.36
+    },
+    {
+     "w": "title,",
+     "s": 27.36,
+     "e": 27.68
+    },
+    {
+     "w": "take",
+     "s": 27.94,
+     "e": 28.16
+    },
+    {
+     "w": "his",
+     "s": 28.16,
+     "e": 28.34
+    },
+    {
+     "w": "license,",
+     "s": 28.34,
+     "e": 28.72
+    },
+    {
+     "w": "and",
+     "s": 29.04,
+     "e": 29.18
+    },
+    {
+     "w": "sentence",
+     "s": 29.18,
+     "e": 29.48
+    },
+    {
+     "w": "him",
+     "s": 29.48,
+     "e": 29.74
+    },
+    {
+     "w": "to",
+     "s": 29.74,
+     "e": 29.96
+    },
+    {
+     "w": "five",
+     "s": 29.96,
+     "e": 30.24
+    },
+    {
+     "w": "years.",
+     "s": 30.24,
+     "e": 30.64
+    },
+    {
+     "w": "The",
+     "s": 32.1,
+     "e": 32.1
+    },
+    {
+     "w": "man",
+     "s": 32.1,
+     "e": 32.34
+    },
+    {
+     "w": "who'd",
+     "s": 32.34,
+     "e": 32.58
+    },
+    {
+     "w": "fight",
+     "s": 32.58,
+     "e": 32.78
+    },
+    {
+     "w": "anyone",
+     "s": 32.78,
+     "e": 33.36
+    },
+    {
+     "w": "loses",
+     "s": 33.36,
+     "e": 33.76
+    },
+    {
+     "w": "three",
+     "s": 33.76,
+     "e": 34.18
+    },
+    {
+     "w": "and",
+     "s": 34.18,
+     "e": 34.34
+    },
+    {
+     "w": "a",
+     "s": 34.34,
+     "e": 34.4
+    },
+    {
+     "w": "half",
+     "s": 34.4,
+     "e": 34.6
+    },
+    {
+     "w": "years",
+     "s": 34.6,
+     "e": 34.8
+    },
+    {
+     "w": "of",
+     "s": 34.8,
+     "e": 34.96
+    },
+    {
+     "w": "his",
+     "s": 34.96,
+     "e": 35.1
+    },
+    {
+     "w": "prime",
+     "s": 35.1,
+     "e": 35.52
+    },
+    {
+     "w": "over",
+     "s": 35.52,
+     "e": 35.84
+    },
+    {
+     "w": "the",
+     "s": 35.84,
+     "e": 36.0
+    },
+    {
+     "w": "one",
+     "s": 36.0,
+     "e": 36.34
+    },
+    {
+     "w": "fight",
+     "s": 36.34,
+     "e": 36.66
+    },
+    {
+     "w": "he",
+     "s": 36.66,
+     "e": 36.86
+    },
+    {
+     "w": "refused.",
+     "s": 36.86,
+     "e": 37.3
+    }
+   ],
+   "s": 26.3,
+   "e": 37.3
   },
   {
-   "text": "He comes back slower, and Joe Frazier hands him his first loss. Months later, the Supreme Court clears him, eight to nothing."
+   "text": "He comes back slower, and Joe Frazier hands him his first loss. Months later, the Supreme Court clears him, eight to nothing.",
+   "words": [
+    {
+     "w": "He",
+     "s": 37.92,
+     "e": 38.0
+    },
+    {
+     "w": "comes",
+     "s": 38.0,
+     "e": 38.2
+    },
+    {
+     "w": "back",
+     "s": 38.2,
+     "e": 38.46
+    },
+    {
+     "w": "slower,",
+     "s": 38.46,
+     "e": 38.82
+    },
+    {
+     "w": "and",
+     "s": 38.82,
+     "e": 39.34
+    },
+    {
+     "w": "Joe",
+     "s": 39.34,
+     "e": 39.56
+    },
+    {
+     "w": "Frazier",
+     "s": 39.56,
+     "e": 39.92
+    },
+    {
+     "w": "hands",
+     "s": 39.92,
+     "e": 40.26
+    },
+    {
+     "w": "him",
+     "s": 40.26,
+     "e": 40.4
+    },
+    {
+     "w": "his",
+     "s": 40.4,
+     "e": 40.58
+    },
+    {
+     "w": "first",
+     "s": 40.58,
+     "e": 40.8
+    },
+    {
+     "w": "loss.",
+     "s": 40.8,
+     "e": 41.24
+    },
+    {
+     "w": "Months",
+     "s": 41.82,
+     "e": 41.96
+    },
+    {
+     "w": "later,",
+     "s": 41.96,
+     "e": 42.34
+    },
+    {
+     "w": "the",
+     "s": 42.62,
+     "e": 42.7
+    },
+    {
+     "w": "Supreme",
+     "s": 42.7,
+     "e": 43.02
+    },
+    {
+     "w": "Court",
+     "s": 43.02,
+     "e": 43.32
+    },
+    {
+     "w": "clears",
+     "s": 43.32,
+     "e": 43.7
+    },
+    {
+     "w": "him,",
+     "s": 43.7,
+     "e": 43.96
+    },
+    {
+     "w": "eight",
+     "s": 44.26,
+     "e": 44.44
+    },
+    {
+     "w": "to",
+     "s": 44.44,
+     "e": 44.62
+    },
+    {
+     "w": "nothing.",
+     "s": 44.62,
+     "e": 44.96
+    }
+   ],
+   "s": 37.92,
+   "e": 44.96
   },
   {
-   "text": "Zaire, 1974. He leans on the ropes, lets George Foreman punch himself out, and knocks him down in the eighth. Champion again."
+   "text": "Zaire, 1974. He leans on the ropes, lets George Foreman punch himself out, and knocks him down in the eighth. Champion again.",
+   "words": [
+    {
+     "w": "Zaire,",
+     "s": 45.58,
+     "e": 45.86
+    },
+    {
+     "w": "1974.",
+     "s": 46.12,
+     "e": 46.88
+    },
+    {
+     "w": "He",
+     "s": 47.72,
+     "e": 47.84
+    },
+    {
+     "w": "leans",
+     "s": 47.84,
+     "e": 48.08
+    },
+    {
+     "w": "on",
+     "s": 48.08,
+     "e": 48.3
+    },
+    {
+     "w": "the",
+     "s": 48.3,
+     "e": 48.42
+    },
+    {
+     "w": "ropes,",
+     "s": 48.42,
+     "e": 48.72
+    },
+    {
+     "w": "lets",
+     "s": 49.02,
+     "e": 49.2
+    },
+    {
+     "w": "George",
+     "s": 49.2,
+     "e": 49.5
+    },
+    {
+     "w": "Foreman",
+     "s": 49.5,
+     "e": 49.88
+    },
+    {
+     "w": "punch",
+     "s": 49.88,
+     "e": 50.2
+    },
+    {
+     "w": "himself",
+     "s": 50.2,
+     "e": 50.56
+    },
+    {
+     "w": "out,",
+     "s": 50.56,
+     "e": 50.9
+    },
+    {
+     "w": "and",
+     "s": 50.9,
+     "e": 51.2
+    },
+    {
+     "w": "knocks",
+     "s": 51.2,
+     "e": 51.48
+    },
+    {
+     "w": "him",
+     "s": 51.48,
+     "e": 51.7
+    },
+    {
+     "w": "down",
+     "s": 51.7,
+     "e": 51.9
+    },
+    {
+     "w": "in",
+     "s": 51.9,
+     "e": 52.06
+    },
+    {
+     "w": "the",
+     "s": 52.06,
+     "e": 52.18
+    },
+    {
+     "w": "eighth.",
+     "s": 52.18,
+     "e": 52.38
+    },
+    {
+     "w": "Champion",
+     "s": 52.88,
+     "e": 53.2
+    },
+    {
+     "w": "again.",
+     "s": 53.2,
+     "e": 53.68
+    }
+   ],
+   "s": 45.58,
+   "e": 53.68
   },
   {
-   "text": "Twenty-two years later, his hands shake from Parkinson's as he lights the Olympic flame."
+   "text": "Twenty-two years later, his hands shake from Parkinson's as he lights the Olympic flame.",
+   "words": [
+    {
+     "w": "Twenty-two",
+     "s": 53.68,
+     "e": 54.56
+    },
+    {
+     "w": "years",
+     "s": 54.56,
+     "e": 54.94
+    },
+    {
+     "w": "later,",
+     "s": 54.94,
+     "e": 55.38
+    },
+    {
+     "w": "his",
+     "s": 55.68,
+     "e": 55.8
+    },
+    {
+     "w": "hands",
+     "s": 55.8,
+     "e": 56.1
+    },
+    {
+     "w": "shake",
+     "s": 56.1,
+     "e": 56.44
+    },
+    {
+     "w": "from",
+     "s": 56.44,
+     "e": 56.68
+    },
+    {
+     "w": "Parkinson's",
+     "s": 56.68,
+     "e": 57.4
+    },
+    {
+     "w": "as",
+     "s": 57.4,
+     "e": 57.5
+    },
+    {
+     "w": "he",
+     "s": 57.5,
+     "e": 57.64
+    },
+    {
+     "w": "lights",
+     "s": 57.64,
+     "e": 57.84
+    },
+    {
+     "w": "the",
+     "s": 57.84,
+     "e": 58.06
+    },
+    {
+     "w": "Olympic",
+     "s": 58.06,
+     "e": 58.36
+    },
+    {
+     "w": "flame.",
+     "s": 58.36,
+     "e": 58.76
+    }
+   ],
+   "s": 53.68,
+   "e": 58.76
   },
   {
-   "text": "He never found the kid who stole his bike."
+   "text": "He never found the kid who stole his bike.",
+   "words": [
+    {
+     "w": "He",
+     "s": 59.54,
+     "e": 59.54
+    },
+    {
+     "w": "never",
+     "s": 59.54,
+     "e": 60.14
+    },
+    {
+     "w": "found",
+     "s": 60.14,
+     "e": 60.44
+    },
+    {
+     "w": "the",
+     "s": 60.44,
+     "e": 60.62
+    },
+    {
+     "w": "kid",
+     "s": 60.62,
+     "e": 60.76
+    },
+    {
+     "w": "who",
+     "s": 60.76,
+     "e": 60.9
+    },
+    {
+     "w": "stole",
+     "s": 60.9,
+     "e": 61.08
+    },
+    {
+     "w": "his",
+     "s": 61.08,
+     "e": 61.3
+    },
+    {
+     "w": "bike.",
+     "s": 61.3,
+     "e": 61.52
+    }
+   ],
+   "s": 59.54,
+   "e": 61.52
   }
  ]
 }

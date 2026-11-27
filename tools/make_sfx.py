@@ -873,6 +873,62 @@ def bed_rf():
         pass
     return out
 
+
+def bed_ali():
+    """Ali bed, timed to src/ali/timing.json: a light upright-bass + snare-brush groove for Louisville,
+    funk drums and bass for the rise, a held tension pad for the draft, a thin heartbeat pulse for the
+    exile, heavy drums for the comeback, a dropout right before the knockout punch, a warm pad to end."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'ali', 'timing.json')))
+    L = [l['s'] for l in tm['lines']]
+    knock = tm['lines'][6]['words'][14]['s']
+    dur = tm['duration'] + 0.8
+    out = np.zeros(int(SR * dur))
+    bpm = 100
+    beat = 60 / bpm
+    step = beat / 2
+    bass = [55.0, 55.0, 65.4, 73.4, 55.0, 82.4, 73.4, 65.4]
+    i = 0
+    while i * step < dur - 0.5:
+        at = i * step
+        sec = 0 if at < L[2] else 1 if at < L[3] else 2 if at < L[4] else 3 if at < L[5] else 4 if at < L[6] else 5 if at < L[7] else 6
+        silent = knock - 0.55 <= at < knock
+        if not silent:
+            if sec in (0, 1, 4, 5) and i % 2 == 0:
+                place(out, pluck(bass[(i // 2) % 8], 0.5, bright=0.2, seed=i) * (0.32 if sec else 0.22), at)
+            if sec == 0 and i % 4 == 2:
+                place(out, band(noise(0.12), 2000, 7000) * env(0.12, 0.01, 0.06) * 0.08, at)
+            if sec in (1, 4, 5):
+                if i % 4 == 0:
+                    place(out, sweep(120, 45, 0.25, 0.3) * env(0.25, 0.001, 0.07) * (0.55 if sec == 5 else 0.45), at)
+                if i % 4 == 2:
+                    place(out, band(noise(0.12), 180, 1200) * env(0.12, 0.001, 0.05) * (0.42 if sec == 5 else 0.32), at)
+                place(out, band(noise(0.05), 6000, 12000) * env(0.05, 0.002, 0.02) * (0.09 if i % 2 else 0.05), at)
+                if sec == 1 and i % 8 == 7:
+                    place(out, pluck(220.0, 0.25, bright=0.9, seed=i) * 0.12, at)
+            if sec == 3 and i % 4 == 0:
+                place(out, sweep(62, 38, 0.3, 0.5) * env(0.3, 0.002, 0.1) * 0.45, at)
+        i += 1
+    def pad(f0, t0, t1, amp):
+        t = t_axis(t1 - t0)
+        x = (np.sin(2 * np.pi * f0 * t) + 0.6 * np.sin(2 * np.pi * f0 * 1.5 * t) + 0.4 * np.sin(2 * np.pi * f0 * 2.003 * t)) * amp
+        x *= np.minimum(1, t / 0.8) * np.minimum(1, (t1 - t0 - t) / 1.0)
+        place(out, x, t0)
+    pad(82.4, L[3], L[4] + 0.6, 0.07)
+    pad(55.0, L[4], L[5] + 0.4, 0.06)
+    pad(110.0, L[7], dur - 0.3, 0.06)
+    for k, f0 in enumerate([220.0, 277.2, 329.6, 440.0]):
+        place(out, pluck(f0, 1.6, seed=90 + k) * 0.12, L[7] + 1.5 + k * 0.9)
+    place(out, sweep(90, 30, 1.0, 0.6) * env(1.0, 0.001, 0.35) * 0.55, knock)
+    tail = int(SR * (dur - 0.8))
+    out[tail:] *= np.linspace(1, 0, len(out) - tail)
+    try:
+        from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+        out = Pedalboard([HighpassFilter(35), Reverb(room_size=0.5, wet_level=0.2, dry_level=0.85), Compressor(threshold_db=-16, ratio=2.5)])(out.astype(np.float32)[None, :], SR)[0]
+    except ImportError:
+        pass
+    return out
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys

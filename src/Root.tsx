@@ -14,6 +14,7 @@ import {LEBRON2_FRAMES, LeBron2} from './lebron2/LeBron2';
 import {CoverPreview} from './covers/Covers';
 import {EscobarCast} from './escobar/CastSheet';
 import {FaceSheet} from './acting/FaceSheet';
+import {ALI_FRAMES, Ali} from './ali/Ali';
 import {EscobarRF, RF_FRAMES} from './escobarrf/EscobarRF';
 import {ACTING_FRAMES, ActingTest} from './actingtest/ActingTest';
 import {ESCOBAR_FRAMES, Escobar} from './escobar/Escobar';
@@ -32,6 +33,7 @@ export const Root: React.FC = () => (
 		<Still id="Cast2" component={Lineup2} width={1920} height={1080} defaultProps={{row: 0 as const}} />
 		<Still id="CoverRecreation" component={CoverPreview} width={1080} height={1920} defaultProps={{view: 'recreation' as const}} />
 		<Still id="CoverPixel" component={CoverPreview} width={1080} height={1920} defaultProps={{view: 'pixel' as const}} />
+		<Composition id="Ali" component={Ali} durationInFrames={ALI_FRAMES} fps={30} width={1080} height={1920} />
 		<Composition id="EscobarRF" component={EscobarRF} durationInFrames={RF_FRAMES} fps={30} width={1080} height={1920} />
 		<Composition id="ActingTest" component={ActingTest} durationInFrames={ACTING_FRAMES} fps={30} width={1080} height={1920} />
 		<Still id="FaceSheet" component={FaceSheet} width={1080} height={1920} defaultProps={{mode: 'expr' as const, who: 'pablo80'}} />

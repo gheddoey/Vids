@@ -16,7 +16,7 @@ export const FACES: Face[] = ['talkA', 'talkB', 'smile', 'grin', 'shock', 'smug'
 
 export type HairStyle = 'flattop' | 'bun' | 'curls' | 'twists' | 'puffs' | 'greybun' | 'bald' | 'short' | 'none';
 export type Top = {
-	kind: 'tee' | 'jersey' | 'suit' | 'jacket' | 'cardigan' | 'windbreaker' | 'overalls' | 'vest' | 'gown' | 'shirt';
+	kind: 'tee' | 'jersey' | 'suit' | 'jacket' | 'cardigan' | 'windbreaker' | 'overalls' | 'vest' | 'gown' | 'shirt' | 'bare';
 	base: string;
 	trim?: string;
 	accent?: string; // shirt under a jacket, tie, stripe…
@@ -52,6 +52,7 @@ export type Look = {
 	beard3d?: string; // block beard around the jaw (3D)
 	belly?: boolean; // heavier build: a belly box on the torso front
 	watch?: string; // wristwatch colour (left wrist)
+	trunks?: {color: string; trim?: string; boots?: string}; // boxing trunks: short + bare legs + high boots
 };
 
 const INK = '#1d140f';
@@ -197,6 +198,17 @@ const paintTorso = (T: Top, side: 'front' | 'back' | 'side', skin: string) =>
 				px(g, b, side === 'side' ? 0 : 12, 0, side === 'side' ? w : 8, 24); // straps
 				if (side !== 'side') px(g, b, 44, 0, 8, 24);
 				if (side === 'front') px(g, d, 20, 30, 24, 14); // bib pocket
+			} else if (T.kind === 'bare') {
+				// bare torso (base = skin): pec + ab shading, trunks waistband (trim) at the bottom
+				px(g, shade(b, -0.12), 8, 22, 20, 1);
+				px(g, shade(b, -0.12), 36, 22, 20, 1);
+				if (side === 'front') {
+					px(g, shade(b, -0.1), 31, 24, 2, 26);
+					for (const y of [30, 37, 44]) (px(g, shade(b, -0.08), 24, y, 7, 1), px(g, shade(b, -0.08), 33, y, 7, 1));
+				}
+				if (side === 'back') px(g, shade(b, -0.1), 31, 8, 2, 40);
+				px(g, T.trim ?? '#f2efe6', 0, 56, w, 8);
+				px(g, shade(T.trim ?? '#f2efe6', 0.25), 0, 56, w, 2);
 			} else if (T.kind === 'shirt') {
 				// open-collar button shirt: skin V at the neck, collar points, placket + buttons, chest pocket, folds
 				if (side === 'front') {
@@ -325,6 +337,20 @@ const paintArm = (L: Look) =>
 const paintLeg = (L: Look) =>
 	tex64(
 		(g) => {
+			if (L.trunks) {
+				// boxer: satin trunks (top third, side stripe), bare leg, white socks, high boots
+				const T = L.trunks;
+				px(g, L.skin, 0, 0, 32, 64);
+				speckle(g, 32, 64, [shade(L.skin, -0.1)], 20, 8);
+				px(g, T.color, 0, 0, 32, 22);
+				px(g, shade(T.color, 0.2), 2, 0, 3, 22);
+				px(g, T.trim ?? '#f2efe6', 0, 19, 32, 3);
+				px(g, '#f2efe6', 0, 44, 32, 4);
+				px(g, T.boots ?? '#f2efe6', 0, 48, 32, 16);
+				px(g, shade(T.boots ?? '#f2efe6', -0.25), 0, 54, 32, 1);
+				px(g, '#5a5650', 0, 62, 32, 2);
+				return;
+			}
 			px(g, L.pants, 0, 0, 32, 64);
 			speckle(g, 32, 64, [shade(L.pants, -0.08), shade(L.pants, 0.06)], 40, 8);
 			px(g, shade(L.pants, -0.25), 14, 0, 2, 50);
