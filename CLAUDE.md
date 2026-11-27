@@ -17,6 +17,12 @@ location passes a rendered quality gate from its real camera before moving on.
 Characters ACT: live faces (gaze, lids, brows, visemes/lip sync), personality profiles, anticipation,
 overlap/follow-through, arcs, variable cadence, impact frames. Listeners act. QC every performance.
 
+## CREATIVE FREEDOM & VIOLENCE (read `docs/CREATIVE-FREEDOM.md`)
+
+Don't sanitise by default: mature, violent, dark scenes are allowed when the story needs them, shown with
+weight and consequence (no gratuitous gore, never glorify real atrocities, real events stay factual).
+This replaces the older "violence only implied" habit (e.g. in the Escobar shorts).
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
@@ -270,7 +276,7 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
 
 ## Content rules
 
-- Biography shorts about real people are fine; keep them respectful and factual, flag facts to verify.
+- Biography shorts about real people are fine; keep them factual (flag facts to verify) and follow `docs/CREATIVE-FREEDOM.md` for intensity.
 - No team/league logos or trademarks on shirts (colours + numbers only); generic magazine/sign names.
 - **Magazine covers / social posts (user's choice, Nov 2026):** look up the REAL one online and either
   (1) rebuild it faithfully in 3D (`src/covers/Covers.tsx` `ChosenOneCover`: same layout, pose, colours,
