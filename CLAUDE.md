@@ -17,6 +17,12 @@ location passes a rendered quality gate from its real camera before moving on.
 Characters ACT: live faces (gaze, lids, brows, visemes/lip sync), personality profiles, anticipation,
 overlap/follow-through, arcs, variable cadence, impact frames. Listeners act. QC every performance.
 
+## SCREENWRITING DIRECTIVE (read `docs/SCREENWRITING-DIRECTIVE.md`)
+
+Write like a professional screenwriter: workflow (premise → hook + ending → structure → narration/dialogue →
+visuals → review → rewrite), verified facts marked apart from dramatisation, no clichés, setups paid off,
+an honest written self-critique of every script before it goes to the user.
+
 ## CREATIVE FREEDOM & VIOLENCE (read `docs/CREATIVE-FREEDOM.md`)
 
 Don't sanitise by default: mature, violent, dark scenes are allowed when the story needs them, shown with
