@@ -794,6 +794,230 @@ def bed_escobar():
     return out
 
 
+# ---------- D.B. Cooper ----------
+
+def _lp(x, hi):
+    return band(x, 0, hi)
+
+
+def storm():
+    """Wind roar + rain hiss at altitude (6 s, loopable feel)."""
+    d = 6.0
+    t = t_axis(d)
+    roar = band(noise(d), 60, 700) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.23 * t) * np.sin(2 * np.pi * 0.07 * t + 1))
+    hiss = band(noise(d), 3000, 12000) * 0.35
+    return (roar + hiss) * np.clip(t / 0.3, 0, 1) * np.clip((d - t) / 0.8, 0, 1)
+
+
+def jet():
+    d = 5.0
+    t = t_axis(d)
+    whine = sum(np.sin(2 * np.pi * f * t + k) * a for k, (f, a) in enumerate([(820, 0.12), (1640, 0.05), (410, 0.08)]))
+    rumble = band(noise(d), 40, 300) * 0.9
+    return (rumble + whine) * np.clip(t / 0.3, 0, 1) * np.clip((d - t) / 1.0, 0, 1)
+
+
+def thunder():
+    d = 3.5
+    t = t_axis(d)
+    crack = band(noise(d), 800, 6000) * env(d, 0.002, 0.08)
+    roll = band(noise(d), 30, 260) * env(d, 0.05, 1.2) * (1 + 0.5 * np.sin(2 * np.pi * 3 * t))
+    return crack * 0.6 + roll * 1.4
+
+
+def gust():
+    d = 1.6
+    t = t_axis(d)
+    return band(noise(d), 200, 2500) * np.sin(np.pi * t / d) ** 2 * (1 + 0.3 * np.sin(2 * np.pi * 7 * t))
+
+
+def chime():
+    """Airport PA ding-dong."""
+    d = 1.6
+    out = np.zeros(int(SR * d))
+    for f, at in ((659.3, 0), (523.3, 0.45)):
+        x = sum(np.sin(2 * np.pi * f * m * t_axis(1.1)) * a for m, a in ((1, 1), (2, 0.3), (3, 0.1)))
+        place(out, x * env(1.1, 0.005, 0.4) * 0.5, at)
+    return out
+
+
+def stamp():
+    d = 0.3
+    return band(noise(d), 100, 1500) * env(d, 0.001, 0.03) + sweep(160, 60, d, 0.4) * env(d, 0.001, 0.04) * 0.6
+
+
+def cabin():
+    """Jet cabin hum (4 s)."""
+    d = 4.0
+    t = t_axis(d)
+    return (band(noise(d), 80, 500) + np.sin(2 * np.pi * 115 * t) * 0.15) * np.clip(t / 0.4, 0, 1) * np.clip((d - t) / 0.6, 0, 1)
+
+
+def paper():
+    d = 0.45
+    return band(noise(d), 1500, 7000) * env(d, 0.02, 0.12) * (0.6 + 0.4 * np.sign(np.sin(2 * np.pi * 30 * t_axis(d))))
+
+
+def sting():
+    """Low brass-ish stab + cymbal swell for 'I have a bomb'."""
+    d = 2.2
+    t = t_axis(d)
+    stab = sum(np.sign(np.sin(2 * np.pi * f * t)) * 0.2 for f in (73.4, 77.8, 110.0))
+    stab = _lp(stab, 900) * env(d, 0.005, 0.6)
+    cym = band(noise(d), 5000, 14000) * env(d, 0.3, 0.6) * 0.25
+    return stab + cym
+
+
+def twang():
+    d = 0.6
+    return np.sin(2 * np.pi * np.cumsum(220 + 400 * np.exp(-t_axis(d) * 20)) / SR) * env(d, 0.001, 0.15) * 0.6
+
+
+def radio():
+    """Cockpit radio chatter: band-limited babble with squelch clicks."""
+    d = 3.0
+    t = t_axis(d)
+    out = np.zeros(int(SR * d))
+    for k, (at, ln) in enumerate(((0.1, 0.7), (1.1, 0.5), (1.9, 0.9))):
+        tt = t_axis(ln)
+        v = np.sin(2 * np.pi * np.cumsum(140 + 60 * np.sin(2 * np.pi * 5 * tt) + 40 * np.sin(2 * np.pi * 11 * tt + k)) / SR)
+        v = np.sign(v) * 0.4 + band(noise(ln), 400, 2800) * 0.5
+        place(out, v * env(ln, 0.01, None, 0.05), at)
+        place(out, band(noise(0.03), 2000, 8000) * 0.6, at + ln)
+    return band(out, 300, 3000)
+
+
+def spool():
+    d = 3.0
+    t = t_axis(d)
+    f = 200 + 900 * (t / d) ** 0.7
+    return (np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.3 + band(noise(d), 60, 400) * (t / d)) * np.clip((d - t) / 0.5, 0, 1)
+
+
+def hydraulic():
+    d = 2.2
+    t = t_axis(d)
+    whine = np.sin(2 * np.pi * np.cumsum(300 + 80 * t) / SR) * 0.3
+    clunk = np.zeros_like(t)
+    place(clunk, sweep(120, 40, 0.3, 0.3) * env(0.3, 0.001, 0.08), d - 0.4)
+    return whine * np.clip(t / 0.1, 0, 1) * np.clip((d - 0.4 - t) / 0.1, 0, 1) + clunk
+
+
+def plunk():
+    d = 0.5
+    return sweep(500, 260, d, 0.5) * env(d, 0.002, 0.08)
+
+
+def type():  # noqa: A001
+    d = 0.08
+    return band(noise(d), 1500, 6000) * env(d, 0.001, 0.01) + sweep(900, 300, d) * env(d, 0.001, 0.008) * 0.4
+
+
+def birds():
+    d = 3.0
+    out = np.zeros(int(SR * d))
+    for k, at in enumerate((0.2, 0.5, 1.3, 1.6, 2.3)):
+        place(out, sweep(3200 + k * 200, 4200, 0.1, 1) * env(0.1, 0.005, 0.04) * 0.3, at)
+    return out
+
+
+def gulls():
+    d = 2.5
+    out = np.zeros(int(SR * d))
+    for at in (0.1, 0.5, 1.4):
+        place(out, band(np.sign(sweep(1400, 900, 0.35, 0.6)), 600, 3500) * env(0.35, 0.02, 0.2) * 0.35, at)
+    return out
+
+
+def piano():
+    """One soft piano note (A3 + octave) with a long tail."""
+    d = 3.5
+    t = t_axis(d)
+    x = sum(np.sin(2 * np.pi * 220 * m * t) * a * np.exp(-t * (0.8 + m * 0.6)) for m, a in ((1, 1), (2, 0.4), (3, 0.2), (4, 0.08)))
+    return x * np.clip(t / 0.004, 0, 1)
+
+
+def match():
+    d = 1.2
+    out = np.zeros(int(SR * d))
+    for f, at in ((880, 0), (1318.5, 0.12)):
+        place(out, np.sin(2 * np.pi * f * t_axis(0.8)) * env(0.8, 0.003, 0.25) * 0.5, at)
+    return out
+
+
+def slide():
+    d = 0.9
+    t = t_axis(d)
+    return band(noise(d), 200, 2500) * np.sin(np.pi * np.clip(t / 0.7, 0, 1)) * 0.6 + np.where(t > 0.7, 1, 0) * sweep(100, 50, d) * env(d, 0.7, 0.05) * 0.5
+
+
+def lowtone():
+    d = 4.0
+    t = t_axis(d)
+    return (np.sin(2 * np.pi * 55 * t) + np.sin(2 * np.pi * 110 * t) * 0.3) * np.clip(t / 0.3, 0, 1) * np.exp(-t * 0.6)
+
+
+def bed_cooper():
+    """1971 noir bed timed to src/dbcooper/timing.json: Rhodes + walking bass + brushes from the
+    airport; a ticking pulse after 'bomb'; drops to a drone for the jump; lifts for the newsroom;
+    bass only for the manhunt; sparse after the money; silence before the last line."""
+    import json
+    tm = json.load(open(os.path.join(os.path.dirname(__file__), '..', 'src', 'dbcooper', 'timing.json')))
+    L = [l['s'] for l in tm['lines']]
+    bomb = tm['lines'][8]['words'][10]['s']
+    dur = tm['duration'] + 1.0
+    t0 = L[2] - 0.3
+    beat = 60 / 84
+    out = np.zeros(int(SR * dur))
+    chords = [(146.8, 174.6, 220.0, 261.6), (110.0, 164.8, 196.0, 246.9), (116.5, 146.8, 174.6, 220.0), (110.0, 138.6, 164.8, 196.0)]
+    bass = [73.4, 82.4, 87.3, 98.0, 55.0, 61.7, 65.4, 69.3, 58.3, 65.4, 69.3, 73.4, 55.0, 69.3, 82.4, 69.3]
+
+    def rhodes(fs, ln):
+        tt = t_axis(ln)
+        x = sum(np.sin(2 * np.pi * f * tt) + 0.25 * np.sin(2 * np.pi * f * 2 * tt) for f in fs)
+        return x * (1 + 0.15 * np.sin(2 * np.pi * 5 * tt)) * env(ln, 0.01, ln * 0.6) * 0.06
+
+    def ubass(f, ln=0.6):
+        tt = t_axis(ln)
+        return _lp(np.sin(2 * np.pi * f * tt) + 0.4 * np.sin(2 * np.pi * 2 * f * tt), 600) * env(ln, 0.01, 0.25) * 0.35
+
+    i = 0
+    while t0 + i * beat < dur - 0.5:
+        at = t0 + i * beat
+        bar = (i // 4) % 4
+        silent = (L[16] - 0.2 <= at < L[20] - 0.1) or (L[32] - 1.2 <= at)
+        tense = bomb <= at < L[16] - 0.2
+        thin = L[22] <= at < L[26]
+        sparse = L[26] <= at < L[32] - 1.2
+        if silent:
+            i += 1
+            continue
+        if tense:
+            place(out, ubass(36.7, 0.3) * 1.2, at)
+            place(out, band(noise(0.05), 3000, 9000) * env(0.05, 0.002, 0.015) * 0.12, at + beat / 2)
+        elif thin:
+            if i % 2 == 0:
+                place(out, ubass(bass[i % 16] * 0.75, 0.9), at)
+        else:
+            if i % 4 == 0:
+                place(out, rhodes(chords[bar], beat * 4 * 0.95) * (0.6 if sparse else 1), at)
+            if not sparse or i % 2 == 0:
+                place(out, ubass(bass[i % 16]), at)
+            if not sparse:
+                place(out, band(noise(0.18), 2000, 8000) * env(0.18, 0.03, 0.06) * 0.05, at + beat / 2)
+        i += 1
+    # a low drone under the jump
+    a, b = int(SR * (L[16] - 0.2)), int(SR * (L[20] - 0.1))
+    tt = np.arange(b - a) / SR
+    out[a:b] += (np.sin(2 * np.pi * 36.7 * tt) * 0.12 + band(noise((b - a) / SR), 40, 200) * 0.05) * np.clip(tt / 1.0, 0, 1)
+    try:
+        from pedalboard import Pedalboard, Reverb, Compressor, HighpassFilter
+        out = Pedalboard([HighpassFilter(35), Reverb(room_size=0.6, wet_level=0.25, dry_level=0.85), Compressor(threshold_db=-16, ratio=2.5)])(out.astype(np.float32)[None, :], SR)[0]
+    except ImportError:
+        pass
+    return out
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys

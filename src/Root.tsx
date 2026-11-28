@@ -14,6 +14,7 @@ import {LEBRON2_FRAMES, LeBron2} from './lebron2/LeBron2';
 import {CoverPreview} from './covers/Covers';
 import {EscobarCast} from './escobar/CastSheet';
 import {ESCOBAR_FRAMES, Escobar} from './escobar/Escobar';
+import {DBCOOPER_FRAMES, DBCooper} from './dbcooper/DBCooper';
 
 export const Root: React.FC = () => (
 	<>
@@ -21,6 +22,7 @@ export const Root: React.FC = () => (
 		<Composition id="FxTest" component={FxTest} durationInFrames={60} fps={30} width={1080} height={1920} />
 		<Composition id="FilterTest" component={FilterTest} durationInFrames={60} fps={30} width={1080} height={1920} defaultProps={{mode: 'on' as const}} />
 		<Composition id="LeBron2" component={LeBron2} durationInFrames={LEBRON2_FRAMES} fps={30} width={1080} height={1920} />
+		<Composition id="DBCooper" component={DBCooper} durationInFrames={DBCOOPER_FRAMES} fps={30} width={1080} height={1920} />
 		<Composition id="Escobar" component={Escobar} durationInFrames={ESCOBAR_FRAMES} fps={30} width={1080} height={1920} />
 		<Composition id="MessiShort" component={MessiShort} durationInFrames={MESSI_FRAMES} fps={30} width={1080} height={1920} />
 		<Composition id="LeBronShort" component={LeBronShort} durationInFrames={LEBRON_FRAMES} fps={30} width={1080} height={1920} />
