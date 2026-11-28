@@ -12,6 +12,13 @@ animation → edit → QC → export + production report), with docs in `docs/<v
 Build complete, layered (FG/MG/BG) cinematic locations — never characters in front of a wall. Every
 location passes a rendered quality gate from its real camera before moving on.
 
+## VISUAL QUALITY DIRECTIVE (read `docs/VISUAL-QUALITY-DIRECTIVE.md`)
+
+World-building, prop design and B-roll: no placeholder props (a sign = designed geometry, frame, mount,
+thickness, wear, matching light), one design language per project, purposeful environmental storytelling,
+purposeful cinematic B-roll (establishing / detail / character / inserts), varied camera, FG/MG/BG depth,
+research references first, QC every asset/shot against the checklist before it's done.
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
