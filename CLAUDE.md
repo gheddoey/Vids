@@ -19,6 +19,13 @@ thickness, wear, matching light), one design language per project, purposeful en
 purposeful cinematic B-roll (establishing / detail / character / inserts), varied camera, FG/MG/BG depth,
 research references first, QC every asset/shot against the checklist before it's done.
 
+## SCRIPTWRITING SYSTEM (read `docs/SCRIPTWRITING-SYSTEM.md` before writing any script)
+
+Retention-first: hook in 1–3 s (no "did you know"/intros), story arc not fact list, open loops that
+all pay off, every sentence advances, write for the ear, visuals synced to every line, real payoff
+ending (no like-and-subscribe), 60-s pacing guide, critical retention audit, 5 hooks compared, and the
+10-part deliverable (title, hooks, timestamped narration, visuals, B-roll, sound, retention, payoff, self-critique).
+
 ## THE SIX RULES (engraved — apply to EVERY video, characters included)
 
 The user's style card (`docs/six-rules.jpg`). Every new video and every remake follows all six:
