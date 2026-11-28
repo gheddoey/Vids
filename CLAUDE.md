@@ -60,6 +60,7 @@ YouTube Shorts in a blocky, Roblox-like R6 style, animated with Remotion + Three
 | `LastSlice` | `src/LastSlice.tsx` | 22 s 16:9 original comedy short (pizza slice) |
 | `LeBron2` | `src/lebron2/LeBron2.tsx` | 41 s LeBron remake: six rules, `lowpoly/Rig` cast, 17 dense sets, slice-open reveal (**new reference**) |
 | `Escobar` | `src/escobar/Escobar.tsx` | 65 s Pablo Escobar short: six rules, cinematic grade, **smooth transitions**, painted+3D stubble (**newest reference**) |
+| `DBCooper` | `src/dbcooper/DBCooper.tsx` | 71 s D.B. Cooper short: 1971 noir, 10 sets, 29 shots, slice-open briefcase (**newest**) |
 | `PS1Test` | `src/ps1/PS1Short.tsx` | 28 s retro "six rules" style test, HD-retro look (draft timing, no VO yet) |
 | `GroupA/GroupB/Heads/Base` stills | `src/Lineup.tsx` | character line-ups for checking designs |
 
@@ -247,6 +248,11 @@ ffmpeg -i out/<name>.mp4 -vf "fps=1,scale=150:-1,tile=12x5" -frames:v 1 out/chec
   container, at any `--gl`/concurrency; stills are clean. Fix after rendering:
   `python3 tools/fix_frames.py out/bundle <Comp> raw.mp4 final.mp4` (re-renders bad frames as stills, keeps audio, limits peaks).
 - `spotLight target-position` doesn't work in R3F; spotlights aim at the origin.
+- **`SkyDome` (ps1/sets) has a 90-unit radius**: anything farther is hidden behind it (far banks, city lights,
+  mountains). Wrap it in `<group scale={3}>` (camera far = 300). See `src/dbcooper/sets.tsx`.
+- **Instanced meshes away from the origin get frustum-culled** (whole forests vanish): `frustumCulled={false}`.
+- 9:16 close-ups: a head fills the frame at ~3 units; use ~6 units at fov 42–44 for a face, hide seat rows
+  between camera and subject (`Cabin727 hideRow`).
 - Big crowds: use `instancedMesh` (`Crowd` in `src/messi/sets.tsx`).
 - `RoundedBoxGeometry` keeps BoxGeometry face groups, so 6-material shirt mapping works on it.
 - Character `img` must be passed; shirt PNGs are cropped per face into CanvasTextures (skin underneath).
