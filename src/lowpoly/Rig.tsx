@@ -30,7 +30,8 @@ export type Look = {
 	eye: string;
 	brow?: string;
 	hair: {style: HairStyle; color: string; accent?: string};
-	hat?: {type: 'cap' | 'beanie' | 'headband' | 'straw' | 'police'; color: string; accent?: string};
+	hat?: {type: 'cap' | 'beanie' | 'headband' | 'straw' | 'police' | 'fedora' | 'pilot' | 'pillbox'; color: string; accent?: string};
+	shades?: string; // dark lenses (filled), frame = glasses colour
 	top: Top;
 	pants: string;
 	shoes?: string;
@@ -156,6 +157,7 @@ const drawFace = (L: Look, face: Face) =>
 				px(g, L.glasses, x + 16, 23, 2, 16);
 			}
 			px(g, L.glasses, 28, 28, 8, 2);
+			if (L.shades) for (const x of [12, 38]) (px(g, L.shades, x, 25, 14, 12), px(g, '#ffffff55', x + 2, 26, 4, 1), px(g, '#ffffff33', x + 2, 27, 2, 1));
 		}
 	});
 
@@ -508,6 +510,28 @@ export const Rig: React.FC<RigProps> = ({look: L, pose = {}, half, holdL, holdR,
 					<B size={[1.34, 0.36, 1.34]} pos={[0, 0.8, 0]} mat={M.hat!} half={half} />
 					<B size={[1.0, 0.07, 0.4]} pos={[0, 0.62, 0.78]} mat={M.hatAcc!} half={half} />
 					<B size={[0.22, 0.2, 0.06]} pos={[0, 0.84, 0.68]} mat={M.ear ?? M.hatAcc!} half={half} />
+				</>
+			) : null}
+			{L.hat?.type === 'fedora' ? (
+				<>
+					<B size={[1.24, 0.46, 1.24]} pos={[0, 0.9, 0]} mat={M.hat!} half={half} />
+					<B size={[0.5, 0.1, 1.0]} pos={[0, 1.12, 0]} mat={M.hatAcc!} half={half} />
+					<B size={[1.3, 0.12, 1.3]} pos={[0, 0.72, 0]} mat={M.hatAcc!} half={half} />
+					<B size={[1.9, 0.06, 1.9]} pos={[0, 0.66, 0.05]} rot={[0.06, 0, 0]} mat={M.hat!} half={half} />
+				</>
+			) : null}
+			{L.hat?.type === 'pilot' ? (
+				<>
+					<B size={[1.4, 0.34, 1.44]} pos={[0, 0.86, -0.02]} mat={M.hat!} half={half} />
+					<B size={[1.3, 0.14, 1.3]} pos={[0, 0.66, 0]} mat={M.hatAcc!} half={half} />
+					<B size={[1.0, 0.06, 0.42]} pos={[0, 0.6, 0.78]} rot={[-0.15, 0, 0]} mat={M.hatAcc!} half={half} />
+					<B size={[0.26, 0.2, 0.06]} pos={[0, 0.84, 0.74]} mat={M.ear ?? M.hatAcc!} half={half} />
+				</>
+			) : null}
+			{L.hat?.type === 'pillbox' ? (
+				<>
+					<B size={[0.9, 0.34, 0.9]} pos={[0.12, 0.84, 0.1]} rot={[0, 0.2, 0.1]} mat={M.hat!} half={half} />
+					<B size={[0.92, 0.08, 0.92]} pos={[0.12, 0.7, 0.1]} rot={[0, 0.2, 0.1]} mat={M.hatAcc!} half={half} />
 				</>
 			) : null}
 			{L.hat?.type === 'headband' ? <B size={[1.28, 0.2, 1.28]} pos={[0, 0.45, 0]} mat={M.hat!} half={half} /> : null}
